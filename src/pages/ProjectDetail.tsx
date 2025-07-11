@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,8 @@ import { MapPin, Clock, DollarSign, Users, Target } from "lucide-react";
 
 const ProjectDetail = () => {
   const { id } = useParams();
+  const [openResumeModal, setOpenResumeModal] = useState<number | null>(null);
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
   
   // Mock project data - in real app this would come from API
   const project = {
@@ -141,7 +144,65 @@ const ProjectDetail = () => {
                         {role.description}
                       </CardDescription>
                     </div>
-                    <Button>Apply</Button>
+                    {/* Quick Apply Button and Modal */}
+                    <Button onClick={() => setOpenResumeModal(role.id)}>
+                       Apply
+                    </Button>
+                    {openResumeModal === role.id && (
+                      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                        <div className="bg-white dark:bg-background rounded-lg shadow-lg max-w-md w-full p-6 relative">
+                          <button
+                            className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+                            onClick={() => {
+                              setOpenResumeModal(null);
+                              setResumeFile(null);
+                            }}
+                            aria-label="Close"
+                          >
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                          <h2 className="text-xl font-bold mb-4">
+                            Quick Apply: {role.title}
+                          </h2>
+                          <form
+                            onSubmit={e => {
+                              e.preventDefault();
+                              if (resumeFile) {
+                                // TODO: handle submit logic here
+                                setOpenResumeModal(null);
+                                setResumeFile(null);
+                              }
+                            }}
+                          >
+                            <label className="block mb-2 font-medium">
+                              Upload your resume
+                            </label>
+                            <input
+                              type="file"
+                              accept=".pdf,.doc,.docx"
+                              className="mb-4 block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+                              onChange={e => setResumeFile(e.target.files?.[0] || null)}
+                              required
+                            />
+                            <div className="flex gap-2 justify-end">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                  setOpenResumeModal(null);
+                                  setResumeFile(null);
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                              <Button type="submit" disabled={!resumeFile}>
+                                Submit Application
+                              </Button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </CardHeader>
                 
@@ -159,12 +220,12 @@ const ProjectDetail = () => {
                           </div>
                           <div className="text-right ml-4">
                             <div className="font-semibold text-lg">${task.amount}</div>
-                            <div className="text-sm text-muted-foreground">
+                            {/* <div className="text-sm text-muted-foreground">
                               ~{task.hours} hours
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              Due: {new Date(task.dueDate).toLocaleDateString()}
-                            </div>
+                            </div> */}
+                            {/* <div className="text-sm text-muted-foreground">
+                              //Due: {new Date(task.dueDate).toLocaleDateString()}
+                            </div> */}
                           </div>
                         </div>
                         
@@ -188,7 +249,7 @@ const ProjectDetail = () => {
         </div>
 
         {/* Perks */}
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>Perks</CardTitle>
           </CardHeader>
@@ -202,7 +263,7 @@ const ProjectDetail = () => {
               ))}
             </ul>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </div>
   );
