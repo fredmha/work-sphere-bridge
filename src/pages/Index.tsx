@@ -103,9 +103,9 @@ const Index = () => {
               </Button>
             </div>
             
-            <p className="text-sm opacity-75">
+            {/* <p className="text-sm opacity-75">
               *Pro Bono Only! - Trusted by 20+ Businesses
-            </p>
+            </p> */}
           </div>
         </div>
       </section>
@@ -197,7 +197,7 @@ const Index = () => {
                     {opportunity.description}
                   </CardDescription>
                   
-                  <div>
+                  {/* <div>
                     <h4 className="font-semibold mb-2 text-sm">Available Roles:</h4>
                     <div className="flex flex-wrap gap-1">
                       {opportunity.roles.map((role, roleIndex) => (
@@ -206,7 +206,7 @@ const Index = () => {
                         </Badge>
                       ))}
                     </div>
-                  </div>
+                  </div> */}
                   
                   <Link to={`/projects/${opportunity.id}`}>
                     <Button className="w-full gap-2 group">

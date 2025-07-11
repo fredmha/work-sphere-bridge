@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +8,9 @@ import { Search, Filter, MapPin, Clock, DollarSign } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const FindProjects = () => {
+  const [openResumeModal, setOpenResumeModal] = useState<number | null>(null);
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
+
   const projects = [
     {
       id: 1,
@@ -89,7 +93,7 @@ const FindProjects = () => {
               </div>
               
               <div className="space-y-4">
-                <div>
+                {/* <div>
                   <label className="text-sm font-medium text-muted-foreground">Categories</label>
                   <Input placeholder="Categories" className="mt-1" />
                 </div>
@@ -102,6 +106,31 @@ const FindProjects = () => {
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Project Length</label>
                   <Input placeholder="Project Length" className="mt-1" />
+                </div> */}
+
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground mb-1 block">Type</label>
+                  <div className="relative">
+                    <select
+                      className="block w-full appearance-none bg-background border border-input rounded-md px-3 py-2 pr-8 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
+                      defaultValue=""
+                    >
+                      <option value="" disabled>
+                        Select Type
+                      </option>
+                      <option value="hourly">Hourly</option>
+                      <option value="pay-per-task">Pay per Task</option>
+                    </select>
+                    <svg
+                      className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
                 </div>
                 
                 <Button className="w-full">Apply Filters</Button>
@@ -132,17 +161,71 @@ const FindProjects = () => {
                         </div>
                         <CardTitle className="text-xl mb-2">{project.title}</CardTitle>
                         
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+                        {/* Condensed project figures row */}
+                        <div className="flex items-center gap-6 text-sm text-muted-foreground mb-3">
+                          {project.type === "Pay per Hour" || project.type === "Hourly" ? (
+                            <>
+                              <div className="flex items-center gap-1">
+                                <DollarSign className="h-4 w-4" />
+                                <span>
+                                  {project.hourlyRate
+                                    ? (typeof project.hourlyRate === "number"
+                                        ? `$${project.hourlyRate}/hr`
+                                        : project.hourlyRate)
+                                    : "N/A"}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Clock className="h-4 w-4" />
+                                <span>
+                                  {/* Expecting project.duration to be like "1-5 hrs/wk" */}
+                                  {project.duration ? project.duration : "N/A"}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <MapPin className="h-4 w-4" />
+                                <span>
+                                  {/* Expecting project.timeframe to be like "1-2 wks" */}
+                                  {project.timeframe ? project.timeframe : "N/A"}
+                                </span>
+                              </div>
+                            </>
+                          ) : project.type === "Pay per Task" ? (
+                            <>
+                              <div className="flex items-center gap-1">
+                                <DollarSign className="h-4 w-4" />
+                                <span>
+                                  {/* No totalTaskValue property, so just show N/A or a placeholder */}
+                                  N/A
+                                </span>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="flex items-center gap-1">
+                                <Clock className="h-4 w-4" />
+                                <span>
+                                  {project.duration ? project.duration : "N/A"}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <MapPin className="h-4 w-4" />
+                                <span>
+                                  {project.timeframe ? project.timeframe : "N/A"}
+                                </span>
+                              </div>
+                            </>
+                          )}
                           <div className="flex items-center gap-1">
-                            <Clock className="h-4 w-4" />
-                            {project.duration}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <MapPin className="h-4 w-4" />
-                            {project.timeframe}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <span>{project.roles}</span>
+                            {/* Use the correct icon import for users, e.g. from lucide-react */}
+                            <svg className="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a4 4 0 0 0-3-3.87M9 20H4v-2a4 4 0 0 1 3-3.87m9-5a4 4 0 1 0-8 0 4 4 0 0 0 8 0z" />
+                            </svg>
+                            <span>
+                              {Array.isArray(project.roles)
+                                ? `${project.roles.length} role${project.roles.length !== 1 ? "s" : ""}`
+                                : project.roles}
+                            </span>
                           </div>
                         </div>
                         
@@ -156,9 +239,64 @@ const FindProjects = () => {
                       </div>
                       
                       <div className="flex flex-col gap-2 ml-4">
-                        <Button size="sm">
+                        <Button
+                          size="sm"
+                          onClick={() => setOpenResumeModal(project.id)}
+                        >
                           Quick Apply
                         </Button>
+                        {/* Modal for uploading resume */}
+                        {openResumeModal === project.id && (
+                          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                            <div className="bg-white dark:bg-background rounded-lg shadow-lg max-w-md w-full p-6 relative">
+                              <button
+                                className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+                                onClick={() => setOpenResumeModal(null)}
+                                aria-label="Close"
+                              >
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                              <h2 className="text-xl font-bold mb-4">
+                                Quick Apply: {project.title}
+                              </h2>
+                              <form
+                                onSubmit={e => {
+                                  e.preventDefault();
+                                  if (resumeFile) {
+                                    setOpenResumeModal(null);
+                                    setResumeFile(null);
+                                  }
+                                }}
+                              >
+                                <label className="block mb-2 font-medium">
+                                  Upload your resume
+                                </label>
+                                <input
+                                  type="file"
+                                  accept=".pdf,.doc,.docx"
+                                  className="mb-4 block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+                                  onChange={e => setResumeFile(e.target.files?.[0] || null)}
+                                  required
+                                />
+                                <div className="flex gap-2 justify-end">
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => {
+                                      setOpenResumeModal(null);
+                                      setResumeFile(null);
+                                    }}
+                                  >
+                                    Cancel
+                                  </Button>
+                                  <Button type="submit" disabled={!resumeFile}>
+                                    Submit Application
+                                  </Button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        )}
                         <Link to={`/projects/${project.id}`}>
                           <Button variant="outline" size="sm" className="w-full">
                             View Details
