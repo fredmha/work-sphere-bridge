@@ -2,27 +2,43 @@ import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Users, Building2, Search, Plus } from "lucide-react";
+import { ArrowRight, Users, Building2, Search, Plus, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 const Index = () => {
+  const { user } = useAuth();
+  
   const valueProps = [
     {
       icon: Users,
       title: "For Students",
       subtitle: "Gain real experience and build your portfolio with meaningful projects.",
-      description: "Build your portfolio through real-world voluntary work experience. Born links students and new grads with real startup projects — no gatekeeping, no endless applications. Browse live opportunities now."
+      description: "Build your portfolio through real-world voluntary work experience. Born links students and new grads with real startup projects — no gatekeeping, no endless applications. Browse live opportunities now.",
+      perks: [
+        "Real-world project experience",
+        "Direct startup collaboration", 
+        "Portfolio building opportunities"
+      ]
     },
     {
       icon: Building2,
       title: "For Companies", 
       subtitle: "Find passionate students for your projects.",
-      description: "Find passionate students for your projects."
+      description: "Find passionate students for your projects.",
+      perks: [
+        "Access to motivated talent",
+        "Zero recruitment fees",
+        "Fresh perspectives on projects"
+      ]
     }
   ];
 
   const stats = [
-    { number: "60+", label: "Projects Posted" }
+    { number: "500+", label: "Active Students" },
+    { number: "150+", label: "Projects Completed" },
+    { number: "25+", label: "Partner Companies" },
+    { number: "95%", label: "Success Rate" }
   ];
 
   const currentOpportunities = [
@@ -114,23 +130,35 @@ const Index = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed mb-4">
                     {prop.description}
                   </p>
+                  <ul className="space-y-2">
+                    {prop.perks.map((perk, perkIndex) => (
+                      <li key={perkIndex} className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-success" />
+                        <span className="text-sm">{perk}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </CardContent>
               </Card>
             ))}
           </div>
 
           {/* Stats */}
-          <div className="text-center">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Making Real Impact</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
+              Join thousands of students and companies already building the future together
+            </p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             {stats.map((stat, index) => (
-              <Card key={index} className="inline-block bg-gradient-card border-0 shadow-medium">
-                <CardContent className="p-6">
-                  <div className="text-3xl font-bold text-primary mb-2">{stat.number}</div>
-                  <div className="text-muted-foreground">{stat.label}</div>
-                </CardContent>
-              </Card>
+              <div key={index} className="text-center">
+                <div className="text-3xl font-bold text-primary mb-2">{stat.number}</div>
+                <div className="text-sm text-muted-foreground">{stat.label}</div>
+              </div>
             ))}
           </div>
         </div>
