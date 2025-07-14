@@ -82,20 +82,35 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
         }
       });
 
-      if (!signUpError && signUpData.user) {
-        // Insert into your custom user table
+      if (!signUpError) {
+        // Wait for the session to be available (polling)
+        let userId = signUpData.user?.id;
+        let tries = 0;
+        while (!userId && tries < 10) {
+          await new Promise(res => setTimeout(res, 300));
+          const { data: { user } } = await supabase.auth.getUser();
+          userId = user?.id;
+          tries++;
+        }
+        if (!userId) {
+          alert('Could not get authenticated user ID after sign up.');
+          return;
+        }
+        // Insert into your custom user table, using 'id' as the Auth user id
         const { error: dbError } = await supabase
           .from('user')
           .insert([
             {
-              id: signUpData.user.id, // Use the Auth user ID as the primary key
+              id: userId,
+              "full name": signupData.name,
               email: signupData.email,
-              "full name": signupData.name, // <-- use the exact column name
               // ...any other fields
             }
           ]);
         if (dbError) {
           alert('User created, but failed to insert into user table: ' + dbError.message);
+        } else {
+          console.log('User record created');
         }
       }
       alert('Sign up successful! Check your email for confirmation.');
