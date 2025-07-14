@@ -26,7 +26,7 @@ const Header = () => {
   return (
     <>
       <header className="bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-4 py-4 flex items-start justify-between">
           <Link to="/" className="text-2xl font-bold">
             B🔗rn
           </Link>
@@ -35,10 +35,18 @@ const Header = () => {
             <Link to="/find-projects" className="hover:text-accent transition-colors">
               Find Projects
             </Link>
+           
             {user?.userType === 'business' && (
-              <Link to="/talent" className="hover:text-accent transition-colors">
-                Find Talent
-              </Link>
+              <>
+                <Link to="/talent" className="hover:text-accent transition-colors">
+                  Find Talent
+                </Link>
+                <Link to="/applicationmanagement">
+                  <Button variant="ghost" size="sm">
+                     Application Management
+                  </Button>
+                </Link>
+              </>
             )}
             {isAuthenticated && (
               <>
@@ -48,13 +56,22 @@ const Header = () => {
                   </Link>
                 ) : (
                   <>
-                    <Link to="/applications" className="hover:text-accent transition-colors">
-                      Application Management
+                    {/* Debug: Explicitly add both links as buttons */}
+                    {/* <Link to="/ApplicationManagement">
+                      <Button variant="ghost" size="sm">
+                        Business Application Management
+                      </Button>
+                    </Link> */}
+                    <Link to="/applications">
+                      <Button variant="ghost" size="sm">
+                        Contractor Applications
+                      </Button>
                     </Link>
                     <Link to="/contractor-dashboard" className="hover:text-accent transition-colors">
                       Dashboard
                     </Link>
                   </>
+                
                 )}
               </>
             )}

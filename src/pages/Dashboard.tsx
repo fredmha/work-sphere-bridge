@@ -31,8 +31,8 @@ const Dashboard = () => {
       progress: 45,
       roles: 3,
       timesheets: [
-        { contractor: "John Doe", hours: 40, week: "Week 1", status: "Approved" },
-        { contractor: "Jane Smith", hours: 35, week: "Week 1", status: "Pending" }
+        { contractor: "John Doe", role: "bosh", hours: 40,  status: "Approved" },
+        { contractor: "Jane Smith", role: "bosh", hours: 35, status: "Pending" }
       ]
     }
   ];
@@ -156,6 +156,9 @@ const Dashboard = () => {
                               <Card key={index} className="p-3">
                                 <p className="font-medium text-sm">{task.title}</p>
                                 <p className="text-xs text-muted-foreground">{task.assignee}</p>
+                                <div className="flex justify-center mt-2">
+                                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Confirm</Button>
+                              </div>
                               </Card>
                             ))}
                           </div>
@@ -168,6 +171,9 @@ const Dashboard = () => {
                               <Card key={index} className="p-3 bg-warning/10">
                                 <p className="font-medium text-sm">{task.title}</p>
                                 <p className="text-xs text-muted-foreground">{task.assignee}</p>
+                              <div className="flex justify-center mt-2">
+                                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Confirm</Button>
+                              </div>
                               </Card>
                             ))}
                           </div>
@@ -202,7 +208,7 @@ const Dashboard = () => {
                           <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                             <div>
                               <p className="font-medium">{timesheet.contractor}</p>
-                              <p className="text-sm text-muted-foreground">{timesheet.week}</p>
+                              <p className="text-sm text-muted-foreground">{timesheet.role}</p>
                             </div>
                             <div className="text-center">
                               <p className="font-semibold">{timesheet.hours}h</p>

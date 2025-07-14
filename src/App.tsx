@@ -13,6 +13,7 @@ import TalentDirectory from "./pages/TalentDirectory";
 import ContractorDashboard from "./pages/ContractorDashboard";
 import ProfileSettings from "./pages/ProfileSettings";
 import NotFound from "./pages/NotFound";
+import Applications from "./pages/applications";
 
 const queryClient = new QueryClient();
 
@@ -29,7 +30,8 @@ const App = () => (
             <Route path="/projects/:id" element={<ProjectDetail />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/contractor-dashboard" element={<ContractorDashboard />} />
-            <Route path="/applications" element={<ApplicationManagement />} />
+            <Route path="/applicationmanagement" element={<ApplicationManagement />} />
+            <Route path="/applications" element={<Applications />} />
             <Route path="/talent" element={<TalentDirectory />} />
             <Route path="/profile" element={<ProfileSettings />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
