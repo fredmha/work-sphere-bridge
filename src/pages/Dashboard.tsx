@@ -7,83 +7,214 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Calendar, Users, Clock, DollarSign, Plus } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Project, ContractorRole, Contractor, ContractorTask } from "@/types";
 
-interface Task {
-  title: string;
-  status: string;
-  assignee: string;
-}
+const columns = ["Pending", "Submitted", "Confirmed"];
 
 const Dashboard = () => {
-  const projects = [
+  // Dummy data matching types.ts structure
+  const contractors: Contractor[] = [
     {
-      id: 1,
-      title: "Convose user engagement marketer",
-      company: "Atlassian",
-      status: "Active",
-      type: "Pay per Task",
-      progress: 75,
-      roles: 2,
-      tasks: [
-        { title: "Building a software engine", status: "Pending", assignee: "Brandon Cheung" },
-        { title: "Building a software engine", status: "Submitted", assignee: "Brandon Cheung" },
-        { title: "Building a software engine", status: "Confirmed", assignee: "Big nozzabigga" }
-      ]
+      id: "contractor-1",
+      fullName: "Brandon Cheung",
+      email: "brandon@example.com",
+      skills: ["React", "TypeScript", "Node.js"],
+      experience: "5 years",
+      type: "task",
+      wocScore: 85,
+      modifiedDate: "2024-01-15T10:00:00Z",
+      createdDate: "2024-01-01T10:00:00Z"
     },
     {
-      id: 2,
-      title: "Mobile App Development",
-      company: "TechStart",
-      status: "Active", 
-      type: "Pay per Hour",
-      progress: 45,
-      roles: 3,
-      timesheets: [
-        { contractor: "John Doe", role: "bosh", hours: 40,  status: "Approved" },
-        { contractor: "Jane Smith", role: "bosh", hours: 35, status: "Pending" }
-      ]
+      id: "contractor-2", 
+      fullName: "Big nozzabigga",
+      email: "big@example.com",
+      skills: ["Marketing", "SEO", "Content"],
+      experience: "3 years",
+      type: "task",
+      wocScore: 92,
+      modifiedDate: "2024-01-15T10:00:00Z",
+      createdDate: "2024-01-01T10:00:00Z"
+    },
+    {
+      id: "contractor-3",
+      fullName: "John Doe",
+      email: "john@example.com", 
+      skills: ["Mobile Development", "React Native"],
+      experience: "4 years",
+      type: "timesheet",
+      wocScore: 78,
+      modifiedDate: "2024-01-15T10:00:00Z",
+      createdDate: "2024-01-01T10:00:00Z"
+    },
+    {
+      id: "contractor-4",
+      fullName: "Jane Smith",
+      email: "jane@example.com",
+      skills: ["UI/UX", "Figma", "Design"],
+      experience: "6 years", 
+      type: "timesheet",
+      wocScore: 88,
+      modifiedDate: "2024-01-15T10:00:00Z",
+      createdDate: "2024-01-01T10:00:00Z"
     }
   ];
 
-  const columns = ["Pending", "Submitted", "Confirmed"];
-  const [kanbanTasks, setKanbanTasks] = useState<{ [key: number]: Task[] }>({
-    1: [
-      { title: "Building a software engine", status: "Pending", assignee: "Brandon Cheung" },
-      { title: "Building a software engine", status: "Submitted", assignee: "Brandon Cheung" },
-      { title: "Building a software engine", status: "Confirmed", assignee: "Big nozzabigga" }
-    ],
-    2: [
-      { title: "Building a software engine", status: "Pending", assignee: "Brandon Cheung" },
-      { title: "Building a software engine", status: "Submitted", assignee: "Brandon Cheung" },
-      { title: "Building a software engine", status: "Confirmed", assignee: "Big nozzabigga" }
-    ]
-  });
-
-  const onDragEnd = (projectId: number) => (result: any) => {
-    const { source, destination } = result;
-
-    if (!destination) {
-      return;
+  const contractorRoles: ContractorRole[] = [
+    {
+      id: "role-1",
+      role: "Software Engineer",
+      description: "Building a software engine",
+      category: ["Development"],
+      contractor: "contractor-1",
+      originalProject: "project-1",
+      score: 85,
+      modifiedDate: "2024-01-15T10:00:00Z",
+      createdDate: "2024-01-01T10:00:00Z"
+    },
+    {
+      id: "role-2", 
+      role: "Marketing Specialist",
+      description: "User engagement marketing",
+      category: ["Marketing"],
+      contractor: "contractor-2",
+      originalProject: "project-1", 
+      score: 92,
+      modifiedDate: "2024-01-15T10:00:00Z",
+      createdDate: "2024-01-01T10:00:00Z"
+    },
+    {
+      id: "role-3",
+      role: "Mobile Developer", 
+      description: "Mobile app development",
+      category: ["Development"],
+      contractor: "contractor-3",
+      originalProject: "project-2",
+      score: 78,
+      modifiedDate: "2024-01-15T10:00:00Z",
+      createdDate: "2024-01-01T10:00:00Z"
+    },
+    {
+      id: "role-4",
+      role: "UI/UX Designer",
+      description: "Design and user experience",
+      category: ["Design"],
+      contractor: "contractor-4", 
+      originalProject: "project-2",
+      score: 88,
+      modifiedDate: "2024-01-15T10:00:00Z",
+      createdDate: "2024-01-01T10:00:00Z"
     }
+  ];
 
-    if (source.droppableId === destination.droppableId) {
-      // Reordering within the same column
-      const newTasks = Array.from(kanbanTasks[projectId]);
-      const [movedTask] = newTasks.splice(source.index, 1);
-      newTasks.splice(destination.index, 0, movedTask);
-      setKanbanTasks(prev => ({ ...prev, [projectId]: newTasks }));
-    } else {
-      // Moving between columns
-      const sourceTasks = Array.from(kanbanTasks[projectId]);
-      const [movedTask] = sourceTasks.splice(source.index, 1);
-      const destinationTasks = Array.from(kanbanTasks[projectId]);
-      destinationTasks.splice(destination.index, 0, movedTask);
-      setKanbanTasks(prev => ({ ...prev, [projectId]: destinationTasks }));
+  const contractorTasks: ContractorTask[] = [
+    {
+      id: "task-1",
+      name: "Building a software engine",
+      description: "Develop core software engine components",
+      role: "role-1",
+      status: "Pending",
+      priority: "High",
+      price: 500,
+      modifiedDate: "2024-01-15T10:00:00Z",
+      createdDate: "2024-01-01T10:00:00Z"
+    },
+    {
+      id: "task-2",
+      name: "Building a software engine", 
+      description: "Implement user interface components",
+      role: "role-1",
+      status: "Submitted",
+      priority: "Medium",
+      price: 300,
+      modifiedDate: "2024-01-15T10:00:00Z",
+      createdDate: "2024-01-01T10:00:00Z"
+    },
+    {
+      id: "task-3",
+      name: "Building a software engine",
+      description: "Marketing campaign implementation", 
+      role: "role-2",
+      status: "Confirmed",
+      priority: "High",
+      price: 400,
+      modifiedDate: "2024-01-15T10:00:00Z",
+      createdDate: "2024-01-01T10:00:00Z"
     }
+  ];
+
+  const business = [
+    {
+      id: "business-1",
+      name: "Convose Inc.",
+      description: "A company focused on user engagement and marketing solutions.",
+      industry: "Marketing & Technology",
+      createdDate: "2023-12-01T09:00:00Z",
+      modifiedDate: "2024-01-10T12:00:00Z"
+    }
+  ];
+
+  const projects: Project[] = [
+    {
+      id: "project-1",
+      projectName: "Convose user engagement marketer",
+      projectDescription: "Marketing campaign for user engagement",
+      business: "business-1",
+      status: "Active",
+      contractorRoles: contractorRoles.filter(role => role.originalProject === "project-1"),
+      category: ["Marketing", "Development"],
+      weeklyHours: 20,
+      modifiedDate: "2024-01-15T10:00:00Z",
+      createdDate: "2024-01-01T10:00:00Z"
+    },
+    {
+      id: "project-2", 
+      projectName: "Mobile App Development",
+      projectDescription: "Complete mobile application development",
+      status: "Active",
+      contractorRoles: contractorRoles.filter(role => role.originalProject === "project-2"),
+      category: ["Development", "Design"],
+      weeklyHours: 40,
+      modifiedDate: "2024-01-15T10:00:00Z",
+      createdDate: "2024-01-01T10:00:00Z"
+    }
+  ];
+  
+  // Dummy business data related to 'business-1'
+
+
+  // Helper function to get contractor name by role ID
+  const getContractorNameByRoleId = (roleId: string) => {
+    const role = contractorRoles.find(r => r.id === roleId);
+    if (role) {
+      const contractor = contractors.find(c => c.id === role.contractor);
+      return contractor?.fullName || "Unknown";
+    }
+    return "Unknown";
   };
 
-  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  // Helper function to get tasks by project
+  const getTasksByProject = (projectId: string) => {
+    const projectRoles = contractorRoles.filter(role => role.originalProject === projectId);
+    const roleIds = projectRoles.map(role => role.id);
+    return contractorTasks.filter(task => roleIds.includes(task.role || ""));
+  };
+
+  // Helper function to get timesheets by project (simulated)
+  const getTimesheetsByProject = (projectId: string) => {
+    const projectRoles = contractorRoles.filter(role => role.originalProject === projectId);
+    return projectRoles.map(role => {
+      const contractor = contractors.find(c => c.id === role.contractor);
+      return {
+        contractor: contractor?.fullName || "Unknown",
+        role: role.role || "Unknown",
+        hours: Math.floor(Math.random() * 20) + 30, // Random hours for demo
+        status: Math.random() > 0.5 ? "Approved" : "Pending"
+      };
+    });
+  };
+
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -152,160 +283,158 @@ const Dashboard = () => {
 
         {/* Projects List */}
         <div className="space-y-6">
-          {projects.map((project) => (
-            <Card key={project.id}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="outline">{project.status}</Badge>
-                      <Badge variant={project.type === "Pay per Task" ? "default" : "secondary"}>
-                        {project.type}
-                      </Badge>
+          {projects.map((project) => {
+            const projectTasks = getTasksByProject(project.id);
+            const projectTimesheets = getTimesheetsByProject(project.id);
+            const progress = Math.floor((projectTasks.filter(t => t.status === "Confirmed").length / projectTasks.length) * 100) || 0;
+            const projectType = projectTasks.length > 0 ? "Pay per Task" : "Pay per Hour";
+            
+            return (
+              <Card key={project.id}>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge variant="outline">{project.status}</Badge>
+                        <Badge variant={projectType === "Pay per Task" ? "default" : "secondary"}>
+                          {projectType}
+                        </Badge>
+                      </div>
+                      <CardTitle>{project.projectName}</CardTitle>
+                      <CardDescription> {project.business}</CardDescription>
                     </div>
-                    <CardTitle>{project.title}</CardTitle>
-                    <CardDescription>{project.company}</CardDescription>
+                    <div className="text-right">
+                      <p className="text-sm text-muted-foreground">Progress</p>
+                      <p className="text-2xl font-bold">{progress}%</p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm text-muted-foreground">Progress</p>
-                    <p className="text-2xl font-bold">{project.progress}%</p>
-                  </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent>
-                <div className="mb-4">
-                  <Progress value={project.progress} className="h-2" />
-                </div>
+                </CardHeader>
                 
-                <Tabs defaultValue={project.type === "Pay per Task" ? "tasks" : "timesheets"}>
-                  <TabsList>
-                    {project.type === "Pay per Task" ? (
-                      <>
-                        <TabsTrigger value="tasks">Tasks</TabsTrigger>
-                        <TabsTrigger value="payments">Payments</TabsTrigger>
-                      </>
-                    ) : (
-                      <>
-                        <TabsTrigger value="timesheets">Timesheets</TabsTrigger>
-                        <TabsTrigger value="payments">Payments</TabsTrigger>
-                      </>
+                <CardContent>
+                  <div className="mb-4">
+                    <Progress value={progress} className="h-2" />
+                  </div>
+                  
+                  <Tabs defaultValue={projectType === "Pay per Task" ? "tasks" : "timesheets"}>
+                    <TabsList>
+                      {projectType === "Pay per Task" ? (
+                        <>
+                          <TabsTrigger value="tasks">Tasks</TabsTrigger>
+                          <TabsTrigger value="payments">Payments</TabsTrigger>
+                        </>
+                      ) : (
+                        <>
+                          <TabsTrigger value="timesheets">Timesheets</TabsTrigger>
+                          <TabsTrigger value="payments">Payments</TabsTrigger>
+                        </>
+                      )}
+                      <TabsTrigger value="team">Team</TabsTrigger>
+                    </TabsList>
+                    
+                    {projectType === "Pay per Task" && (
+                      <TabsContent value="tasks" className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div>
+                            <h4 className="font-semibold mb-3 text-center">Pending</h4>
+                            <div className="space-y-2">
+                              {projectTasks.filter(task => task.status === "Pending").map((task) => (
+                                <Card key={task.id} className="p-3">
+                                  <p className="font-medium text-sm">{task.name}</p>
+                                  <p className="text-xs text-muted-foreground">{getContractorNameByRoleId(task.role || "")}</p>
+                                  <div className="flex justify-center mt-2">
+                                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Confirm</Button>
+                                  </div>
+                                </Card>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <h4 className="font-semibold mb-3 text-center">Submitted</h4>
+                            <div className="space-y-2">
+                              {projectTasks.filter(task => task.status === "Submitted").map((task) => (
+                                <Card key={task.id} className="p-3 bg-warning/10">
+                                  <p className="font-medium text-sm">{task.name}</p>
+                                  <p className="text-xs text-muted-foreground">{getContractorNameByRoleId(task.role || "")}</p>
+                                  <div className="flex justify-center mt-2">
+                                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Confirm</Button>
+                                  </div>
+                                </Card>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <h4 className="font-semibold mb-3 text-center">Confirmed</h4>
+                            <div className="space-y-2">
+                              {projectTasks.filter(task => task.status === "Confirmed").map((task) => (
+                                <Card key={task.id} className="p-3 bg-success/10">
+                                  <p className="font-medium text-sm">{task.name}</p>
+                                  <p className="text-xs text-muted-foreground">{getContractorNameByRoleId(task.role || "")}</p>
+                                </Card>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex justify-center">
+                          <Button className="gap-2">
+                            <Plus className="h-4 w-4" />
+                            Add Task
+                          </Button>
+                        </div>
+                      </TabsContent>
                     )}
-                    <TabsTrigger value="team">Team</TabsTrigger>
-                  </TabsList>
-                  
-                  {project.type === "Pay per Task" && (
-                    <TabsContent value="tasks" className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {/* Pending */}
-                        <div>
-                          <h4 className="font-semibold mb-3 text-center">Pending</h4>
-                          <div className="space-y-2">
-                            {project.tasks?.filter(task => task.status === "Pending").map((task, index) => (
-                              <Card key={index} className="p-3">
-                                <p className="font-medium text-sm">{task.title}</p>
-                                <p className="text-xs text-muted-foreground">{task.assignee}</p>
-                                <div className="flex justify-center mt-2">
-                                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Confirm</Button>
-                                </div>
-                              </Card>
-                            ))}
-                          </div>
+                    
+                    {projectType === "Pay per Hour" && (
+                      <TabsContent value="timesheets" className="space-y-4">
+                        <div className="space-y-3">
+                          {projectTimesheets.map((timesheet, index) => (
+                            <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                              <div>
+                                <p className="font-medium">{timesheet.contractor}</p>
+                                <p className="text-sm text-muted-foreground">{timesheet.role}</p>
+                              </div>
+                              <div className="text-center">
+                                <p className="font-semibold">{timesheet.hours}h</p>
+                              </div>
+                              <div>
+                                <Badge variant={timesheet.status === "Approved" ? "default" : "secondary"}>
+                                  {timesheet.status}
+                                </Badge>
+                              </div>
+                              <div className="flex gap-2">
+                                {timesheet.status === "Pending" && (
+                                  <>
+                                    <Button size="sm" variant="outline">Reject</Button>
+                                    <Button size="sm">Approve</Button>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                        {/* Submitted */}
-                        <div>
-                          <h4 className="font-semibold mb-3 text-center">Submitted</h4>
-                          <div className="space-y-2">
-                            {project.tasks?.filter(task => task.status === "Submitted").map((task, index) => (
-                              <Card key={index} className="p-3 bg-warning/10">
-                                <p className="font-medium text-sm">{task.title}</p>
-                                <p className="text-xs text-muted-foreground">{task.assignee}</p>
-                                <div className="flex justify-center mt-2">
-                                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Confirm</Button>
-                                </div>
-                              </Card>
-                            ))}
-                          </div>
-                        </div>
-                        {/* Confirmed */}
-                        <div>
-                          <h4 className="font-semibold mb-3 text-center">Confirmed</h4>
-                          <div className="space-y-2">
-                            {project.tasks?.filter(task => task.status === "Confirmed").map((task, index) => (
-                              <Card key={index} className="p-3 bg-success/10">
-                                <p className="font-medium text-sm">{task.title}</p>
-                                <p className="text-xs text-muted-foreground">{task.assignee}</p>
-                              </Card>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex justify-center">
-                        <Button className="gap-2" onClick={() => setShowAddTaskModal(true)}>
-                          <Plus className="h-4 w-4" />
-                          Add Task
-                        </Button>
-                      </div>
+                      </TabsContent>
+                    )}
+                    
+                    <TabsContent value="payments">
+                      <p className="text-center text-muted-foreground py-8">
+                        Payment management interface coming soon
+                      </p>
                     </TabsContent>
-                  )}
-                  
-                  {project.type === "Pay per Hour" && (
-                    <TabsContent value="timesheets" className="space-y-4">
-                      <div className="space-y-3">
-                        {project.timesheets?.map((timesheet, index) => (
-                          <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                            <div>
-                              <p className="font-medium">{timesheet.contractor}</p>
-                              <p className="text-sm text-muted-foreground">{timesheet.role}</p>
-                            </div>
-                            <div className="text-center">
-                              <p className="font-semibold">{timesheet.hours}h</p>
-                            </div>
-                            <div>
-                              <Badge variant={timesheet.status === "Approved" ? "default" : "secondary"}>
-                                {timesheet.status}
-                              </Badge>
-                            </div>
-                            <div className="flex gap-2">
-                              {timesheet.status === "Pending" && (
-                                <>
-                                  <Button size="sm" variant="outline">Reject</Button>
-                                  <Button size="sm">Approve</Button>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                    
+                    <TabsContent value="team">
+                      <p className="text-center text-muted-foreground py-8">
+                        Team management interface coming soon
+                      </p>
                     </TabsContent>
-                  )}
-                  
-                  <TabsContent value="payments">
-                    <p className="text-center text-muted-foreground py-8">
-                      Payment management interface coming soon
-                    </p>
-                  </TabsContent>
-                  
-                  <TabsContent value="team">
-                    <p className="text-center text-muted-foreground py-8">
-                      Team management interface coming soon
-                    </p>
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
-            </Card>
-          ))}
+                  </Tabs>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </div>
-      {/* Add Task Modal */}
-      <Dialog open={showAddTaskModal} onOpenChange={setShowAddTaskModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add Task</DialogTitle>
-          </DialogHeader>
-          <div>Blank popup for now.</div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

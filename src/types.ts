@@ -27,7 +27,7 @@ export interface User {
 // Project
 export interface Project {
   id: string;
-  businessOG?: string; // Business ID
+  business?: string; // Business ID
   category?: string[]; // List of Categories
   contractorRoles?: ContractorRole[]; // List of Contractor Roles
   duration?: string;
@@ -83,6 +83,7 @@ export interface Contractor {
   skills?: string[];
   university?: string;
   wam?: string;
+  type?: string; //whether its a paid per task or a timesheet model
   wocScore?: number;
   yearOfDegree?: string;
   creator?: string; // User ID

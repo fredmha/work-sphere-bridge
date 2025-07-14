@@ -24,6 +24,7 @@ import { MessageService } from '@/entities/MessageService';
 import { TaskService } from '@/entities/TaskService';
 import ApplicationProgressStepper from './ApplicationProgressStepper.tsx';
 
+
 const statusConfig = {
   pending: {
     className: "bg-yellow-100 text-yellow-800 border-yellow-200",
