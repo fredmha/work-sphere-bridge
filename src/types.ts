@@ -123,6 +123,7 @@ export interface ContractorTask {
   owner?: string; // User ID
   priority?: string;
   role?: string; // Contractor Role ID
+  price?: number;
   score?: number;
   status?: string;
   visibility?: boolean;

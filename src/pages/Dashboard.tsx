@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,6 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Calendar, Users, Clock, DollarSign, Plus } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+
+interface Task {
+  title: string;
+  status: string;
+  assignee: string;
+}
 
 const Dashboard = () => {
   const projects = [
@@ -36,6 +45,45 @@ const Dashboard = () => {
       ]
     }
   ];
+
+  const columns = ["Pending", "Submitted", "Confirmed"];
+  const [kanbanTasks, setKanbanTasks] = useState<{ [key: number]: Task[] }>({
+    1: [
+      { title: "Building a software engine", status: "Pending", assignee: "Brandon Cheung" },
+      { title: "Building a software engine", status: "Submitted", assignee: "Brandon Cheung" },
+      { title: "Building a software engine", status: "Confirmed", assignee: "Big nozzabigga" }
+    ],
+    2: [
+      { title: "Building a software engine", status: "Pending", assignee: "Brandon Cheung" },
+      { title: "Building a software engine", status: "Submitted", assignee: "Brandon Cheung" },
+      { title: "Building a software engine", status: "Confirmed", assignee: "Big nozzabigga" }
+    ]
+  });
+
+  const onDragEnd = (projectId: number) => (result: any) => {
+    const { source, destination } = result;
+
+    if (!destination) {
+      return;
+    }
+
+    if (source.droppableId === destination.droppableId) {
+      // Reordering within the same column
+      const newTasks = Array.from(kanbanTasks[projectId]);
+      const [movedTask] = newTasks.splice(source.index, 1);
+      newTasks.splice(destination.index, 0, movedTask);
+      setKanbanTasks(prev => ({ ...prev, [projectId]: newTasks }));
+    } else {
+      // Moving between columns
+      const sourceTasks = Array.from(kanbanTasks[projectId]);
+      const [movedTask] = sourceTasks.splice(source.index, 1);
+      const destinationTasks = Array.from(kanbanTasks[projectId]);
+      destinationTasks.splice(destination.index, 0, movedTask);
+      setKanbanTasks(prev => ({ ...prev, [projectId]: destinationTasks }));
+    }
+  };
+
+  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
 
   return (
     <div className="min-h-screen bg-background">
@@ -149,6 +197,7 @@ const Dashboard = () => {
                   {project.type === "Pay per Task" && (
                     <TabsContent value="tasks" className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* Pending */}
                         <div>
                           <h4 className="font-semibold mb-3 text-center">Pending</h4>
                           <div className="space-y-2">
@@ -157,13 +206,13 @@ const Dashboard = () => {
                                 <p className="font-medium text-sm">{task.title}</p>
                                 <p className="text-xs text-muted-foreground">{task.assignee}</p>
                                 <div className="flex justify-center mt-2">
-                                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Confirm</Button>
-                              </div>
+                                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Confirm</Button>
+                                </div>
                               </Card>
                             ))}
                           </div>
                         </div>
-                        
+                        {/* Submitted */}
                         <div>
                           <h4 className="font-semibold mb-3 text-center">Submitted</h4>
                           <div className="space-y-2">
@@ -171,14 +220,14 @@ const Dashboard = () => {
                               <Card key={index} className="p-3 bg-warning/10">
                                 <p className="font-medium text-sm">{task.title}</p>
                                 <p className="text-xs text-muted-foreground">{task.assignee}</p>
-                              <div className="flex justify-center mt-2">
-                                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Confirm</Button>
-                              </div>
+                                <div className="flex justify-center mt-2">
+                                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Confirm</Button>
+                                </div>
                               </Card>
                             ))}
                           </div>
                         </div>
-                        
+                        {/* Confirmed */}
                         <div>
                           <h4 className="font-semibold mb-3 text-center">Confirmed</h4>
                           <div className="space-y-2">
@@ -191,9 +240,8 @@ const Dashboard = () => {
                           </div>
                         </div>
                       </div>
-                      
                       <div className="flex justify-center">
-                        <Button className="gap-2">
+                        <Button className="gap-2" onClick={() => setShowAddTaskModal(true)}>
                           <Plus className="h-4 w-4" />
                           Add Task
                         </Button>
@@ -249,6 +297,15 @@ const Dashboard = () => {
           ))}
         </div>
       </div>
+      {/* Add Task Modal */}
+      <Dialog open={showAddTaskModal} onOpenChange={setShowAddTaskModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Task</DialogTitle>
+          </DialogHeader>
+          <div>Blank popup for now.</div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
