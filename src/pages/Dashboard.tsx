@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Calendar, Users, Clock, DollarSign, Plus } from "lucide-react";
-import { Project, ContractorRole, Contractor, ContractorTask } from "@/types";
+import type { Contractor, ContractorRole, ContractorTask, Project } from '@/types';
+import { CONTRACTOR_TYPE_OPTIONS, ContractorType } from '@/constants/contractorType';
 
 const columns = ["Pending", "Submitted", "Confirmed"];
 
@@ -19,6 +20,7 @@ const Dashboard = () => {
       fullName: "Brandon Cheung",
       email: "brandon@example.com",
       skills: ["React", "TypeScript", "Node.js"],
+      interests: ["Software Engineering", "AI / ML"],
       experience: "5 years",
       type: "task",
       wocScore: 85,
@@ -26,10 +28,11 @@ const Dashboard = () => {
       createdDate: "2024-01-01T10:00:00Z"
     },
     {
-      id: "contractor-2", 
+      id: "contractor-2",
       fullName: "Big nozzabigga",
       email: "big@example.com",
       skills: ["Marketing", "SEO", "Content"],
+      interests: ["Digital Marketing & Growth", "Sales & Business Development"],
       experience: "3 years",
       type: "task",
       wocScore: 92,
@@ -39,8 +42,9 @@ const Dashboard = () => {
     {
       id: "contractor-3",
       fullName: "John Doe",
-      email: "john@example.com", 
+      email: "john@example.com",
       skills: ["Mobile Development", "React Native"],
+      interests: ["Start-ups & Innovation", "Product Management"],
       experience: "4 years",
       type: "timesheet",
       wocScore: 78,
@@ -52,7 +56,8 @@ const Dashboard = () => {
       fullName: "Jane Smith",
       email: "jane@example.com",
       skills: ["UI/UX", "Figma", "Design"],
-      experience: "6 years", 
+      interests: ["UX / UI Design", "Consulting & Strategy"],
+      experience: "6 years",
       type: "timesheet",
       wocScore: 88,
       modifiedDate: "2024-01-15T10:00:00Z",
@@ -73,19 +78,19 @@ const Dashboard = () => {
       createdDate: "2024-01-01T10:00:00Z"
     },
     {
-      id: "role-2", 
+      id: "role-2",
       role: "Marketing Specialist",
       description: "User engagement marketing",
       category: ["Marketing"],
       contractor: "contractor-2",
-      originalProject: "project-1", 
+      originalProject: "project-1",
       score: 92,
       modifiedDate: "2024-01-15T10:00:00Z",
       createdDate: "2024-01-01T10:00:00Z"
     },
     {
       id: "role-3",
-      role: "Mobile Developer", 
+      role: "Mobile Developer",
       description: "Mobile app development",
       category: ["Development"],
       contractor: "contractor-3",
@@ -99,7 +104,7 @@ const Dashboard = () => {
       role: "UI/UX Designer",
       description: "Design and user experience",
       category: ["Design"],
-      contractor: "contractor-4", 
+      contractor: "contractor-4",
       originalProject: "project-2",
       score: 88,
       modifiedDate: "2024-01-15T10:00:00Z",
@@ -121,7 +126,7 @@ const Dashboard = () => {
     },
     {
       id: "task-2",
-      name: "Building a software engine", 
+      name: "Building a software engine",
       description: "Implement user interface components",
       role: "role-1",
       status: "Submitted",
@@ -133,7 +138,7 @@ const Dashboard = () => {
     {
       id: "task-3",
       name: "Building a software engine",
-      description: "Marketing campaign implementation", 
+      description: "Marketing campaign implementation",
       role: "role-2",
       status: "Confirmed",
       priority: "High",
@@ -168,7 +173,7 @@ const Dashboard = () => {
       createdDate: "2024-01-01T10:00:00Z"
     },
     {
-      id: "project-2", 
+      id: "project-2",
       projectName: "Mobile App Development",
       projectDescription: "Complete mobile application development",
       status: "Active",
@@ -183,8 +188,8 @@ const Dashboard = () => {
   // Dummy business data related to 'business-1'
 
 
-  // Helper function to get contractor name by role ID
-  const getContractorNameByRoleId = (roleId: string) => {
+  // Helper: Get contractor name by role ID
+  const getContractorNameByRoleId = (roleId: string): string => {
     const role = contractorRoles.find(r => r.id === roleId);
     if (role) {
       const contractor = contractors.find(c => c.id === role.contractor);
@@ -193,14 +198,14 @@ const Dashboard = () => {
     return "Unknown";
   };
 
-  // Helper function to get tasks by project
-  const getTasksByProject = (projectId: string) => {
+  // Helper: Get tasks by project
+  const getTasksByProject = (projectId: string): ContractorTask[] => {
     const projectRoles = contractorRoles.filter(role => role.originalProject === projectId);
     const roleIds = projectRoles.map(role => role.id);
     return contractorTasks.filter(task => roleIds.includes(task.role || ""));
   };
 
-  // Helper function to get timesheets by project (simulated)
+  // Helper: Get timesheets by project (simulated)
   const getTimesheetsByProject = (projectId: string) => {
     const projectRoles = contractorRoles.filter(role => role.originalProject === projectId);
     return projectRoles.map(role => {

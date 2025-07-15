@@ -2,67 +2,76 @@ import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquare, UserPlus, Eye } from "lucide-react";
+import { UserPlus, Eye } from "lucide-react";
 import { INTEREST_OPTIONS, Interest } from "@/constants/interests";
 import { SKILL_OPTIONS, Skill } from "@/constants/skills";
 import React, { useState } from "react";
 import Select from 'react-select';
+import type { Contractor } from "@/types";
 
 const interestOptions = INTEREST_OPTIONS.map(i => ({ value: i, label: i }));
 const skillOptions = SKILL_OPTIONS.map(s => ({ value: s, label: s }));
 
+// Dummy data matching the Contractor interface from types.ts
+const contractors: Contractor[] = [
+  {
+    id: "contractor-1",
+    fullName: "Brandon Cheung",
+    email: "brandon@example.com",
+    skills: ["React", "TypeScript", "Node.js"],
+    interests: ["Software Engineering", "AI / ML"],
+    experience: "5 years",
+    type: "task",
+    wocScore: 85,
+    modifiedDate: "2024-01-15T10:00:00Z",
+    createdDate: "2024-01-01T10:00:00Z"
+  },
+  {
+    id: "contractor-2",
+    fullName: "Big nozzabigga",
+    email: "big@example.com",
+    skills: ["Marketing", "SEO", "Content"],
+    interests: ["Digital Marketing & Growth", "Sales & Business Development"],
+    experience: "3 years",
+    type: "task",
+    wocScore: 92,
+    modifiedDate: "2024-01-15T10:00:00Z",
+    createdDate: "2024-01-01T10:00:00Z"
+  },
+  {
+    id: "contractor-3",
+    fullName: "John Doe",
+    email: "john@example.com",
+    skills: ["Mobile Development", "React Native"],
+    interests: ["Start-ups & Innovation", "Product Management"],
+    experience: "4 years",
+    type: "timesheet",
+    wocScore: 78,
+    modifiedDate: "2024-01-15T10:00:00Z",
+    createdDate: "2024-01-01T10:00:00Z"
+  },
+  {
+    id: "contractor-4",
+    fullName: "Jane Smith",
+    email: "jane@example.com",
+    skills: ["UI/UX", "Figma", "Design"],
+    interests: ["UX / UI Design", "Consulting & Strategy"],
+    experience: "6 years",
+    type: "timesheet",
+    wocScore: 88,
+    modifiedDate: "2024-01-15T10:00:00Z",
+    createdDate: "2024-01-01T10:00:00Z"
+  }
+];
+
 const TalentDirectory = () => {
-  // State for selected filters
   const [selectedInterests, setSelectedInterests] = useState<Interest[]>([]);
   const [selectedSkills, setSelectedSkills] = useState<Skill[]>([]);
 
-  // Example talents (replace with real data from Supabase in production)
-  const talents = [
-    {
-      id: 1,
-      name: "Simon",
-      university: "Macquarie University",
-      skills: ["Python", "SQL", "React", "Node.js", "Docker", "Kubernetes"],
-      interests: ["AI / ML", "CyberSecurity", "Cloud Computing", "Software Engineering"],
-      year: "Year 2",
-      degree: "Bachelor of Information Technology",
-      wam: "WAM:85-81",
-      rating: "4.5",
-      description:
-        "During my degree, I've completed technical projects such as deploying a Honeypot in Azure to detect brute-force attacks, creating a file integrity monitor with PowerShell, and building an SQL database schema for a university assignment. I've also developed a sign language detection model using Python and OpenCV."
-    },
-    {
-      id: 2,
-      name: "Pranav",
-      university: "University of New South Wales (UNSW)",
-      year: "Year 5+",
-      degree: "Bachelor of Engineering",
-      wam: "WAM:75-71",
-      rating: "Rating:",
-      skills: ["AutoCAD", "Revit", "Python"],
-      interests: ["Start-ups & Innovation", "Product Management"],
-      description:
-        "I am currently studying bachelor of civil engineering and commerce. I have a keen interest in startups and want to learn more about their operation. My skills are: Business: User research and Analysis Engineering: AutoCAD, Revit, SpaceSass, Python (Beginner)"
-    },
-    {
-      id: 3,
-      name: "Iqtidar Rahman",
-      university: "University of New South Wales (UNSW)",
-      year: "Year 4",
-      degree: "Bachelor of Computer Science",
-      wam: "WAM:75-71",
-      rating: "Rating:",
-      skills: ["Python", "JavaScript / TypeScript", "React"],
-      interests: ["Consulting & Strategy", "Data & Analytics", "Software Engineering"],
-      description:
-        "I am a results-oriented professional pursuing a double degree in Actuarial Studies and Computer Science at UNSW. With a passion for"
-    }
-  ];
-
-  // Filtering logic: only show talents who have ALL selected skills and ALL selected interests
-  const filteredTalents = talents.filter(talent => {
-    const hasAllSkills = selectedSkills.every(skill => talent.skills.includes(skill));
-    const hasAllInterests = selectedInterests.every(interest => talent.interests.includes(interest));
+  // Filtering logic: only show contractors who have ALL selected skills and ALL selected interests
+  const filteredContractors = contractors.filter(contractor => {
+    const hasAllSkills = selectedSkills.every(skill => contractor.skills?.includes(skill));
+    const hasAllInterests = selectedInterests.every(interest => contractor.interests?.includes(interest));
     return hasAllSkills && hasAllInterests;
   });
 
@@ -112,23 +121,23 @@ const TalentDirectory = () => {
             </div>
 
             <div className="space-y-6">
-              {filteredTalents.map((talent) => (
-                <Card key={talent.id} className="hover:shadow-medium transition-shadow">
+              {filteredContractors.map((contractor) => (
+                <Card key={contractor.id} className="hover:shadow-medium transition-shadow">
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-4 mb-2">
-                          <CardTitle className="text-xl">{talent.name}</CardTitle>
+                          <CardTitle className="text-xl">{contractor.fullName}</CardTitle>
                           <Badge variant="outline">
-                            {talent.rating === null || talent.rating === undefined || talent.rating === ''
-                              ? 'Rating: ---'
-                              : `Rating: ${talent.rating}`}
+                            {contractor.wocScore !== undefined && contractor.wocScore !== null
+                              ? `Rating: ${contractor.wocScore}`
+                              : 'Rating: ---'}
                           </Badge>
                         </div>
                         <div className="flex flex-col gap-1 mt-2">
                           <div>
                             <span className="font-medium text-sm text-muted-foreground mr-2">Skills:</span>
-                            {talent.skills.map((skill: string, i: number) => (
+                            {contractor.skills?.map((skill: string, i: number) => (
                               <Badge key={`skill-${i}`} variant="secondary" className="bg-blue-100 text-blue-800 mr-1 mb-1">
                                 {skill}
                               </Badge>
@@ -136,7 +145,7 @@ const TalentDirectory = () => {
                           </div>
                           <div>
                             <span className="font-medium text-sm text-muted-foreground mr-2">Interests:</span>
-                            {talent.interests.map((interest: string, i: number) => (
+                            {contractor.interests?.map((interest: string, i: number) => (
                               <Badge key={`interest-${i}`} variant="secondary" className="bg-green-100 text-green-800 mr-1 mb-1">
                                 {interest}
                               </Badge>
@@ -144,7 +153,7 @@ const TalentDirectory = () => {
                           </div>
                         </div>
                         <CardDescription className="leading-relaxed">
-                          {talent.description}
+                          {contractor.experience}
                         </CardDescription>
                       </div>
                     </div>
@@ -163,7 +172,7 @@ const TalentDirectory = () => {
                   </CardContent>
                 </Card>
               ))}
-              {filteredTalents.length === 0 && (
+              {filteredContractors.length === 0 && (
                 <div className="text-center text-muted-foreground mt-8">No talent matches your selected filters.</div>
               )}
             </div>
