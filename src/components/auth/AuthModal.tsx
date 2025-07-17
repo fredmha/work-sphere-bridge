@@ -103,6 +103,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
             .insert([{
               "linkeduser": userId,
               description: signupData.summary,
+              name: signupData.name,
               skills: signupData.skills.split(',').map(s => s.trim()),
               interests: signupData.interests.split(',').map(s => s.trim()),
               resume: '', // You can update this if you have a resume upload
@@ -115,8 +116,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
         }
         if (signupData.userType === 'business') {
           const { error: businessError } = await supabase.from('business').insert([{
-            linkeduser: userId as string,
-            name: signupData.company,
+            linkeduser: userId ,
+            //name: signupData.company,
             created_at: new Date().toISOString()
           }]);
           if (businessError) {
@@ -135,42 +136,57 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
     }
   }; 
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSignupStep2 = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    try {
-      // Only allow 'business' or 'contractor' for userType
-      if (signupData.userType !== 'business' && signupData.userType !== 'contractor') {
-        alert('Please select a user type.');
-        setIsLoading(false);
-        return;
-      }
-      // Omit _customSkill from userData
-      const { _customSkill, ...restSignupData } = signupData;
-      const userData = {
-        name: signupData.name,
-        userType: signupData.userType,
-        ...(signupData.userType === 'business' ? {
-          company: signupData.company
-        } : {
-          degree: signupData.degree,
-          university: signupData.university,
-          wam: signupData.wam,
+    if (!signupData.email || !signupData.name || !signupData.userType) {
+      alert('Please fill all required fields.');
+      return;
+    }
+
+    // Get the current user's ID from Supabase Auth
+    const { data: { user } } = await supabase.auth.getUser();
+    const userId = user?.id;
+    if (!userId) {
+      alert('User not authenticated');
+      return;
+    }
+
+    if (signupData.userType === 'contractor') {
+      const { error: contractorError } = await supabase
+        .from('contractor')
+        .update({
+          description: signupData.summary,
           skills: signupData.skills.split(',').map(s => s.trim()),
           interests: signupData.interests.split(',').map(s => s.trim()),
-          summary: signupData.summary,
-          year: signupData.year
+          resume: '', // Update if you have resume upload
+          
         })
-      };
-      await signup(signupData.email, signupData.password, userData);
-      setSignupStep(1);
-      onClose();
-    } catch (error) {
-      console.error('Signup failed:', error);
-    } finally {
-      setIsLoading(false);
+        .eq('linkeduser', userId); // Use the correct column name for user linkage
+
+      if (contractorError) {
+        alert('Failed to update contractor profile: ' + contractorError.message);
+        return;
+      }
     }
+
+    if (signupData.userType === 'business') {
+      const { error: businessError } = await supabase
+        .from('business')
+        .update({
+          name: signupData.company,
+        })
+        .eq('linkeduser', userId); // Use the correct column name for user linkage
+
+      if (businessError) {
+        alert('Failed to update business profile: ' + businessError.message);
+        return;
+      }
+    }
+
+    alert('Profile updated successfully!');
   };
+
+
 
   return (
     <Dialog open={isOpen} onOpenChange={() => { setSignupStep(1); setShowManualSignup(false); onClose(); }}>
@@ -365,7 +381,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
                   </Button>
                 </form>
               ) : (
-                <form onSubmit={handleSignup} className="space-y-4">
+                <form onSubmit={handleSignupStep2} className="space-y-4">
                   {signupData.userType === 'business' ? (
                     <div className="space-y-2">
                       <Label htmlFor="company">Company Name</Label>
