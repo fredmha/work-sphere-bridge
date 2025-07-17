@@ -77,7 +77,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
         options: {
           data: {
             full_name: signupData.name,
-            user_type: signupData.userType
+            user_type: signupData.userType // <-- use 'role' to match your SQL
           }
         }
       });
@@ -96,31 +96,44 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
           alert('Could not get authenticated user ID after sign up.');
           return;
         }
-        // Insert into your custom user table, using 'id' as the Auth user id
-        const { error: dbError } = await supabase
-          .from('user')
-          .insert([
-            {
-              id: userId,
-              "full name": signupData.name,
-              email: signupData.email,
-              // ...any other fields
-            }
-          ]);
-        if (dbError) {
-          alert('User created, but failed to insert into user table: ' + dbError.message);
-        } else {
-          console.log('User record created');
+        if (signupData.userType === 'contractor') {
+          // Insert into contractor table (fix table name to lowercase)
+          const { error: contractorError } = await supabase
+            .from('contractor')
+            .insert([{
+              "linkeduser": userId,
+              description: signupData.summary,
+              skills: signupData.skills.split(',').map(s => s.trim()),
+              interests: signupData.interests.split(',').map(s => s.trim()),
+              resume: '', // You can update this if you have a resume upload
+              created_at: new Date().toISOString()
+            }]);
+          if (contractorError) {
+            alert('Failed to create contractor profile: ' + contractorError.message);
+            return;
+          }
         }
+        if (signupData.userType === 'business') {
+          const { error: businessError } = await supabase.from('business').insert([{
+            linkeduser: userId as string,
+            name: signupData.company,
+            created_at: new Date().toISOString()
+          }]);
+          if (businessError) {
+            alert('Failed to create business profile: ' + businessError.message);
+            return;
+          }
+          alert('Business sign up not implemented');
+        }
+        alert('Sign up successful! Check your email for confirmation.');
+        setSignupStep(2); // Only proceed if successful
       }
-      alert('Sign up successful! Check your email for confirmation.');
-      setSignupStep(2); // Only proceed if successful
     } catch (err) {
       alert('Unexpected error: ' + (err as Error).message);
     } finally {
       setIsLoading(false);
     }
-  };
+  }; 
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();

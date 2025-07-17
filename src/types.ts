@@ -156,3 +156,9 @@ export interface Contract {
   createdDate: string;
   slug?: string;
 }
+
+export interface business {
+  id: string;
+  linkeduser?: string;
+  businessname?: string;
+}
