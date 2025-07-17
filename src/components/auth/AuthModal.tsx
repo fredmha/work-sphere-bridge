@@ -10,6 +10,8 @@ import { useAuth } from '@/context/AuthContext';
 import { Mail, Lock, User, Building2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/lib/supabaseClient';
+import { useNavigate } from 'react-router-dom';
+
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -23,6 +25,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
   const [isLoading, setIsLoading] = useState(false);
   const [signupStep, setSignupStep] = useState(1);
   const [showManualSignup, setShowManualSignup] = useState(false);
+  const navigate = useNavigate();
 
   // Login form state
   const [loginData, setLoginData] = useState({ email: '', password: '' });
@@ -86,14 +89,39 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
         // Wait for the session to be available (polling)
         let userId = signUpData.user?.id;
         let tries = 0;
-        while (!userId && tries < 10) {
+        let session = signUpData.session;
+        while ((!userId || !session) && tries < 10) {
           await new Promise(res => setTimeout(res, 300));
-          const { data: { user } } = await supabase.auth.getUser();
-          userId = user?.id;
+          const { data: { user: currentUser } } = await supabase.auth.getUser();
+          const { data: { session: currentSession } } = await supabase.auth.getSession();
+          userId = currentUser?.id;
+          session = currentSession;
           tries++;
         }
         if (!userId) {
           alert('Could not get authenticated user ID after sign up.');
+          return;
+        }
+        if (!session) {
+          // Try to log the user in explicitly
+          console.log('No session after sign up, attempting explicit login...');
+          const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+            email: signupData.email,
+            password: signupData.password
+          });
+          console.log('Login result:', loginData, loginError);
+          // Immediately check if the user is now logged in
+          const { data: { user: loggedInUser } } = await supabase.auth.getUser();
+          console.log('User after login:', loggedInUser);
+          if (loginError || !loggedInUser) {
+            alert('Login failed after sign up: ' + (loginError?.message || 'No user returned'));
+            return;
+          }
+          userId = loggedInUser.id;
+        }
+        // Only proceed if user is authenticated
+        if (!userId) {
+          alert('User is not authenticated after sign up.');
           return;
         }
         if (signupData.userType === 'contractor') {
@@ -124,7 +152,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
             alert('Failed to create business profile: ' + businessError.message);
             return;
           }
-          alert('Business sign up not implemented');
+         // alert('Business sign up not implemented');
         }
         alert('Sign up successful! Check your email for confirmation.');
         setSignupStep(2); // Only proceed if successful
@@ -152,35 +180,54 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
     }
 
     if (signupData.userType === 'contractor') {
-      const { error: contractorError } = await supabase
+      const updatePayload = {
+        description: signupData.summary,
+        skills: signupData.skills.split(',').map(s => s.trim()),
+        interests: signupData.interests.split(',').map(s => s.trim()),
+        resume: '', // Update if you have resume upload
+      };
+      console.log('Attempting contractor update:', updatePayload);
+      const { error: contractorError, data: contractorData } = await supabase
         .from('contractor')
-        .update({
-          description: signupData.summary,
-          skills: signupData.skills.split(',').map(s => s.trim()),
-          interests: signupData.interests.split(',').map(s => s.trim()),
-          resume: '', // Update if you have resume upload
-          
-        })
-        .eq('linkeduser', userId); // Use the correct column name for user linkage
-
+        .update(updatePayload)
+        .eq('linkeduser', userId);
+      console.log('Contractor update result:', { contractorError, contractorData });
       if (contractorError) {
         alert('Failed to update contractor profile: ' + contractorError.message);
         return;
       }
+      // if (!contractorData || (Array.isArray(contractorData as any) && (contractorData as any).length === 0)) {
+      //   alert('No contractor profile was updated. Check if the row exists and RLS allows update.');
+      //   return;
+      // }
     }
 
     if (signupData.userType === 'business') {
-      const { error: businessError } = await supabase
+      const updatePayload = {
+        name: signupData.company,
+      };
+      console.log('Attempting business update:', updatePayload);
+      const { error: businessError, data: businessData } = await supabase
         .from('business')
-        .update({
-          name: signupData.company,
-        })
-        .eq('linkeduser', userId); // Use the correct column name for user linkage
-
+        .update(updatePayload)
+        .eq('linkeduser', userId);
+      console.log('Business update result:', { businessError, businessData });
       if (businessError) {
         alert('Failed to update business profile: ' + businessError.message);
         return;
       }
+      // if (!businessData || (Array.isArray(businessData as any) && (businessData as any).length === 0)) {
+      //   alert('No business profile was updated. Check if the row exists and RLS allows update.');
+      //   return;
+      // }
+    }
+    
+    if (signupData.userType === 'contractor') {
+      navigate('/ContractorDashboard');
+    } else if (signupData.userType === 'business') {
+      navigate('/Dashboard');
+    } else {
+      navigate('/fuck'); // fallback
     }
 
     alert('Profile updated successfully!');
