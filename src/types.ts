@@ -57,9 +57,11 @@ export interface ContractorRole {
   originalProject?: string; // Project ID
   owner?: string; // User ID
   role?: string;
+  pay?: number; //only for timesheet, pay per hour
   score?: number;
   visibility?: boolean;
   creator?: string; // User ID
+  type?: string; //whether its a paid per task or a timesheet model
   modifiedDate: string;
   createdDate: string;
   slug?: string;
@@ -103,6 +105,7 @@ export interface Offer {
   offerMessage?: string;
   owner?: string; // User ID
   project?: string; // Project ID
+
   receiver?: string; // User ID
   resume?: string; // file URL
   status?: string;
@@ -115,7 +118,8 @@ export interface Offer {
 // Contractor Task
 export interface ContractorTask {
   id: string;
-  description?: string;
+  description?: string; //description of what needs to be done
+  deliverables?: string //what needs to be delivered
   feedback?: string;
   files?: string[]; // List of file URLs
   labels?: string[];
@@ -124,7 +128,7 @@ export interface ContractorTask {
   owner?: string; // User ID
   priority?: string;
   role?: string; // Contractor Role ID
-  price?: number;
+  price?: number; //price of milestone
   score?: number;
   status?: string;
   visibility?: boolean;

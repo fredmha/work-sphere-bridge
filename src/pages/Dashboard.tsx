@@ -9,9 +9,10 @@ import { Progress } from "@/components/ui/progress";
 import { Calendar, Users, Clock, DollarSign, Plus } from "lucide-react";
 import type { Contractor, ContractorRole, ContractorTask, Project } from '@/types';
 import { CONTRACTOR_TYPE_OPTIONS, ContractorType } from '@/constants/contractorType';
+import { useNavigate } from 'react-router-dom';
 
 const columns = ["Pending", "Submitted", "Confirmed"];
-
+const navigate = useNavigate();
 const Dashboard = () => {
   // Dummy data matching types.ts structure
   const contractors: Contractor[] = [
@@ -232,6 +233,7 @@ const Dashboard = () => {
           <Button className="gap-2">
             <Plus className="h-4 w-4" />
             Create a Project
+            navigate('/ProjectWizard');
           </Button>
         </div>
 
