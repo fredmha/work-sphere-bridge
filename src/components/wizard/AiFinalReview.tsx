@@ -18,7 +18,7 @@ import {
   Star
 } from 'lucide-react';
 import { useProjectWizard } from './ProjectContext';
-import { Project } from '@/entities/Project';
+import  Project  from '@/entities/Project.json';
 
 export default function AiFinalReview() {
   const { state, actions } = useProjectWizard();
@@ -68,7 +68,7 @@ export default function AiFinalReview() {
         }
       };
 
-      await Project.create(finalProjectData.project);
+      //await Project.create(finalProjectData.project);
       
       // Success feedback
       alert('🎉 Project launched successfully!');

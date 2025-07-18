@@ -19,7 +19,7 @@ export default function AiDescribeStep() {
   const { state, actions } = useProjectWizard();
   const [description, setDescription] = useState(state.aiContext?.rawDescription || '');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const InvokeLLM = (...args: any[]) => Promise.resolve('LLM not available');
+  // const InvokeLLM = (...args: any[]) => Promise.resolve('LLM not available');
   const handleAnalyze = async () => {
     if (!description.trim()) return;
 
@@ -27,58 +27,11 @@ export default function AiDescribeStep() {
     actions.setProcessing(true);
 
     try {
-      const aiResponse = await InvokeLLM({
-        prompt: `Analyze this project description and extract structured data:
-
-"${description}"
-
-Parse this into:
-1. Project name (infer from context)
-2. Project description (clean, professional summary)
-3. Contractor roles needed with:
-   - Role name
-   - Role description
-   - Payment type (milestone or timesheet based on description)
-   - For timesheet: suggested hourly rate
-   - For milestone: break down into specific tasks with prices
-
-Be intelligent about inferring payment structures from context clues like "paid per hour", "per task", "deliverables", etc.`,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            projectName: { type: "string" },
-            projectDescription: { type: "string" },
-            contractorRoles: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  role: { type: "string" },
-                  description: { type: "string" },
-                  type: { type: "string", enum: ["milestone", "timesheet"] },
-                  pay: { type: "number" },
-                  tasks: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        name: { type: "string" },
-                        description: { type: "string" },
-                        deliverables: { type: "string" },
-                        price: { type: "number" }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      });
+      const aiResponse = await (() => Promise.resolve('LLM not available'))();
 
       actions.updateAiContext({
         rawDescription: description,
-        ...aiResponse,
+        // ...(aiResponse || {}),
         currentStep: 'review-project'
       });
 

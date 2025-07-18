@@ -12,8 +12,9 @@ import { CONTRACTOR_TYPE_OPTIONS, ContractorType } from '@/constants/contractorT
 import { useNavigate } from 'react-router-dom';
 
 const columns = ["Pending", "Submitted", "Confirmed"];
-const navigate = useNavigate();
+
 const Dashboard = () => {
+  const navigate = useNavigate();
   // Dummy data matching types.ts structure
   const contractors: Contractor[] = [
     {
@@ -230,10 +231,9 @@ const Dashboard = () => {
         {/* Dashboard Header */}
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">Project Dashboard</h1>
-          <Button className="gap-2">
+          <Button className="gap-2" onClick={() => navigate('/ProjectWizard')}>
             <Plus className="h-4 w-4" />
             Create a Project
-            navigate('/ProjectWizard');
           </Button>
         </div>
 
