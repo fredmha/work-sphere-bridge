@@ -20,7 +20,7 @@ interface AuthModalProps {
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTab = 'login' }) => {
-  const { login, signup } = useAuth();
+  const { login } = useAuth(); // Only use login from AuthContext, handle signup directly
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [isLoading, setIsLoading] = useState(false);
   const [signupStep, setSignupStep] = useState(1);
@@ -30,20 +30,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
   // Login form state
   const [loginData, setLoginData] = useState({ email: '', password: '' });
 
-  // Signup form state
+  // Signup form state - using the correct field names that match your database
   const [signupData, setSignupData] = useState({
     email: '',
     password: '',
     confirmPassword: '',
-    name: '',
-    userType: '' as '' | 'business' | 'contractor',
-    company: '',
+    name: '', // This maps to 'full name' in users table
+    userType: '' as '' | 'business' | 'contractor', // This maps to 'role' in users table
+    company: '', // This maps to business_name in users table
     degree: '',
     university: '',
     wam: '',
     skills: '',
     interests: '',
-    summary: '',
+    summary: '', // This maps to description in contractor table
     year: '',
     _customSkill: ''
   });
@@ -56,6 +56,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
       onClose();
     } catch (error) {
       console.error('Login failed:', error);
+      alert('Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -63,6 +64,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
 
   const handleSignupStep1 = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate required fields
     if (!signupData.email || !signupData.name || !signupData.password || !signupData.confirmPassword || !signupData.userType) {
       alert('Please fill all required fields.');
       return;
@@ -71,93 +74,208 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
       alert('Passwords do not match');
       return;
     }
+    
     setIsLoading(true);
     try {
-      // Connect to Supabase Auth
+      console.log('Starting signup process...');
+      
+      // STEP 1: Create the user account in Supabase Auth
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: signupData.email,
         password: signupData.password,
         options: {
           data: {
             full_name: signupData.name,
-            user_type: signupData.userType // <-- use 'role' to match your SQL
+            user_type: signupData.userType
           }
         }
       });
 
-      if (!signUpError) {
-        // Wait for the session to be available (polling)
-        let userId = signUpData.user?.id;
-        let tries = 0;
-        let session = signUpData.session;
-        while ((!userId || !session) && tries < 10) {
-          await new Promise(res => setTimeout(res, 300));
-          const { data: { user: currentUser } } = await supabase.auth.getUser();
-          const { data: { session: currentSession } } = await supabase.auth.getSession();
-          userId = currentUser?.id;
-          session = currentSession;
-          tries++;
-        }
-        if (!userId) {
-          alert('Could not get authenticated user ID after sign up.');
+      if (signUpError) {
+        console.error('Supabase auth signup error:', signUpError);
+        alert('Signup failed: ' + signUpError.message);
+        return;
+      }
+
+      console.log('Supabase auth signup successful:', signUpData);
+
+      // STEP 2: Wait for the session to be available (polling)
+      let userId = signUpData.user?.id;
+      let tries = 0;
+      let session = signUpData.session;
+      
+      console.log('Waiting for session to be available...');
+      while ((!userId || !session) && tries < 10) {
+        await new Promise(res => setTimeout(res, 300));
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        userId = currentUser?.id;
+        session = currentSession;
+        tries++;
+        console.log(`Try ${tries}: userId=${userId}, session=${!!session}`);
+      }
+      
+      if (!userId) {
+        alert('Could not get authenticated user ID after sign up.');
+        return;
+      }
+      
+      if (!session) {
+        // STEP 3: Try to log the user in explicitly if no session
+        console.log('No session after sign up, attempting explicit login...');
+        const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+          email: signupData.email,
+          password: signupData.password
+        });
+        console.log('Login result:', loginData, loginError);
+        
+        // Immediately check if the user is now logged in
+        const { data: { user: loggedInUser } } = await supabase.auth.getUser();
+        console.log('User after login:', loggedInUser);
+        
+        if (loginError || !loggedInUser) {
+          alert('Login failed after sign up: ' + (loginError?.message || 'No user returned'));
           return;
         }
-        if (!session) {
-          // Try to log the user in explicitly
-          console.log('No session after sign up, attempting explicit login...');
-          const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+        userId = loggedInUser.id;
+      }
+      
+      // STEP 4: Only proceed if user is authenticated
+      if (!userId) {
+        alert('User is not authenticated after sign up.');
+        return;
+      }
+      
+      console.log('User authenticated, creating profiles...');
+
+      // STEP 5: Create user record in users table FIRST (This was missing!)
+      console.log('Creating user record in users table...');
+      
+      // Check if user already exists in users table
+      const { data: existingUser, error: checkError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('id', userId)
+        .single();
+      
+      if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows returned
+        console.error('Error checking existing user:', checkError);
+        alert('Error checking user profile: ' + checkError.message);
+        return;
+      }
+      
+      if (existingUser) {
+        console.log('User already exists in users table, skipping insert');
+      } else {
+        // Only insert if user doesn't exist
+        const { error: userError } = await supabase
+          .from('users')
+          .insert({
+            id: userId, // This must match auth.users.id
             email: signupData.email,
-            password: signupData.password
+            'full name': signupData.name, // Note: space in field name
+            role: signupData.userType, // 'contractor' or 'business'
+            business_name: signupData.company || null,
+            business_website: null,
+            industry: null,
+            description: signupData.summary || null,
+            completed_sign_up: false,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
           });
-          console.log('Login result:', loginData, loginError);
-          // Immediately check if the user is now logged in
-          const { data: { user: loggedInUser } } = await supabase.auth.getUser();
-          console.log('User after login:', loggedInUser);
-          if (loginError || !loggedInUser) {
-            alert('Login failed after sign up: ' + (loginError?.message || 'No user returned'));
-            return;
-          }
-          userId = loggedInUser.id;
-        }
-        // Only proceed if user is authenticated
-        if (!userId) {
-          alert('User is not authenticated after sign up.');
+
+        if (userError) {
+          console.error('User table insert error:', userError);
+          alert('Failed to create user profile: ' + userError.message);
           return;
         }
-        if (signupData.userType === 'contractor') {
-          // Insert into contractor table (fix table name to lowercase)
+        console.log('User record created successfully');
+      }
+
+      // STEP 6: Create contractor profile if user is a contractor
+      if (signupData.userType === 'contractor') {
+        console.log('Creating contractor profile...');
+        
+        // Check if contractor profile already exists
+        const { data: existingContractor, error: checkContractorError } = await supabase
+          .from('contractor')
+          .select('id')
+          .eq('linkeduser', userId)
+          .single();
+        
+        if (checkContractorError && checkContractorError.code !== 'PGRST116') {
+          console.error('Error checking existing contractor:', checkContractorError);
+          alert('Error checking contractor profile: ' + checkContractorError.message);
+          return;
+        }
+        
+        if (existingContractor) {
+          console.log('Contractor profile already exists, skipping insert');
+        } else {
           const { error: contractorError } = await supabase
             .from('contractor')
-            .insert([{
-              "linkeduser": userId,
-              description: signupData.summary,
-              name: signupData.name,
-              skills: signupData.skills.split(',').map(s => s.trim()),
-              interests: signupData.interests.split(',').map(s => s.trim()),
-              resume: '', // You can update this if you have a resume upload
+            .insert({
+              linkeduser: userId, // Foreign key to auth.users.id
+              name: signupData.name, // ✅ contractor table HAS name field
+              description: signupData.summary || null,
+              skills: signupData.skills.split(',').map(s => s.trim()).filter(Boolean),
+              interests: signupData.interests.split(',').map(s => s.trim()).filter(Boolean),
+              resume: null,
               created_at: new Date().toISOString()
-            }]);
+            });
+            
           if (contractorError) {
+            console.error('Contractor profile creation error:', contractorError);
             alert('Failed to create contractor profile: ' + contractorError.message);
             return;
           }
+          console.log('Contractor profile created successfully');
         }
-        if (signupData.userType === 'business') {
-          const { error: businessError } = await supabase.from('business').insert([{
-            linkeduser: userId ,
-            //name: signupData.company,
-            created_at: new Date().toISOString()
-          }]);
+      }
+      
+      // STEP 7: Create business profile if user is a business
+      if (signupData.userType === 'business') {
+        console.log('Creating business profile...');
+        
+        // Check if business profile already exists
+        const { data: existingBusiness, error: checkBusinessError } = await supabase
+          .from('business')
+          .select('id')
+          .eq('linkeduser', userId)
+          .single();
+        
+        if (checkBusinessError && checkBusinessError.code !== 'PGRST116') {
+          console.error('Error checking existing business:', checkBusinessError);
+          alert('Error checking business profile: ' + checkBusinessError.message);
+          return;
+        }
+        
+        if (existingBusiness) {
+          console.log('Business profile already exists, skipping insert');
+        } else {
+          const { error: businessError } = await supabase
+            .from('business')
+            .insert({
+              linkeduser: userId, // Foreign key to auth.users.id
+              name: signupData.company || null,
+              created_at: new Date().toISOString()
+            });
+          
           if (businessError) {
+            console.error('Business profile creation error:', businessError);
             alert('Failed to create business profile: ' + businessError.message);
             return;
           }
-         // alert('Business sign up not implemented');
+          console.log('Business profile created successfully');
         }
-        alert('Sign up successful! Check your email for confirmation.');
-        setSignupStep(2); // Only proceed if successful
       }
+      
+      console.log('All profiles created successfully, proceeding to step 2');
+      alert('Sign up successful! Check your email for confirmation.');
+      setSignupStep(2); // Only proceed if everything was successful
+      
     } catch (err) {
+      console.error('Unexpected error during signup:', err);
       alert('Unexpected error: ' + (err as Error).message);
     } finally {
       setIsLoading(false);
@@ -166,6 +284,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
 
   const handleSignupStep2 = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate required fields
     if (!signupData.email || !signupData.name || !signupData.userType) {
       alert('Please fill all required fields.');
       return;
@@ -179,11 +299,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
       return;
     }
 
+    console.log('Updating profiles for user:', userId);
+
+    // Update contractor profile with skills and interests if applicable
     if (signupData.userType === 'contractor') {
       const updatePayload = {
         description: signupData.summary,
-        skills: signupData.skills.split(',').map(s => s.trim()),
-        interests: signupData.interests.split(',').map(s => s.trim()),
+        skills: signupData.skills.split(',').map(s => s.trim()).filter(Boolean),
+        interests: signupData.interests.split(',').map(s => s.trim()).filter(Boolean),
         resume: '', // Update if you have resume upload
       };
       console.log('Attempting contractor update:', updatePayload);
@@ -196,12 +319,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
         alert('Failed to update contractor profile: ' + contractorError.message);
         return;
       }
-      // if (!contractorData || (Array.isArray(contractorData as any) && (contractorData as any).length === 0)) {
-      //   alert('No contractor profile was updated. Check if the row exists and RLS allows update.');
-      //   return;
-      // }
     }
 
+    // Update business profile if applicable
     if (signupData.userType === 'business') {
       const updatePayload = {
         name: signupData.company,
@@ -216,12 +336,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
         alert('Failed to update business profile: ' + businessError.message);
         return;
       }
-      // if (!businessData || (Array.isArray(businessData as any) && (businessData as any).length === 0)) {
-      //   alert('No business profile was updated. Check if the row exists and RLS allows update.');
-      //   return;
-      // }
     }
     
+    // Navigate based on user role
     if (signupData.userType === 'contractor') {
       navigate('/ContractorDashboard');
     } else if (signupData.userType === 'business') {
@@ -232,8 +349,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
 
     alert('Profile updated successfully!');
   };
-
-
 
   return (
     <Dialog open={isOpen} onOpenChange={() => { setSignupStep(1); setShowManualSignup(false); onClose(); }}>
@@ -356,7 +471,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
                 </Button>
               </div>
             ) : (
-              // ... existing two-step manual sign up form ...
               signupStep === 1 ? (
                 <form onSubmit={handleSignupStep1} className="space-y-4">
                   <div className="space-y-2">
