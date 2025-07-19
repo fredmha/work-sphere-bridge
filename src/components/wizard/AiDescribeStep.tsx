@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Bot, Sparkles, ArrowRight, Lightbulb } from 'lucide-react';
-//import { InvokeLLM } from '@/integrations/Core';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Bot, Sparkles, ArrowRight, Lightbulb, AlertCircle } from 'lucide-react';
 import { useProjectWizard } from './ProjectContext';
 
 const suggestedPrompts = [
@@ -19,34 +19,38 @@ export default function AiDescribeStep() {
   const { state, actions } = useProjectWizard();
   const [description, setDescription] = useState(state.aiContext?.rawDescription || '');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  // const InvokeLLM = (...args: any[]) => Promise.resolve('LLM not available');
+
   const handleAnalyze = async () => {
     if (!description.trim()) return;
 
     setIsAnalyzing(true);
-    actions.setProcessing(true);
 
     try {
-      const aiResponse = await (() => Promise.resolve('LLM not available'))();
-
-      actions.updateAiContext({
-        rawDescription: description,
-        // ...(aiResponse || {}),
-        currentStep: 'review-project'
-      });
-
-      actions.setStep(2);
+      // Use the new OpenAI integration from ProjectContext
+      await actions.generateProjectWithAI(description);
     } catch (error) {
       console.error('AI analysis failed:', error);
-      alert('Something went wrong with the AI analysis. Please try again.');
+      // Error is now handled in ProjectContext and displayed via state.lastError
+      // No need for generic alert here
     }
 
     setIsAnalyzing(false);
-    actions.setProcessing(false);
   };
 
   const handleUseSuggestion = (suggestion) => {
     setDescription(suggestion);
+    // Clear any previous errors when user starts typing
+    if (state.lastError) {
+      actions.clearError();
+    }
+  };
+
+  const handleDescriptionChange = (e) => {
+    setDescription(e.target.value);
+    // Clear any previous errors when user starts typing
+    if (state.lastError) {
+      actions.clearError();
+    }
   };
 
   return (
@@ -68,6 +72,22 @@ export default function AiDescribeStep() {
         </p>
       </motion.div>
 
+      {/* Error Display */}
+      {state.lastError && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6"
+        >
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription className="font-medium">
+              {state.lastError}
+            </AlertDescription>
+          </Alert>
+        </motion.div>
+      )}
+
       <Card className="border-none shadow-2xl shadow-gray-200/50 rounded-3xl overflow-hidden mb-8">
         <CardHeader className="bg-gradient-to-r from-emerald-50 to-blue-50 p-8">
           <CardTitle className="flex items-center gap-2 text-xl">
@@ -79,7 +99,7 @@ export default function AiDescribeStep() {
           <div className="space-y-6">
             <Textarea
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={handleDescriptionChange}
               placeholder="Example: We need a backend developer to build an API for our mobile app, paid by the hour at around $75/hr. We also need a UI designer to create 5 landing pages, paid per page at $500 each. The project should take about 3 months..."
               rows={8}
               className="text-base leading-relaxed resize-none border-2 focus:border-emerald-500 transition-colors"
@@ -91,11 +111,11 @@ export default function AiDescribeStep() {
               </div>
               <Button
                 onClick={handleAnalyze}
-                disabled={!description.trim() || isAnalyzing}
+                disabled={!description.trim() || isAnalyzing || state.isProcessing}
                 size="lg"
                 className="bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 font-semibold"
               >
-                {isAnalyzing ? (
+                {isAnalyzing || state.isProcessing ? (
                   <>
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                     Analyzing...

@@ -1,73 +1,115 @@
-# Welcome to your Lovable project
+# Project Wizard with OpenAI & Supabase Integration
 
-## Project info
+This project integrates OpenAI API for project generation and Supabase for data persistence within the wizard flow.
 
-**URL**: https://lovable.dev/projects/85657c6d-9b2b-4f66-91d5-36f8709a4bd0
+## Setup Instructions
 
-## How can I edit this code?
+### 1. Environment Variables
 
-There are several ways of editing your application.
+Create a `.env` file in your project root with the following variables:
 
-**Use Lovable**
+```env
+# Supabase Configuration
+VITE_SUPABASE_URL=your_supabase_url_here
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/85657c6d-9b2b-4f66-91d5-36f8709a4bd0) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+# OpenAI Configuration (Frontend - for development only)
+# Note: In production, this should be moved to a backend server for security
+VITE_OPENAI_API_KEY=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
 ```
 
-**Edit a file directly in GitHub**
+### 2. Supabase Database Setup
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Create a `projects` table in your Supabase database with the following schema:
 
-**Use GitHub Codespaces**
+```sql
+CREATE TABLE projects (
+  id SERIAL PRIMARY KEY,
+  project_name TEXT NOT NULL,
+  project_description TEXT,
+  category TEXT[],
+  duration TEXT,
+  weekly_hours INTEGER,
+  incentive TEXT[],
+  contractor_roles JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Workflow
 
-## What technologies are used for this project?
+1. **User Input**: User describes their project in the AI Describe Step
+2. **OpenAI Processing**: Project description is sent directly to OpenAI API from frontend
+3. **State Management**: AI response is stored in ProjectContext state with detailed error handling
+4. **Wizard Flow**: User reviews and edits the generated project through wizard steps
+5. **Completion**: When user clicks "Launch Project", data is synced to Supabase
+6. **Reset**: Wizard resets and user can start a new project
 
-This project is built with:
+## Key Components
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### ProjectContext.tsx
+- Manages all wizard state including OpenAI responses and error states
+- Handles project generation via `generateProjectWithAI()` with detailed error handling
+- Manages project completion and Supabase sync via `completeProject()`
+- Provides `lastError` state for displaying detailed error messages
 
-## How can I deploy this project?
+### AiDescribeStep.tsx
+- Replaced `invokellm` with `actions.generateProjectWithAI()`
+- Integrates with OpenAI API through ProjectContext
+- Displays detailed error messages instead of generic alerts
+- Clears errors when user starts typing or selects suggestions
 
-Simply open [Lovable](https://lovable.dev/projects/85657c6d-9b2b-4f66-91d5-36f8709a4bd0) and click on Share -> Publish.
+### src/lib/openai.ts (New)
+- Direct OpenAI API integration with comprehensive error handling
+- Custom `OpenAIError` class for detailed error information
+- Environment variable validation and API key checking
+- JSON response parsing with fallback handling
 
-## Can I connect a custom domain to my Lovable project?
+## Error Handling
 
-Yes, you can!
+### Backend Error Surfacing
+- **OpenAI API Errors**: Detailed error messages including status codes, error types, and specific failure reasons
+- **Network Errors**: HTTP status codes and connection issues
+- **Parsing Errors**: JSON parsing failures with raw response debugging
+- **Environment Errors**: Missing API key notifications
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Frontend Error Display
+- **Real Error Messages**: Instead of "Something went wrong", users see specific error details
+- **Error Categories**: Different error types (API, network, parsing, etc.) are clearly identified
+- **Debugging Information**: Console logs provide detailed error context for developers
+- **User-Friendly**: Errors are displayed in styled alert components with clear messaging
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## Security Notes
+
+⚠️ **Development Only**: This implementation uses the OpenAI API key in the frontend for development purposes. In production:
+
+1. Move OpenAI API calls to a backend server
+2. Store API key server-side only
+3. Create secure API endpoints for project generation
+4. Implement proper authentication and rate limiting
+
+## Usage
+
+1. Navigate to `/ProjectWizard`
+2. Select "AI-Assisted Setup"
+3. Describe your project in detail
+4. Review and edit the AI-generated structure
+5. Click "Launch Project" to save to database
+
+## Troubleshooting
+
+### Common Error Messages and Solutions:
+
+- **"OpenAI API key not configured"**: Add `VITE_OPENAI_API_KEY` to your `.env` file
+- **"OpenAI API error: 401"**: Invalid or expired API key
+- **"OpenAI API error: 429"**: Rate limit exceeded, wait and retry
+- **"Failed to parse AI response"**: AI returned invalid JSON, check console for raw response
+- **"Database error"**: Supabase connection or table issues
+
+### Debug Mode
+Enable detailed logging by checking the browser console for:
+- API request/response details
+- Error stack traces
+- Raw AI responses
+- State changes and context updates

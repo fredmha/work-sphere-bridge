@@ -53,36 +53,16 @@ export default function AiFinalReview() {
 
   const handleLaunch = async () => {
     setIsLaunching(true);
-    actions.setProcessing(true);
 
     try {
-      const finalProjectData = {
-        project: {
-          projectName: projectData.projectName,
-          projectDescription: projectData.projectDescription,
-          category: projectData.category || [],
-          duration: projectData.duration || null,
-          weeklyHours: projectData.weeklyHours || null,
-          incentive: projectData.incentive || [],
-          contractorRoles: projectData.contractorRoles || []
-        }
-      };
-
-      //await Project.create(finalProjectData.project);
-      
-      // Success feedback
-      alert('🎉 Project launched successfully!');
-      console.log('Final Project Data:', JSON.stringify(finalProjectData, null, 2));
-      
-      // Reset wizard
-      actions.resetAll();
+      // Use the new completion logic from ProjectContext that syncs to Supabase
+      await actions.completeProject();
     } catch (error) {
       console.error('Error launching project:', error);
       alert('❌ Error launching project. Please try again.');
     }
 
     setIsLaunching(false);
-    actions.setProcessing(false);
   };
 
   const handleBack = () => {
@@ -340,14 +320,14 @@ export default function AiFinalReview() {
           </div>
           <Button 
             onClick={handleLaunch} 
-            disabled={!isComplete || isLaunching}
+            disabled={!isComplete || isLaunching || state.isCompleting}
             size="lg" 
             className="bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 font-semibold shadow-lg shadow-emerald-500/20 px-8"
           >
-            {isLaunching ? (
+            {isLaunching || state.isCompleting ? (
               <>
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                Launching...
+                {state.isCompleting ? 'Saving to Database...' : 'Launching...'}
               </>
             ) : (
               <>
