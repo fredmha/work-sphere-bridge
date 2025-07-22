@@ -8,6 +8,7 @@ import AiReviewProject from '../components/wizard/AiReviewProject';
 import AiReviewRoles from '../components/wizard/AiReviewRoles';
 import AiTaskManager from '../components/wizard/AiTaskManager';
 import AiFinalReview from '../components/wizard/AiFinalReview';
+import Header from "@/components/layout/Header";
 
 function WizardContent() {
   const { state } = useProjectWizard();
@@ -51,6 +52,7 @@ function WizardContent() {
 
     return <ModeSelection />;
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 font-sans">

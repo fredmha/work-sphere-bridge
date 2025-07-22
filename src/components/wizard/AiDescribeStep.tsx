@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Bot, Sparkles, ArrowRight, Lightbulb, AlertCircle } from 'lucide-react';
+import { Bot, Sparkles, ArrowRight, Lightbulb, AlertCircle, ArrowLeft } from 'lucide-react';
 import { useProjectWizard } from './ProjectContext';
 
 const suggestedPrompts = [
@@ -24,33 +24,26 @@ export default function AiDescribeStep() {
     if (!description.trim()) return;
 
     setIsAnalyzing(true);
-
     try {
-      // Use the new OpenAI integration from ProjectContext
       await actions.generateProjectWithAI(description);
     } catch (error) {
       console.error('AI analysis failed:', error);
-      // Error is now handled in ProjectContext and displayed via state.lastError
-      // No need for generic alert here
     }
-
     setIsAnalyzing(false);
   };
 
   const handleUseSuggestion = (suggestion) => {
     setDescription(suggestion);
-    // Clear any previous errors when user starts typing
-    if (state.lastError) {
-      actions.clearError();
-    }
+    if (state.lastError) actions.clearError();
+  };
+
+  const handleBack = () => {
+    actions.setMode(null); // Go back to Mode Selection
   };
 
   const handleDescriptionChange = (e) => {
     setDescription(e.target.value);
-    // Clear any previous errors when user starts typing
-    if (state.lastError) {
-      actions.clearError();
-    }
+    if (state.lastError) actions.clearError();
   };
 
   return (
@@ -104,7 +97,6 @@ export default function AiDescribeStep() {
               rows={8}
               className="text-base leading-relaxed resize-none border-2 focus:border-emerald-500 transition-colors"
             />
-            
             <div className="flex justify-between items-center">
               <div className="text-sm text-gray-500">
                 {description.length} characters
@@ -162,6 +154,14 @@ export default function AiDescribeStep() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Back Button at the very bottom */}
+      <div className="flex justify-between mt-6">
+        <Button variant="outline" onClick={handleBack} className="flex items-center gap-2">
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </Button>
+      </div>
     </div>
   );
 }
