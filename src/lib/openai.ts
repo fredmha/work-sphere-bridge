@@ -18,7 +18,7 @@ interface OpenAIResponse {
   }>;
 }
 
-interface OpenAIError {
+interface OpenAIApiError {
   error: {
     message: string;
     type?: string;
@@ -60,7 +60,7 @@ export const generateProjectWithOpenAI = async (description: string): Promise<Op
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-4.1',
         messages: [
           {
             role: 'system',
@@ -105,7 +105,7 @@ Be intelligent about inferring payment structures from context clues like "paid 
     console.log('OpenAI API response status:', response.status);
 
     if (!response.ok) {
-      const errorData: OpenAIError = await response.json().catch(() => ({
+      const errorData: OpenAIApiError = await response.json().catch(() => ({
         error: { message: `HTTP ${response.status}: ${response.statusText}` }
       }));
 
