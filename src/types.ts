@@ -24,26 +24,14 @@ export interface User {
   slug?: string;
 }
 
-// Project
-export interface Project {
+// Project (matches current Supabase table)
+export interface projects {
   id: string;
-  business?: string; // Business ID
-  category?: string[]; // List of Categories
-  contractorRoles?: ContractorRole[]; // List of Contractor Roles
-  duration?: string;
-  incentive?: string[];
-  likedBy?: string[]; // List of User IDs
-  owner?: string; // User ID
-  projectDescription?: string;
-  projectName?: string;
-  saved?: string; // User ID
-  status?: string;
-  visibility?: boolean;
-  weeklyHours?: number;
-  creator?: string; // User ID
-  modifiedDate: string;
-  createdDate: string;
-  slug?: string;
+  project_name: string;
+  project_description: string;
+  contractor_roles?: any; // Not used yet, can be left as any or a more specific type later
+  owner_id: string;
+  created_at: string;
 }
 
 // Contractor Role

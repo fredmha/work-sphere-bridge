@@ -128,25 +128,18 @@ function projectReducer(state: ProjectWizardState, action: any): ProjectWizardSt
 }
 
 // Supabase sync function
-const syncToSupabase = async (projectData: any) => {
+const syncToSupabase = async (projectData: any, ownerId: string) => {
   if (!supabase) {
     throw new Error('Supabase client not configured');
   }
 
   try {
-    // Use a more generic approach that doesn't rely on specific table types
     const { data, error } = await supabase
-      .from('projects' as any) // Type assertion to bypass type checking
+      .from('projects')
       .insert([{
         project_name: projectData.projectName,
         project_description: projectData.projectDescription,
-        category: projectData.category || [],
-        duration: projectData.duration || null,
-        weekly_hours: projectData.weeklyHours || null,
-        incentive: projectData.incentive || [],
-        contractor_roles: projectData.contractorRoles || [],
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        owner_id: ownerId,
       }])
       .select();
 
@@ -241,23 +234,24 @@ export function ProjectWizardProvider({ children }: { children: ReactNode }) {
           throw new Error('No project data to complete');
         }
 
+        // Get the current user
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
+          throw new Error('User not authenticated');
+        }
+
         const finalProjectData = {
           projectName: projectData.projectName,
           projectDescription: projectData.projectDescription,
-          category: projectData.category || [],
-          duration: projectData.duration || null,
-          weeklyHours: projectData.weeklyHours || null,
-          incentive: projectData.incentive || [],
-          contractorRoles: projectData.contractorRoles || []
         };
 
-        // Sync to Supabase
-        await syncToSupabase(finalProjectData);
-        
+        // Sync to Supabase (only allowed fields)
+        await syncToSupabase(finalProjectData, user.id);
+
         // Success feedback
         alert('🎉 Project launched successfully and saved to database!');
         console.log('Final Project Data:', JSON.stringify(finalProjectData, null, 2));
-        
+
         // Reset wizard
         dispatch({ type: 'RESET_ALL' });
       } catch (error) {
