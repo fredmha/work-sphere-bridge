@@ -150,7 +150,40 @@ const syncToSupabase = async (projectData: any, ownerId: string) => {
 
     return data;
   } catch (error) {
-    console.error('Supabase sync failed:', error);
+    console.error('Supabase project sync failed:', error);
+    throw error;
+  }
+};
+
+const syncContractorRolesToSupabase = async (rolesData: any[], projectId: string, ownerId: string) => {
+  if (!supabase) {
+    throw new Error('Supabase client not configured');
+  }
+
+  try {
+    const rolesToInsert = rolesData.map(role => ({
+      project_id: projectId, // Link to the newly created project
+      owner_id: ownerId,
+      role: role.role,
+      description: role.description,
+      type: role.type,
+      pay: role.pay,
+      // score and contractor_id are not directly from AI response, assuming nullable or default
+    }));
+
+    const { data, error } = await supabase
+      .from('ContractorRole') // Use the table name provided by the user
+      .insert(rolesToInsert)
+      .select();
+
+    if (error) {
+      console.error('Supabase contractor roles insert error:', error);
+      throw new Error(`Database error: ${error.message}`);
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Supabase contractor roles sync failed:', error);
     throw error;
   }
 };
@@ -245,8 +278,13 @@ export function ProjectWizardProvider({ children }: { children: ReactNode }) {
           projectDescription: projectData.projectDescription,
         };
 
-        // Sync to Supabase (only allowed fields)
-        await syncToSupabase(finalProjectData, user.id);
+        // Sync project data to Supabase
+        const insertedProject = await syncToSupabase(finalProjectData, user.id);
+
+        // Sync contractor roles to Supabase
+        if (projectData.contractorRoles && insertedProject && insertedProject.length > 0) {
+          await syncContractorRolesToSupabase(projectData.contractorRoles, insertedProject[0].id, user.id);
+        }
 
         // Success feedback
         alert('🎉 Project launched successfully and saved to database!');

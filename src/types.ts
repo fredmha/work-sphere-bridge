@@ -37,22 +37,20 @@ export interface projects {
 // Contractor Role
 export interface ContractorRole {
   id: string;
-  category?: string[];
-  contractor?: string; // Contractor ID
+  contractor_id?: string; // Contractor ID
   description?: string;
-  incentive?: string[];
-  ogContractorRoles?: string; // Project ID
-  originalProject?: string; // Project ID
-  owner?: string; // User ID
+  
+ // projects?: string; // Project ID
+  owner_id?: string; // User ID
   role?: string;
   pay?: number; //only for timesheet, pay per hour
   score?: number;
-  visibility?: boolean;
-  creator?: string; // User ID
+  //visibility?: boolean;
+  //creator?: string; // User ID
   type?: string; //whether its a paid per task or a timesheet model
-  modifiedDate: string;
-  createdDate: string;
-  slug?: string;
+  //modifiedDate: string;
+  created_at: string;
+  //slug?: string;
 }
 
 // Contractor
