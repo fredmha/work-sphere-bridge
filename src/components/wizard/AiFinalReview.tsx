@@ -17,25 +17,24 @@ import {
   FileText,
   Star
 } from 'lucide-react';
-import { useProjectWizard } from './ProjectContext';
-import  Project  from '@/entities/Project.json';
+import { useProjectWizard, type AIProjectData, type ContractorRole } from './ProjectContext';
 
 export default function AiFinalReview() {
   const { state, actions } = useProjectWizard();
   const [isLaunching, setIsLaunching] = useState(false);
 
-  const projectData = state.aiContext;
-  const milestoneRoles = projectData?.contractorRoles?.filter(role => role.type === 'milestone') || [];
-  const timesheetRoles = projectData?.contractorRoles?.filter(role => role.type === 'timesheet') || [];
+  const projectData: AIProjectData | null = state.aiContext;
+  const milestoneRoles: ContractorRole[] = projectData?.contractorRoles?.filter(role => role.type === 'milestone') || [];
+  const timesheetRoles: ContractorRole[] = projectData?.contractorRoles?.filter(role => role.type === 'timesheet') || [];
 
-  const calculateTotalMilestoneValue = () => {
+  const calculateTotalMilestoneValue = (): number => {
     return milestoneRoles.reduce((total, role) => {
       const roleTotal = role.tasks?.reduce((sum, task) => sum + (task.price || 0), 0) || 0;
       return total + roleTotal;
     }, 0);
   };
 
-  const calculateTotalTasks = () => {
+  const calculateTotalTasks = (): number => {
     return milestoneRoles.reduce((total, role) => total + (role.tasks?.length || 0), 0);
   };
 

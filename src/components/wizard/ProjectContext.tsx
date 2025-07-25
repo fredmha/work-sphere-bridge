@@ -4,10 +4,36 @@ import { generateProjectWithOpenAI, OpenAIError } from '@/lib/openai';
 
 // --- Types ---
 export type ProjectWizardMode = 'ai' | 'manual' | null;
+
+// AI-generated project data structure
+export interface ContractorRole {
+  role: string;
+  description: string;
+  type: 'milestone' | 'timesheet';
+  pay?: number; // For timesheet roles
+  tasks?: Array<{
+    name: string;
+    description: string;
+    deliverables: string;
+    price: number;
+  }>;
+}
+
+export interface AIProjectData {
+  projectName: string;
+  projectDescription: string;
+  category?: string[];
+  duration?: string;
+  weeklyHours?: number;
+  contractorRoles: ContractorRole[];
+  rawDescription?: string;
+  currentStep?: string;
+}
+
 export interface ProjectWizardState {
   currentMode: ProjectWizardMode;
   currentStep: number;
-  aiContext: any;
+  aiContext: AIProjectData | null;
   manualContext: any;
   isProcessing: boolean;
   openaiResponse: any; // Store OpenAI API response
@@ -17,7 +43,7 @@ export interface ProjectWizardState {
 export interface ProjectWizardActions {
   setMode: (mode: ProjectWizardMode) => void;
   setStep: (step: number) => void;
-  updateAiContext: (data: any) => void;
+  updateAiContext: (data: Partial<AIProjectData>) => void;
   updateManualContext: (data: any) => void;
   resetAi: () => void;
   resetManual: () => void;
@@ -127,8 +153,8 @@ function projectReducer(state: ProjectWizardState, action: any): ProjectWizardSt
   }
 }
 
-// Supabase sync function
-const syncToSupabase = async (projectData: any, ownerId: string) => {
+// Supabase sync function - stores project without contractor roles (they'll be stored separately)
+const syncToSupabase = async (projectData: AIProjectData, ownerId: string) => {
   if (!supabase) {
     throw new Error('Supabase client not configured');
   }
@@ -140,6 +166,7 @@ const syncToSupabase = async (projectData: any, ownerId: string) => {
         project_name: projectData.projectName,
         project_description: projectData.projectDescription,
         owner_id: ownerId,
+        // Don't store contractor_roles as JSON anymore
       }])
       .select();
 
@@ -155,14 +182,15 @@ const syncToSupabase = async (projectData: any, ownerId: string) => {
   }
 };
 
-const syncContractorRolesToSupabase = async (rolesData: any[], projectId: string, ownerId: string) => {
+// Sync contractor roles to separate ContractorRole table with project_id
+const syncContractorRolesToSupabase = async (rolesData: ContractorRole[], projectId: number, ownerId: string) => {
   if (!supabase) {
     throw new Error('Supabase client not configured');
   }
 
   try {
     const rolesToInsert = rolesData.map(role => ({
-      project_id: projectId, // Link to the newly created project
+      project_id: projectId, // Link to the project
       owner_id: ownerId,
       role: role.role,
       description: role.description,
@@ -172,7 +200,7 @@ const syncContractorRolesToSupabase = async (rolesData: any[], projectId: string
     }));
 
     const { data, error } = await supabase
-      .from('ContractorRole') // Use the table name provided by the user
+      .from('ContractorRole')
       .insert(rolesToInsert)
       .select();
 
@@ -273,22 +301,23 @@ export function ProjectWizardProvider({ children }: { children: ReactNode }) {
           throw new Error('User not authenticated');
         }
 
-        const finalProjectData = {
-          projectName: projectData.projectName,
-          projectDescription: projectData.projectDescription,
-        };
+        // First, create the project
+        const insertedProject = await syncToSupabase(projectData, user.id);
+        
+        if (!insertedProject || insertedProject.length === 0) {
+          throw new Error('Failed to create project');
+        }
 
-        // Sync project data to Supabase
-        const insertedProject = await syncToSupabase(finalProjectData, user.id);
+        const projectId = insertedProject[0].id;
 
-        // Sync contractor roles to Supabase
-        if (projectData.contractorRoles && insertedProject && insertedProject.length > 0) {
-          await syncContractorRolesToSupabase(projectData.contractorRoles, insertedProject[0].id, user.id);
+        // Then, create the contractor roles linked to the project
+        if (projectData.contractorRoles && projectData.contractorRoles.length > 0) {
+          await syncContractorRolesToSupabase(projectData.contractorRoles, projectId, user.id);
         }
 
         // Success feedback
         alert('🎉 Project launched successfully and saved to database!');
-        console.log('Final Project Data:', JSON.stringify(finalProjectData, null, 2));
+        console.log('Final Project Data:', JSON.stringify(projectData, null, 2));
 
         // Reset wizard
         dispatch({ type: 'RESET_ALL' });
