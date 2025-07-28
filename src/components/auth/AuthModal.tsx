@@ -340,7 +340,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
     
     // Navigate based on user role
     if (signupData.userType === 'contractor') {
-      navigate('/ContractorDashboard');
+      navigate('/contractor/onboarding');
     } else if (signupData.userType === 'business') {
       navigate('/Dashboard');
     } else {

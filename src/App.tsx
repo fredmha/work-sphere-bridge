@@ -15,6 +15,7 @@ import ProfileSettings from "./pages/ProfileSettings";
 import NotFound from "./pages/NotFound";
 import Applications from "./pages/applications";
 import ProjectWizard from "./pages/ProjectWizard";
+import ContractorOnboarding from "./pages/ContractorOnboarding";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ export default function App() {
               <Route path="/talent" element={<TalentDirectory />} />
               <Route path="/profile" element={<ProfileSettings />} />
               <Route path="/ProjectWizard" element={<ProjectWizard />} />
+              <Route path="/contractor/onboarding" element={<ContractorOnboarding />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
