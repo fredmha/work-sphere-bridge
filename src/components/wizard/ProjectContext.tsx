@@ -52,6 +52,7 @@ export interface ProjectWizardActions {
   // New OpenAI and Supabase actions
   generateProjectWithAI: (description: string) => Promise<void>;
   completeProject: () => Promise<void>;
+  completeManualProject: () => Promise<void>;
   setOpenAIResponse: (response: any) => void;
   setCompleting: (completing: boolean) => void;
   clearError: () => void; // Clear error state
@@ -154,7 +155,7 @@ function projectReducer(state: ProjectWizardState, action: any): ProjectWizardSt
 }
 
 // Supabase sync function - stores project without contractor roles (they'll be stored separately)
-const syncToSupabase = async (projectData: AIProjectData, ownerId: string) => {
+const syncToSupabase = async (projectData: AIProjectData | any, ownerId: string) => {
   if (!supabase) {
     throw new Error('Supabase client not configured');
   }
@@ -183,7 +184,7 @@ const syncToSupabase = async (projectData: AIProjectData, ownerId: string) => {
 };
 
 // Sync contractor roles to separate ContractorRole table with project_id
-const syncContractorRolesToSupabase = async (rolesData: ContractorRole[], projectId: number, ownerId: string) => {
+const syncContractorRolesToSupabase = async (rolesData: ContractorRole[] | any[], projectId: number, ownerId: string) => {
   if (!supabase) {
     throw new Error('Supabase client not configured');
   }
@@ -216,7 +217,7 @@ const syncContractorRolesToSupabase = async (rolesData: ContractorRole[], projec
 };
 
 // Sync tasks to ContractorTask table
-const syncTasksToSupabase = async (rolesData: ContractorRole[], projectId: number, ownerId: string, insertedRoles: any[]) => {
+const syncTasksToSupabase = async (rolesData: ContractorRole[] | any[], projectId: number, ownerId: string, insertedRoles: any[]) => {
   if (!supabase) {
     throw new Error('Supabase client not configured');
   }
@@ -380,6 +381,56 @@ export function ProjectWizardProvider({ children }: { children: ReactNode }) {
         dispatch({ type: 'RESET_ALL' });
       } catch (error) {
         console.error('Project completion failed:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+        alert(`❌ Error completing project: ${errorMessage}`);
+        throw error;
+      } finally {
+        dispatch({ type: 'SET_COMPLETING', payload: false });
+      }
+    },
+    // Complete manual project and sync to Supabase
+    completeManualProject: async () => {
+      dispatch({ type: 'SET_COMPLETING', payload: true });
+      try {
+        const projectData = state.manualContext;
+        if (!projectData) {
+          throw new Error('No project data to complete');
+        }
+
+        // Get the current user
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
+          throw new Error('User not authenticated');
+        }
+
+        // First, create the project
+        const insertedProject = await syncToSupabase(projectData, user.id);
+        
+        if (!insertedProject || insertedProject.length === 0) {
+          throw new Error('Failed to create project');
+        }
+
+        const projectId = insertedProject[0].id;
+
+        // Then, create the contractor roles linked to the project
+        let insertedRoles: any[] = [];
+        if (projectData.contractorRoles && projectData.contractorRoles.length > 0) {
+          insertedRoles = await syncContractorRolesToSupabase(projectData.contractorRoles, projectId, user.id);
+        }
+
+        // Finally, create the tasks for each role
+        if (projectData.contractorRoles && projectData.contractorRoles.length > 0) {
+          await syncTasksToSupabase(projectData.contractorRoles, projectId, user.id, insertedRoles);
+        }
+
+        // Success feedback
+        alert('🎉 Project launched successfully and saved to database!');
+        console.log('Final Manual Project Data:', JSON.stringify(projectData, null, 2));
+
+        // Reset wizard
+        dispatch({ type: 'RESET_ALL' });
+      } catch (error) {
+        console.error('Manual project completion failed:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
         alert(`❌ Error completing project: ${errorMessage}`);
         throw error;

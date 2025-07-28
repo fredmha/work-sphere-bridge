@@ -8,7 +8,7 @@ import { Clock, Target, CheckCircle, FileText, Users, Calendar } from 'lucide-re
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProjectWizard } from './ProjectContext';
 
-export default function ProjectSummary({ projectData, onSubmit, onBack }) {
+export default function ProjectSummary({ projectData, onSubmit, onBack, isCompleting = false }) {
   const { state, actions } = useProjectWizard();
   const milestoneRoles = projectData.contractorRoles?.filter(role => role.type === 'milestone') || [];
   const timesheetRoles = projectData.contractorRoles?.filter(role => role.type === 'timesheet') || [];
@@ -181,9 +181,23 @@ export default function ProjectSummary({ projectData, onSubmit, onBack }) {
           <Button variant="ghost" onClick={onBack}>
             Go Back
           </Button>
-          <Button onClick={handleSubmit} size="lg" className="bg-emerald-600 hover:bg-emerald-700 font-semibold shadow-lg shadow-emerald-500/20">
-            <CheckCircle className="w-5 h-5 mr-2" />
-            Launch Project
+          <Button 
+            onClick={handleSubmit} 
+            disabled={isCompleting}
+            size="lg" 
+            className="bg-emerald-600 hover:bg-emerald-700 font-semibold shadow-lg shadow-emerald-500/20"
+          >
+            {isCompleting ? (
+              <>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                Saving to Database...
+              </>
+            ) : (
+              <>
+                <CheckCircle className="w-5 h-5 mr-2" />
+                Launch Project
+              </>
+            )}
           </Button>
         </div>
       </div>

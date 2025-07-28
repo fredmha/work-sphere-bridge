@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ProjectWizardProvider, useProjectWizard } from '../components/wizard/ProjectContext';
@@ -8,7 +9,10 @@ import AiReviewProject from '../components/wizard/AiReviewProject';
 import AiReviewRoles from '../components/wizard/AiReviewRoles';
 import AiTaskManager from '../components/wizard/AiTaskManager';
 import AiFinalReview from '../components/wizard/AiFinalReview';
-import Header from "@/components/layout/Header";
+import ManualProjectInfo from '../components/wizard/ManualProjectInfo';
+import ManualRoleManager from '../components/wizard/ManualRoleManager';
+import ManualTaskManager from '../components/wizard/ManualTaskManger';
+import ManualFinalReview from '../components/wizard/ManualFinalReview';
 
 function WizardContent() {
   const { state } = useProjectWizard();
@@ -38,21 +42,20 @@ function WizardContent() {
     if (state.currentMode === 'manual') {
       switch (state.currentStep) {
         case 1:
-          return <div className="text-center p-12 text-gray-500">Manual Project Info - Coming Soon</div>;
+          return <ManualProjectInfo />;
         case 2:
-          return <div className="text-center p-12 text-gray-500">Manual Roles - Coming Soon</div>;
+          return <ManualRoleManager />;
         case 3:
-          return <div className="text-center p-12 text-gray-500">Manual Tasks - Coming Soon</div>;
+          return <ManualTaskManager />;
         case 4:
-          return <div className="text-center p-12 text-gray-500">Manual Review - Coming Soon</div>;
+          return <ManualFinalReview />;
         default:
-          return <div className="text-center p-12 text-gray-500">Manual Flow - Coming Soon</div>;
+          return <ManualProjectInfo />;
       }
     }
 
     return <ModeSelection />;
   };
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 font-sans">
@@ -102,4 +105,3 @@ export default function ProjectWizard() {
     </ProjectWizardProvider>
   );
 }
-//hey 
