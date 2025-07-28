@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode, Dispatch } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { generateProjectWithOpenAI, OpenAIError } from '@/lib/openai';
+import { useNavigate } from 'react-router-dom';
 
 // --- Types ---
 export type ProjectWizardMode = 'ai' | 'manual' | null;
@@ -218,57 +219,13 @@ const syncContractorRolesToSupabase = async (rolesData: ContractorRole[] | any[]
 
 // Sync tasks to ContractorTask table
 const syncTasksToSupabase = async (rolesData: ContractorRole[] | any[], projectId: number, ownerId: string, insertedRoles: any[]) => {
-  if (!supabase) {
-    throw new Error('Supabase client not configured');
-  }
-
-  try {
-    const tasksToInsert: any[] = [];
-
-    // For each role, create tasks if they exist
-    rolesData.forEach((role, roleIndex) => {
-      if (role.tasks && role.tasks.length > 0) {
-        const roleId = insertedRoles[roleIndex]?.id;
-        if (roleId) {
-          role.tasks.forEach(task => {
-            tasksToInsert.push({
-              name: task.name,
-              description: task.description,
-              deliverables: task.deliverables,
-              price: task.price,
-              Project: projectId,
-              role: roleId,
-              owner: ownerId,
-              status: 'pending', // Default status
-              priority: 'medium', // Default priority
-            });
-          });
-        }
-      }
-    });
-
-    if (tasksToInsert.length > 0) {
-      const { data, error } = await supabase
-        .from('ContractorTask')
-        .insert(tasksToInsert)
-        .select();
-
-      if (error) {
-        console.error('Supabase tasks insert error:', error);
-        throw new Error(`Database error: ${error.message}`);
-      }
-
-      return data;
-    }
-
-    return [];
-  } catch (error) {
-    console.error('Supabase tasks sync failed:', error);
-    throw error;
-  }
+  // TODO: Implement when ContractorTask table is available
+  console.log('Task sync skipped - ContractorTask table not available yet');
+  return [];
 };
 
 export function ProjectWizardProvider({ children }: { children: ReactNode }) {
+  const navigate = useNavigate();
   const [state, dispatch] = useReducer(projectReducer, initialState, (initial) => {
     try {
       const saved = localStorage.getItem('projectWizardState');
@@ -377,8 +334,9 @@ export function ProjectWizardProvider({ children }: { children: ReactNode }) {
         alert('🎉 Project launched successfully and saved to database!');
         console.log('Final Project Data:', JSON.stringify(projectData, null, 2));
 
-        // Reset wizard
+        // Reset wizard and redirect to dashboard
         dispatch({ type: 'RESET_ALL' });
+        navigate('/dashboard');
       } catch (error) {
         console.error('Project completion failed:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
@@ -427,8 +385,9 @@ export function ProjectWizardProvider({ children }: { children: ReactNode }) {
         alert('🎉 Project launched successfully and saved to database!');
         console.log('Final Manual Project Data:', JSON.stringify(projectData, null, 2));
 
-        // Reset wizard
+        // Reset wizard and redirect to dashboard
         dispatch({ type: 'RESET_ALL' });
+        navigate('/dashboard');
       } catch (error) {
         console.error('Manual project completion failed:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';

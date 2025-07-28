@@ -316,6 +316,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await supabase!.auth.signOut();
       setUser(null);
       setIsAuthenticated(false);
+      
+      // Clear any cached data
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Force a page reload to clear any cached state
+      window.location.reload();
     } catch (error) {
       console.error('Logout error:', error);
     }
