@@ -197,6 +197,7 @@ const syncContractorRolesToSupabase = async (rolesData: ContractorRole[] | any[]
       description: role.description,
       type: role.type,
       pay: role.pay,
+      project_id: projectId,
       // score and contractor_id are not directly from AI response, assuming nullable or default
     }));
 
@@ -336,7 +337,11 @@ export function ProjectWizardProvider({ children }: { children: ReactNode }) {
 
         // Reset wizard and redirect to dashboard
         dispatch({ type: 'RESET_ALL' });
-        navigate('/dashboard');
+        
+        // Use setTimeout to prevent navigation issues
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 100);
       } catch (error) {
         console.error('Project completion failed:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
@@ -387,7 +392,11 @@ export function ProjectWizardProvider({ children }: { children: ReactNode }) {
 
         // Reset wizard and redirect to dashboard
         dispatch({ type: 'RESET_ALL' });
-        navigate('/dashboard');
+        
+        // Use setTimeout to prevent navigation issues
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 100);
       } catch (error) {
         console.error('Manual project completion failed:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';

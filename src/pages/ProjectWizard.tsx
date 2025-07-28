@@ -13,6 +13,7 @@ import ManualProjectInfo from '../components/wizard/ManualProjectInfo';
 import ManualRoleManager from '../components/wizard/ManualRoleManager';
 import ManualTaskManager from '../components/wizard/ManualTaskManger';
 import ManualFinalReview from '../components/wizard/ManualFinalReview';
+import Header from '@/components/layout/Header';
 
 function WizardContent() {
   const { state } = useProjectWizard();
@@ -59,6 +60,7 @@ function WizardContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 font-sans">
+      <Header />
       <div className="container mx-auto px-4 py-8 md:py-16">
         <div className="max-w-7xl mx-auto">
           

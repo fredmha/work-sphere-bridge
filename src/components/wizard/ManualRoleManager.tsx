@@ -29,8 +29,10 @@ export default function ManualRoleManager() {
     console.log('ManualRoleManager - Milestone roles:', contractorRoles.filter(role => role?.type === 'milestone').length);
     
     if (hasMilestoneRoles) {
+      console.log('ManualRoleManager - Milestone roles detected, proceeding to task management (step 3)');
       actions.setStep(3); // Go to task management
     } else {
+      console.log('ManualRoleManager - No milestone roles, skipping to review (step 4)');
       actions.setStep(4); // Skip to review if no milestone roles
     }
   };

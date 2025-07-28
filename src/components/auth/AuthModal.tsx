@@ -20,7 +20,7 @@ interface AuthModalProps {
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTab = 'login' }) => {
-  const { login } = useAuth(); // Only use login from AuthContext, handle signup directly
+  const { login, clearAuthData, forceClearCache } = useAuth(); // Only use login from AuthContext, handle signup directly
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [isLoading, setIsLoading] = useState(false);
   const [signupStep, setSignupStep] = useState(1);
@@ -400,6 +400,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? 'Signing in...' : 'Sign In'}
               </Button>
+              
+              <div className="text-center">
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    clearAuthData();
+                    alert('Cache cleared! Please try logging in again.');
+                  }}
+                  className="text-sm text-gray-500 underline hover:text-gray-700"
+                >
+                  Having trouble? Clear Cache & Try Again
+                </button>
+              </div>
             </form>
             
             <div className="relative">
@@ -540,6 +553,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
                   <Button type="button" variant="outline" className="w-full" onClick={() => setShowManualSignup(false)}>
                     Back
                   </Button>
+                  
+                  <div className="text-center">
+                    <button 
+                      type="button" 
+                      onClick={() => {
+                        clearAuthData();
+                        alert('Cache cleared! Please try signing up again.');
+                      }}
+                      className="text-sm text-gray-500 underline hover:text-gray-700"
+                    >
+                      Having trouble? Clear Cache & Try Again
+                    </button>
+                  </div>
                 </form>
               ) : (
                 <form onSubmit={handleSignupStep2} className="space-y-4">
@@ -689,6 +715,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
                   <Button type="button" variant="outline" className="w-full" onClick={() => setSignupStep(1)}>
                     Back
                   </Button>
+                  
+                  <div className="text-center">
+                    <button 
+                      type="button" 
+                      onClick={() => {
+                        clearAuthData();
+                        alert('Cache cleared! Please try signing up again.');
+                      }}
+                      className="text-sm text-gray-500 underline hover:text-gray-700"
+                    >
+                      Having trouble? Clear Cache & Try Again
+                    </button>
+                  </div>
                 </form>
               )
             )}
