@@ -122,9 +122,9 @@ export default function ProjectSummary({ projectData, onSubmit, onBack, isComple
                     </CardTitle>
                     <p className="text-gray-600 mt-1">{role.description}</p>
                   </div>
-                  <Button variant="outline" className="text-emerald-600 border-emerald-300 hover:bg-emerald-50">
+                  {/* <Button variant="outline" className="text-emerald-600 border-emerald-300 hover:bg-emerald-50">
                     Apply Now
-                  </Button>
+                  </Button> */}
                 </CardHeader>
                 <CardContent className="px-6 pb-6">
                   <h4 className="font-semibold text-gray-800 mb-3">Tasks & Milestones</h4>
@@ -161,9 +161,9 @@ export default function ProjectSummary({ projectData, onSubmit, onBack, isComple
                     </CardTitle>
                     <p className="text-gray-600 mt-1">{role.description}</p>
                   </div>
-                  <Button variant="outline" className="text-blue-600 border-blue-300 hover:bg-blue-50">
+                  {/* <Button variant="outline" className="text-blue-600 border-blue-300 hover:bg-blue-50">
                     Apply Now
-                  </Button>
+                  </Button> */}
                 </CardHeader>
                 <CardContent className="px-6 pb-6">
                   <Badge className="text-base bg-blue-100 text-blue-800 hover:bg-blue-200">

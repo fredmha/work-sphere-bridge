@@ -111,7 +111,7 @@ export default function ProjectInfoForm({ projectData, onUpdate, onNext, onBack 
             </div>
 
             <div className="grid md:grid-cols-2 gap-8">
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label htmlFor="duration" className="text-sm font-medium text-gray-700">
                   Expected Duration
                 </Label>
@@ -129,9 +129,9 @@ export default function ProjectInfoForm({ projectData, onUpdate, onNext, onBack 
                     <SelectItem value="12+ months">12+ months</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
+              </div> */}
 
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label htmlFor="weeklyHours" className="text-sm font-medium text-gray-700">
                   Weekly Commitment
                 </Label>
@@ -145,12 +145,12 @@ export default function ProjectInfoForm({ projectData, onUpdate, onNext, onBack 
                   min="1"
                   max="80"
                 />
-              </div>
+              </div> */}
             </div>
 
             <div className="space-y-4">
-              <Label className="text-sm font-medium text-gray-700">Categories</Label>
-              <div className="p-4 border rounded-lg bg-gray-50/50">
+              {/* <Label className="text-sm font-medium text-gray-700">Categories</Label> */}
+              {/* <div className="p-4 border rounded-lg bg-gray-50/50">
                 <div className="flex flex-wrap gap-2 mb-3">
                   {formData.category?.map((category, index) => (
                     <Badge key={index} variant="secondary" className="px-3 py-1 text-sm bg-emerald-100 text-emerald-800 hover:bg-emerald-200">
@@ -180,11 +180,11 @@ export default function ProjectInfoForm({ projectData, onUpdate, onNext, onBack 
                     <Plus className="w-4 h-4" />
                   </Button>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             <div className="space-y-4">
-              <Label className="text-sm font-medium text-gray-700">Perks & Incentives</Label>
+              {/* <Label className="text-sm font-medium text-gray-700">Perks & Incentives</Label>
               <div className="p-4 border rounded-lg bg-gray-50/50">
                 <div className="flex flex-wrap gap-2 mb-3">
                   {formData.incentive?.map((incentive, index) => (
@@ -215,7 +215,7 @@ export default function ProjectInfoForm({ projectData, onUpdate, onNext, onBack 
                     <Plus className="w-4 h-4" />
                   </Button>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             <div className="flex justify-between pt-8 border-t">
