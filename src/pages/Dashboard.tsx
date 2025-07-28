@@ -116,7 +116,7 @@ const Dashboard = () => {
 
   // Helper: Get timesheets by project (simulated)
   const getTimesheetsByProject = (projectId: number) => {
-    const projectRoles = contractorRoles.filter(role => role.owner_id === user?.id);
+    const projectRoles = contractorRoles.filter(role => role.owner_id === user?.id && role.project_id === projectId);
     return projectRoles.map(role => {
       return {
         contractor: "Contractor", // We'll need to join with contractors table later
@@ -127,7 +127,12 @@ const Dashboard = () => {
     });
   };
 
-
+  const handleCreateProject = () => {
+    // Clear any existing project wizard state
+    localStorage.removeItem('projectWizardState');
+    sessionStorage.removeItem('projectWizardState');
+    navigate('/ProjectWizard');
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -137,7 +142,7 @@ const Dashboard = () => {
         {/* Dashboard Header */}
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">Project Dashboard</h1>
-          <Button className="gap-2" onClick={() => navigate('/ProjectWizard')}>
+          <Button className="gap-2" onClick={handleCreateProject}>
             <Plus className="h-4 w-4" />
             Create a Project
           </Button>
@@ -207,7 +212,7 @@ const Dashboard = () => {
             <Card>
               <CardContent className="p-8 text-center">
                 <p className="text-muted-foreground mb-4">No projects found. Create your first project to get started!</p>
-                <Button onClick={() => navigate('/ProjectWizard')}>
+                <Button onClick={handleCreateProject}>
                   <Plus className="h-4 w-4 mr-2" />
                   Create Your First Project
                 </Button>

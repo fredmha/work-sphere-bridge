@@ -50,6 +50,7 @@ export interface ProjectWizardActions {
   resetManual: () => void;
   setProcessing: (processing: boolean) => void;
   resetAll: () => void;
+  completeReset: () => void; // Complete reset including localStorage
   // New OpenAI and Supabase actions
   generateProjectWithAI: (description: string) => Promise<void>;
   completeProject: () => Promise<void>;
@@ -150,6 +151,26 @@ function projectReducer(state: ProjectWizardState, action: any): ProjectWizardSt
       return {
         ...initialState
       };
+    case 'COMPLETE_RESET':
+      // Clear any stored state from localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('projectWizardState');
+        sessionStorage.removeItem('projectWizardState');
+        // Clear any other project-related storage
+        Object.keys(localStorage).forEach(key => {
+          if (key.includes('project') || key.includes('wizard') || key.includes('ai') || key.includes('manual')) {
+            localStorage.removeItem(key);
+          }
+        });
+        Object.keys(sessionStorage).forEach(key => {
+          if (key.includes('project') || key.includes('wizard') || key.includes('ai') || key.includes('manual')) {
+            sessionStorage.removeItem(key);
+          }
+        });
+      }
+      return {
+        ...initialState
+      };
     default:
       return state;
   }
@@ -168,6 +189,7 @@ const syncToSupabase = async (projectData: AIProjectData | any, ownerId: string)
         project_name: projectData.projectName,
         project_description: projectData.projectDescription,
         owner_id: ownerId,
+        status: 'Draft',
         // Don't store contractor_roles as JSON anymore
       }])
       .select();
@@ -198,6 +220,7 @@ const syncContractorRolesToSupabase = async (rolesData: ContractorRole[] | any[]
       type: role.type,
       pay: role.pay,
       project_id: projectId,
+      
       // score and contractor_id are not directly from AI response, assuming nullable or default
     }));
 
@@ -226,7 +249,6 @@ const syncTasksToSupabase = async (rolesData: ContractorRole[] | any[], projectI
 };
 
 export function ProjectWizardProvider({ children }: { children: ReactNode }) {
-  const navigate = useNavigate();
   const [state, dispatch] = useReducer(projectReducer, initialState, (initial) => {
     try {
       const saved = localStorage.getItem('projectWizardState');
@@ -235,6 +257,24 @@ export function ProjectWizardProvider({ children }: { children: ReactNode }) {
       return initial;
     }
   });
+  const navigate = useNavigate();
+
+  // Global event listener for navigation away from ProjectWizard
+  useEffect(() => {
+    const handleNavigation = () => {
+      // Reset state when navigating away from ProjectWizard
+      if (window.location.pathname !== '/ProjectWizard') {
+        dispatch({ type: 'COMPLETE_RESET' });
+      }
+    };
+
+    // Listen for navigation events
+    window.addEventListener('popstate', handleNavigation);
+    
+    return () => {
+      window.removeEventListener('popstate', handleNavigation);
+    };
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('projectWizardState', JSON.stringify(state));
@@ -254,6 +294,9 @@ export function ProjectWizardProvider({ children }: { children: ReactNode }) {
     resetAll: () => {
       localStorage.removeItem('projectWizardState');
       dispatch({ type: 'RESET_ALL' });
+    },
+    completeReset: () => {
+      dispatch({ type: 'COMPLETE_RESET' });
     },
     // OpenAI project generation with improved error handling
     generateProjectWithAI: async (description: string) => {
@@ -335,8 +378,8 @@ export function ProjectWizardProvider({ children }: { children: ReactNode }) {
         alert('🎉 Project launched successfully and saved to database!');
         console.log('Final Project Data:', JSON.stringify(projectData, null, 2));
 
-        // Reset wizard and redirect to dashboard
-        dispatch({ type: 'RESET_ALL' });
+        // Complete reset wizard and redirect to dashboard
+        dispatch({ type: 'COMPLETE_RESET' });
         
         // Use setTimeout to prevent navigation issues
         setTimeout(() => {
@@ -390,8 +433,8 @@ export function ProjectWizardProvider({ children }: { children: ReactNode }) {
         alert('🎉 Project launched successfully and saved to database!');
         console.log('Final Manual Project Data:', JSON.stringify(projectData, null, 2));
 
-        // Reset wizard and redirect to dashboard
-        dispatch({ type: 'RESET_ALL' });
+        // Complete reset wizard and redirect to dashboard
+        dispatch({ type: 'COMPLETE_RESET' });
         
         // Use setTimeout to prevent navigation issues
         setTimeout(() => {

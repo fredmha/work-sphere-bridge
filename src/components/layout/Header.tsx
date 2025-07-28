@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { AuthModal } from "@/components/auth/AuthModal";
@@ -16,6 +16,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const Header = () => {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
   const [authModal, setAuthModal] = useState<{ isOpen: boolean; defaultTab: 'login' | 'signup' } | null>(null);
+  const location = useLocation();
+  const isInProjectWizard = location.pathname === '/ProjectWizard';
 
   const openAuthModal = (defaultTab: 'login' | 'signup') => {
     setAuthModal({ isOpen: true, defaultTab });
