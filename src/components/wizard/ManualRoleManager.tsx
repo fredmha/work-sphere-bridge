@@ -13,16 +13,17 @@ export default function ManualRoleManager() {
     }
   }, [state.manualContext?.contractorRoles, actions]);
 
-  const handleNext = () => {
-    // Get the current roles from the context
-    const contractorRoles = state.manualContext?.contractorRoles || [];
+   // Accept roles directly from the child component so we don't rely on the
+  // context update completing before running our milestone logic.
+  const handleNext = (rolesFromChild?: any[]) => {
+    // Use the provided roles if available, otherwise fall back to context
+    const contractorRoles = rolesFromChild || state.manualContext?.contractorRoles || [];
     
     // Check if any roles are milestone-based
     const hasMilestoneRoles = contractorRoles.some(role => 
       role && 
-      role.type === 'milestone' && 
-      role.role && 
-      role.description
+      role.type === 'milestone'
+      //&& role.type !== 'timesheet'
     );
     
     console.log('ManualRoleManager - Roles found:', contractorRoles.length);

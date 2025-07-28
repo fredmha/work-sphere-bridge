@@ -1,0 +1,56 @@
+{
+    "name": "Application",
+    "type": "object",
+    "properties": {
+      "project_name": {
+        "type": "string"
+      },
+      "role": {
+        "type": "string"
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "interview",
+          "offer",
+          "active",
+          "completed",
+          "rejected"
+        ],
+        "default": "pending"
+      },
+      "company": {
+        "type": "string"
+      },
+      "description": {
+        "type": "string"
+      },
+      "submitted_date": {
+        "type": "string",
+        "format": "date"
+      },
+      "payment_type": {
+        "type": "string",
+        "enum": [
+          "hourly",
+          "task_based"
+        ]
+      },
+      "hourly_rate": {
+        "type": "number"
+      },
+      "estimated_weekly_hours": {
+        "type": "number"
+      },
+      "total_task_price": {
+        "type": "number"
+      }
+    },
+    "required": [
+      "project_name",
+      "role",
+      "company",
+      "payment_type"
+    ]
+  }

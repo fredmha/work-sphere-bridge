@@ -30,9 +30,9 @@ const ProfileSettings = () => {
     email: user?.email || '',
     university: user?.university || '',
     degree: user?.degree || '',
-    // year: user?.year || '',
-    // wam: user?.wam || '',
-    // summary: user?.summary || '',
+    year: user?.year || '',
+    wam: user?.wam || '',
+    summary: user?.summary || '',
     skills: user?.skills?.join(', ') || '',
     interests: user?.interests?.join(', ') || ''
   });
