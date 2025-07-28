@@ -190,7 +190,6 @@ const syncContractorRolesToSupabase = async (rolesData: ContractorRole[], projec
 
   try {
     const rolesToInsert = rolesData.map(role => ({
-      project_id: projectId, // Link to the project
       owner_id: ownerId,
       role: role.role,
       description: role.description,
@@ -212,6 +211,58 @@ const syncContractorRolesToSupabase = async (rolesData: ContractorRole[], projec
     return data;
   } catch (error) {
     console.error('Supabase contractor roles sync failed:', error);
+    throw error;
+  }
+};
+
+// Sync tasks to ContractorTask table
+const syncTasksToSupabase = async (rolesData: ContractorRole[], projectId: number, ownerId: string, insertedRoles: any[]) => {
+  if (!supabase) {
+    throw new Error('Supabase client not configured');
+  }
+
+  try {
+    const tasksToInsert: any[] = [];
+
+    // For each role, create tasks if they exist
+    rolesData.forEach((role, roleIndex) => {
+      if (role.tasks && role.tasks.length > 0) {
+        const roleId = insertedRoles[roleIndex]?.id;
+        if (roleId) {
+          role.tasks.forEach(task => {
+            tasksToInsert.push({
+              name: task.name,
+              description: task.description,
+              deliverables: task.deliverables,
+              price: task.price,
+              Project: projectId,
+              role: roleId,
+              owner: ownerId,
+              status: 'pending', // Default status
+              priority: 'medium', // Default priority
+            });
+          });
+        }
+      }
+    });
+
+    if (tasksToInsert.length > 0) {
+      const { data, error } = await supabase
+        .from('ContractorTask')
+        .insert(tasksToInsert)
+        .select();
+
+      if (error) {
+        console.error('Supabase tasks insert error:', error);
+        throw new Error(`Database error: ${error.message}`);
+      }
+
+      return data;
+    }
+
+    return [];
+  } catch (error) {
+    console.error('Supabase tasks sync failed:', error);
     throw error;
   }
 };
@@ -311,8 +362,14 @@ export function ProjectWizardProvider({ children }: { children: ReactNode }) {
         const projectId = insertedProject[0].id;
 
         // Then, create the contractor roles linked to the project
+        let insertedRoles: any[] = [];
         if (projectData.contractorRoles && projectData.contractorRoles.length > 0) {
-          await syncContractorRolesToSupabase(projectData.contractorRoles, projectId, user.id);
+          insertedRoles = await syncContractorRolesToSupabase(projectData.contractorRoles, projectId, user.id);
+        }
+
+        // Finally, create the tasks for each role
+        if (projectData.contractorRoles && projectData.contractorRoles.length > 0) {
+          await syncTasksToSupabase(projectData.contractorRoles, projectId, user.id, insertedRoles);
         }
 
         // Success feedback
