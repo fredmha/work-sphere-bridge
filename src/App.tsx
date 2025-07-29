@@ -38,7 +38,7 @@ export default function App() {
               <Route path="/talent" element={<TalentDirectory />} />
               <Route path="/profile" element={<ProfileSettings />} />
               <Route path="/ProjectWizard" element={<ProjectWizard />} />
-              <Route path="/contractor/onboarding" element={<ContractorOnboarding />} />
+              <Route path="/contractor-onboarding" element={<ContractorOnboarding />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
