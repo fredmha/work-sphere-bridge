@@ -320,9 +320,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
         return;
       }
     }
- //fuck
+
     // Update business profile if applicable
-    if (signupData.userType === 'contractor') {
+    if (signupData.userType === 'business') {
       const updatePayload = {
         name: signupData.company,
       };
