@@ -5,9 +5,79 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Users, Building2, Search, Plus, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { useEffect, useState } from "react";
 
 const Index = () => {
-  const { user } = useAuth();
+  console.log("🏠 Index component: Starting render...");
+  
+  const [renderAttempt, setRenderAttempt] = useState(0);
+  const [authError, setAuthError] = useState<string | null>(null);
+  
+  // Try to get auth context with error handling
+  let authContext = null;
+  try {
+    authContext = useAuth();
+    console.log("🏠 Index component: Auth context obtained successfully");
+  } catch (error) {
+    console.error("🏠 Index component: Error getting auth context:", error);
+    setAuthError(error instanceof Error ? error.message : "Unknown auth error");
+  }
+
+  const { user, isLoading } = authContext || { user: null, isLoading: false };
+
+  console.log("🏠 Index component: Auth state:", { 
+    user: !!user, 
+    isLoading, 
+    authError,
+    renderAttempt 
+  });
+
+  useEffect(() => {
+    console.log("🏠 Index component: Mounted");
+    setRenderAttempt(prev => prev + 1);
+    
+    return () => {
+      console.log("🏠 Index component: Unmounted");
+    };
+  }, []);
+
+  // Fallback for auth errors
+  if (authError) {
+    console.log("🏠 Index component: Rendering auth error fallback");
+    return (
+      <div className="min-h-screen bg-yellow-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md">
+          <h1 className="text-2xl font-bold text-yellow-600 mb-4">Authentication Error</h1>
+          <p className="text-gray-600 mb-4">
+            There was an issue with the authentication system. The app will continue without authentication.
+          </p>
+          <p className="text-sm text-gray-500 mb-4">Error: {authError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state if auth is still loading
+  if (isLoading) {
+    console.log("🏠 Index component: Rendering loading state");
+    return (
+      <div className="min-h-screen bg-blue-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-blue-600">Loading authentication...</p>
+          <p className="text-sm text-blue-500 mt-2">Render attempt: {renderAttempt}</p>
+        </div>
+      </div>
+    );
+  }
+
+  console.log("🏠 Index component: Rendering main content");
   
   const valueProps = [
     {
@@ -69,7 +139,7 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-green-50"> {/* Added background color for debugging */}
       <Header />
       
       {/* Hero Section */}

@@ -53,18 +53,27 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  console.log("🔐 AuthProvider: Initializing...");
+  
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   // Check if Supabase is properly configured
   const isSupabaseConfigured = () => {
-    return supabase !== null;
+    const configured = supabase !== null;
+    console.log("🔐 AuthProvider: Supabase configured:", configured);
+    return configured;
   };
 
   // Fetch user profile data from database
   const fetchUserProfile = async (supabaseUser: SupabaseUser): Promise<User | null> => {
-    if (!supabase) return null;
+    console.log("🔐 AuthProvider: Fetching user profile for:", supabaseUser.id);
+    
+    if (!supabase) {
+      console.log("🔐 AuthProvider: Supabase not available, returning null");
+      return null;
+    }
     
     try {
       // Get user data from users table
@@ -75,14 +84,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .single();
 
       if (userError) {
-        console.error('Error fetching user data:', userError);
+        console.error('🔐 AuthProvider: Error fetching user data:', userError);
         return null;
       }
 
       if (!userData) {
-        console.error('No user data found');
+        console.error('🔐 AuthProvider: No user data found');
         return null;
       }
+
+      console.log("🔐 AuthProvider: User data fetched successfully:", userData);
 
       // Get contractor profile if user is a contractor
       let contractorProfile = undefined;
@@ -100,6 +111,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             resume: contractorData.resume,
             description: contractorData.description,
           };
+          console.log("🔐 AuthProvider: Contractor profile loaded");
         }
       }
 
@@ -116,10 +128,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           businessProfile = {
             name: businessData.name,
           };
+          console.log("🔐 AuthProvider: Business profile loaded");
         }
       }
 
-      return {
+      const userProfile = {
         id: userData.id,
         email: userData.email,
         fullName: userData['full name'],
@@ -133,65 +146,82 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         contractorProfile,
         businessProfile,
       };
+
+      console.log("🔐 AuthProvider: Final user profile:", userProfile);
+      return userProfile;
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.error('🔐 AuthProvider: Error fetching user profile:', error);
       return null;
     }
   };
 
   // Initialize auth state
   useEffect(() => {
-    console.log('AuthContext: Initializing...');
-    console.log('AuthContext: Supabase configured:', isSupabaseConfigured());
+    console.log('🔐 AuthProvider: Starting initialization...');
+    console.log('🔐 AuthProvider: Supabase configured:', isSupabaseConfigured());
     
-    // Always set loading to false after a short delay
-    const timer = setTimeout(() => {
-      console.log('AuthContext: Setting loading to false');
+    // Set loading to false immediately if Supabase is not configured
+    if (!isSupabaseConfigured()) {
+      console.log('🔐 AuthProvider: Supabase not configured, setting loading to false immediately');
       setIsLoading(false);
-    }, 100);
+      return;
+    }
+    
+    // Always set loading to false after a short delay as fallback
+    const timer = setTimeout(() => {
+      console.log('🔐 AuthProvider: Fallback timer - setting loading to false');
+      setIsLoading(false);
+    }, 2000); // Increased timeout to 2 seconds
 
     // If Supabase is configured, try to get session
-    if (isSupabaseConfigured()) {
-      const initializeAuth = async () => {
-        try {
-          const { data: { session } } = await supabase!.auth.getSession();
-          
-          if (session?.user) {
-            const userProfile = await fetchUserProfile(session.user);
-            setUser(userProfile);
-            setIsAuthenticated(!!userProfile);
-          }
-        } catch (error) {
-          console.error('Error getting Supabase session:', error);
+    const initializeAuth = async () => {
+      try {
+        console.log('🔐 AuthProvider: Getting Supabase session...');
+        const { data: { session } } = await supabase!.auth.getSession();
+        
+        if (session?.user) {
+          console.log('🔐 AuthProvider: Session found, fetching user profile...');
+          const userProfile = await fetchUserProfile(session.user);
+          setUser(userProfile);
+          setIsAuthenticated(!!userProfile);
+          console.log('🔐 AuthProvider: User profile set, authenticated:', !!userProfile);
+        } else {
+          console.log('🔐 AuthProvider: No session found');
         }
-      };
+      } catch (error) {
+        console.error('🔐 AuthProvider: Error getting Supabase session:', error);
+      } finally {
+        console.log('🔐 AuthProvider: Setting loading to false after auth check');
+        setIsLoading(false);
+      }
+    };
 
-      initializeAuth();
+    initializeAuth();
 
-      // Set up auth listener
-      const { data: { subscription } } = supabase!.auth.onAuthStateChange(
-        async (event, session) => {
-          console.log('Auth state changed:', event, session?.user?.id);
-          
-          if (session?.user) {
-            const userProfile = await fetchUserProfile(session.user);
-            setUser(userProfile);
-            setIsAuthenticated(!!userProfile);
-          } else {
-            setUser(null);
-            setIsAuthenticated(false);
-          }
+    // Set up auth listener
+    const { data: { subscription } } = supabase!.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('🔐 AuthProvider: Auth state changed:', event, session?.user?.id);
+        
+        if (session?.user) {
+          const userProfile = await fetchUserProfile(session.user);
+          setUser(userProfile);
+          setIsAuthenticated(!!userProfile);
+        } else {
+          setUser(null);
+          setIsAuthenticated(false);
         }
-      );
+      }
+    );
 
-      return () => {
-        clearTimeout(timer);
-        subscription.unsubscribe();
-      };
-    }
-
-    return () => clearTimeout(timer);
+    return () => {
+      console.log('🔐 AuthProvider: Cleaning up...');
+      clearTimeout(timer);
+      subscription.unsubscribe();
+    };
   }, []);
+
+  console.log("🔐 AuthProvider: Current state:", { user: !!user, isAuthenticated, isLoading });
 
   const login = async (email: string, password: string) => {
     if (!isSupabaseConfigured()) {

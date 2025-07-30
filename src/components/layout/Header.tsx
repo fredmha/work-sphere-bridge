@@ -14,7 +14,34 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Header = () => {
-  const { user, isAuthenticated, isLoading, logout } = useAuth();
+  console.log("🔝 Header component: Starting render...");
+  
+  const [authError, setAuthError] = useState<string | null>(null);
+  
+  // Try to get auth context with error handling
+  let authContext = null;
+  try {
+    authContext = useAuth();
+    console.log("🔝 Header component: Auth context obtained successfully");
+  } catch (error) {
+    console.error("🔝 Header component: Error getting auth context:", error);
+    setAuthError(error instanceof Error ? error.message : "Unknown auth error");
+  }
+
+  const { user, isAuthenticated, isLoading, logout } = authContext || { 
+    user: null, 
+    isAuthenticated: false, 
+    isLoading: false, 
+    logout: async () => {} 
+  };
+
+  console.log("🔝 Header component: Auth state:", { 
+    user: !!user, 
+    isAuthenticated, 
+    isLoading,
+    authError 
+  });
+
   const [authModal, setAuthModal] = useState<{ isOpen: boolean; defaultTab: 'login' | 'signup' } | null>(null);
 
   const openAuthModal = (defaultTab: 'login' | 'signup') => {
@@ -31,6 +58,7 @@ const Header = () => {
 
   // Show loading spinner while auth is initializing
   if (isLoading) {
+    console.log("🔝 Header component: Rendering loading state");
     return (
       <header className="bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -45,6 +73,33 @@ const Header = () => {
       </header>
     );
   }
+
+  // Show error state if auth failed
+  if (authError) {
+    console.log("🔝 Header component: Rendering error state");
+    return (
+      <header className="bg-primary text-primary-foreground">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <Link to="/" className="text-2xl font-bold">
+            B🔗rn
+          </Link>
+          <div className="flex items-center space-x-3">
+            <span className="text-sm text-yellow-200">Auth Error</span>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-primary-foreground hover:bg-primary-foreground/10"
+              onClick={() => window.location.reload()}
+            >
+              Retry
+            </Button>
+          </div>
+        </div>
+      </header>
+    );
+  }
+
+  console.log("🔝 Header component: Rendering main header");
 
   return (
     <>
