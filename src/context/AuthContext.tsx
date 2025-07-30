@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { User as SupabaseUser, Session } from '@supabase/supabase-js';
 import type { Database } from '@/types/supabase';
+import { buildTransform } from 'framer-motion';
 
 type Tables = Database['public']['Tables'];
 type UserRow = Tables['users']['Row'];
@@ -299,19 +300,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(userProfile);
       setIsAuthenticated(true);
   
-      // ✅ Redirect logic
-      if (userProfile.role === 'contractor') {
-        if (!userProfile.completedSignUp) {
-          window.location.href = '/contractor-onboarding';
-        } else {
-          window.location.href = '/contractor-dashboard';
-        }
-      } else if (userProfile.role === 'business') {
-        window.location.href = '/dashboard'; // or another route for business users
-      } else {
-        window.location.href = '/'; // fallback
-      }
-  
+      // Navigation will be handled by AuthRedirect component
       return { error: null };
     } catch (error) {
       console.error('Login error:', error);
@@ -419,7 +408,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await supabase!.auth.signOut();
       clearAuthData();
       
-      // Navigate to home page instead of reloading
+      // Navigate to home page using window.location since we're outside Router context
       window.location.href = '/';
     } catch (error) {
       console.error('Logout error:', error);

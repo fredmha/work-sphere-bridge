@@ -5,6 +5,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { useEffect } from "react";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { AuthRedirect } from "@/components/auth/AuthRedirect";
+
 import Index from "./pages/Index";
 import FindProjects from "./pages/FindProjects";
 import ProjectDetail from "./pages/ProjectDetail";
@@ -16,11 +19,11 @@ import ProfileSettings from "./pages/ProfileSettings";
 import NotFound from "./pages/NotFound";
 import Applications from "./pages/applications";
 import ProjectWizard from "./pages/ProjectWizard";
+import ContractorOnboardingPage from "./pages/ContractorOnboarding";
 
 const queryClient = new QueryClient();
 
 export default function App() {
-  // Clear any cached auth data on app startup
   useEffect(() => {
     const clearCachedAuth = () => {
       const keys = Object.keys(localStorage);
@@ -29,17 +32,17 @@ export default function App() {
           localStorage.removeItem(key);
         }
       });
-      
+
       const sessionKeys = Object.keys(sessionStorage);
       sessionKeys.forEach(key => {
         if (key.includes('supabase') || key.includes('auth') || key.includes('sb-')) {
           sessionStorage.removeItem(key);
         }
       });
-      
+
       console.log('App startup: Cached auth data cleared');
     };
-    
+
     clearCachedAuth();
   }, []);
 
@@ -50,12 +53,28 @@ export default function App() {
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <AuthRedirect />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/find-projects" element={<FindProjects />} />
               <Route path="/projects/:id" element={<ProjectDetail />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/contractor-dashboard" element={<ContractorDashboard />} />
+              <Route 
+                path="/contractor-dashboard" 
+                element={
+                  <ProtectedRoute allowedRoles={['contractor']} requireCompletedSignUp={true}>
+                    <ContractorDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/contractor-onboarding" 
+                element={
+                  <ProtectedRoute allowedRoles={['contractor']}>
+                    <ContractorOnboardingPage />
+                  </ProtectedRoute>
+                } 
+              />
               <Route path="/applicationmanagement" element={<ApplicationManagement />} />
               <Route path="/applications" element={<Applications />} />
               <Route path="/talent" element={<TalentDirectory />} />
