@@ -263,36 +263,58 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!isSupabaseConfigured()) {
       return { error: new Error('Supabase not configured. Please set up your environment variables.') };
     }
-
+  
     try {
-      // Clear any existing auth data before attempting login
       clearAuthData();
-      
-      // Add a small delay to ensure cache is cleared
       await new Promise(resolve => setTimeout(resolve, 100));
-      
+  
       const { data, error } = await supabase!.auth.signInWithPassword({
         email,
         password,
       });
-
+  
       if (error) {
         console.error('Login error:', error);
-        // Clear any partial auth data on error
         clearAuthData();
         return { error };
       }
-
-      if (data.user) {
-        const userProfile = await fetchUserProfile(data.user);
-        setUser(userProfile);
-        setIsAuthenticated(!!userProfile);
+  
+      const loggedInUser = data.user;
+  
+      if (!loggedInUser) {
+        console.error('No user returned from Supabase');
+        clearAuthData();
+        return { error: new Error('No user returned') };
       }
-
+  
+      // ✅ Fetch full user profile
+      const userProfile = await fetchUserProfile(loggedInUser);
+  
+      if (!userProfile) {
+        console.error('Failed to fetch user profile');
+        clearAuthData();
+        return { error: new Error('User profile fetch failed') };
+      }
+  
+      setUser(userProfile);
+      setIsAuthenticated(true);
+  
+      // ✅ Redirect logic
+      if (userProfile.role === 'contractor') {
+        if (!userProfile.completedSignUp) {
+          window.location.href = '/contractor-onboarding';
+        } else {
+          window.location.href = '/contractor-dashboard';
+        }
+      } else if (userProfile.role === 'business') {
+        window.location.href = '/dashboard'; // or another route for business users
+      } else {
+        window.location.href = '/'; // fallback
+      }
+  
       return { error: null };
     } catch (error) {
       console.error('Login error:', error);
-      // Clear any partial auth data on error
       clearAuthData();
       return { error };
     }
