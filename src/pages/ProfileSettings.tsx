@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from "@/components/layout/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { supabase } from '@/lib/supabaseClient';
+import { User } from '@/types';
 import { useAuth } from "@/context/AuthContext";
 import { 
   Edit, 
@@ -26,13 +28,14 @@ const ProfileSettings = () => {
   const { user, updateProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    name: user?.name || '',
+    name: user?.fullName || '',
     email: user?.email || '',
-    university: user?.university || '',
-    degree: user?.degree || '',
-    year: user?.year || '',
-    wam: user?.wam || '',
-    summary: user?.summary || '',
+    //company: user?.company || '',
+   // university: user?.university || '',
+   // degree: user?.degree || '',
+   // year: user?.year || '',
+    //wam: user?.wam || '',
+    //summary: user?.summary || '',
     skills: user?.skills?.join(', ') || '',
     interests: user?.interests?.join(', ') || ''
   });
@@ -46,28 +49,25 @@ const ProfileSettings = () => {
     setIsEditing(false);
   };
 
-  const pastProjects = [
-    {
-      id: "1",
-      title: "React Dashboard Development",
-      company: "TechCorp",
-      role: "Frontend Developer",
-      duration: "3 months",
-      rating: 4.8,
-      feedback: "Excellent work on UI components and responsive design. Very professional and delivered ahead of schedule."
-    },
-    {
-      id: "2", 
-      title: "API Integration Project",
-      company: "StartupXYZ",
-      role: "Full Stack Developer",
-      duration: "2 months",
-      rating: 4.9,
-      feedback: "Outstanding problem-solving skills and clean code. Great communication throughout the project."
-    }
-  ];
+  const [pastProjects, setPastProjects] = useState<any[]>([]);          
+  useEffect(() => {
+    const fetchProjects = async () => {
+      if (!user || !supabase) return;
 
-  if (user?.userType === 'business') {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("owner_id", user.id);
+
+      if (!error && data) {
+        setPastProjects(data);
+      }
+    };
+
+    fetchProjects();
+  }, [user]);
+  
+  if (user?.role === 'business') {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -111,8 +111,29 @@ const ProfileSettings = () => {
                         <Label htmlFor="company-name">Company Name</Label>
                         <Input
                           id="company-name"
-                          value={user?.company || formData.name}
-                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          value={formData.name || ""}
+                          onChange={async (e) => {
+                            const companyName = e.target.value;
+                            setFormData({ ...formData, name: companyName });
+
+                            // Search for business in business db where linkeduser matches logged in user and name matches input
+                            if (user?.id) {
+                              const { data, error } = await supabase
+                                .from('business')
+                                .select('name')
+                                .eq('linkeduser', user.id)
+                                .ilike('name', `%${companyName}%`)
+                                .single();
+
+                              if (!error && data && data.name) {
+                                // Set formData.company to the business name from db
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  company: data.name,
+                                }));
+                              }
+                            }
+                          }}
                           disabled={!isEditing}
                         />
                       </div>
@@ -389,7 +410,9 @@ const ProfileSettings = () => {
                   </Card>
                 </div>
 
-                {pastProjects.map((project) => (
+                {pastProjects.length === 0 ? (
+                  <p className="text-muted-foreground">No past projects</p>
+                ) : pastProjects.map((project) => (
                   <Card key={project.id}>
                     <CardHeader>
                       <div className="flex items-start justify-between">
