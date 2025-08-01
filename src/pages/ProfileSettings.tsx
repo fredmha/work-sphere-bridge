@@ -123,68 +123,73 @@ const ProfileSettings: React.FC = () => {
               </TabsList>
 
               <TabsContent value="profile">
-                <Card>
-                  <CardHeader className="flex items-center justify-between">
-                    <div>
-                      <CardTitle>Company Information</CardTitle>
-                      <CardDescription>Update your company details</CardDescription>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setIsEditing(prev => !prev)}
-                      disabled={loading}
-                    >
-                      <Edit className="h-4 w-4 mr-2" />
-                      {isEditing ? 'Cancel' : 'Edit'}
-                    </Button>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="company-name">Company Name</Label>
-                        <Input
-                          id="company-name"
-                          value={formData.company}
-                          onChange={e => setFormData(f => ({ ...f, company: e.target.value }))}
-                          disabled={!isEditing || loading}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="contact-email">Contact Email</Label>
-                        <Input
-                          id="contact-email"
-                          type="email"
-                          value={formData.email}
-                          onChange={e => setFormData(f => ({ ...f, email: e.target.value }))}
-                          disabled={!isEditing || loading}
-                        />
-                      </div>
-                    </div>
-                    {isEditing && (
-                      <div className="flex gap-2">
-                        <Button
-                          type="button"
-                          onClick={handleSave}
-                          disabled={loading}
-                        >
-                          <Save className="h-4 w-4 mr-2" />
-                          {loading ? 'Saving...' : 'Save Changes'}
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => setIsEditing(false)}
-                          disabled={loading}
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
+  <Card>
+    <CardHeader className="relative pb-0">
+      <div>
+        <CardTitle>Company Information</CardTitle>
+        <CardDescription>Update your company details</CardDescription>
+      </div>
+      <div className="absolute top-4 right-4">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setIsEditing(prev => !prev)}
+          disabled={loading}
+        >
+          <Edit className="h-4 w-4 mr-2" />
+          {isEditing ? 'Cancel' : 'Edit'}
+        </Button>
+      </div>
+    </CardHeader>
+
+    <CardContent className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <Label htmlFor="company-name">Company Name</Label>
+          <Input
+            id="company-name"
+            value={formData.company}
+            onChange={e => setFormData(f => ({ ...f, company: e.target.value }))}
+            disabled={!isEditing || loading}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="contact-email">Contact Email</Label>
+          <Input
+            id="contact-email"
+            type="email"
+            value={formData.email}
+            onChange={e => setFormData(f => ({ ...f, email: e.target.value }))}
+            disabled={!isEditing || loading}
+          />
+        </div>
+      </div>
+
+      {isEditing && (
+        <div className="flex flex-col items-end gap-2">
+          <Button
+            type="button"
+            onClick={handleSave}
+            disabled={loading}
+          >
+            <Save className="h-4 w-4 mr-2" />
+            {loading ? 'Saving...' : 'Save Changes'}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setIsEditing(false)}
+            disabled={loading}
+          >
+            Cancel
+          </Button>
+        </div>
+      )}
+    </CardContent>
+  </Card>
+</TabsContent>
+
 
               {/* Remaining tabs unchanged */}
             </Tabs>
