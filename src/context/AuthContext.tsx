@@ -40,6 +40,8 @@ interface AuthContextType {
   signup: (email: string, password: string, userData: Partial<User>) => Promise<{ error: any }>;
   logout: () => Promise<void>;
   updateProfile: (data: Partial<User>) => Promise<{ error: any }>;
+  clearAuthData: () => void;
+  forceClearCache: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -60,6 +62,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Check if Supabase is properly configured
   const isSupabaseConfigured = () => {
     return supabase !== null;
+  };
+
+  // Clear all auth-related data
+  const clearAuthData = () => {
+    setUser(null);
+    setIsAuthenticated(false);
+    
+    // Clear all Supabase-related storage
+    const supabaseKeys = [
+      'supabase.auth.token',
+      'supabase.auth.expires_at',
+      'supabase.auth.refresh_token',
+      'supabase.auth.expires_in',
+      'supabase.auth.access_token',
+      'supabase.auth.user',
+      'supabase.auth.session',
+      'sb-cwngvhypysvajbjtbdhx-auth-token', // Your specific project key
+      'sb-cwngvhypysvajbjtbdhx-auth-refresh-token',
+    ];
+    
+    // Clear specific Supabase keys
+    supabaseKeys.forEach(key => {
+      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
+    });
+    
+    // Clear any other auth-related storage
+    Object.keys(localStorage).forEach(key => {
+      if (key.includes('supabase') || key.includes('auth') || key.includes('sb-')) {
+        localStorage.removeItem(key);
+      }
+    });
+    Object.keys(sessionStorage).forEach(key => {
+      if (key.includes('supabase') || key.includes('auth') || key.includes('sb-')) {
+        sessionStorage.removeItem(key);
+      }
+    });
+    
+    // Clear cookies that might contain auth data
+    document.cookie.split(";").forEach(function(c) { 
+      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+    });
+    
+    console.log('Auth data cleared');
   };
 
   // Fetch user profile data from database
@@ -144,6 +190,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('AuthContext: Initializing...');
     console.log('AuthContext: Supabase configured:', isSupabaseConfigured());
     
+    // Clear any cached auth data on app startup
+    clearAuthData();
+    
     // Always set loading to false after a short delay
     const timer = setTimeout(() => {
       console.log('AuthContext: Setting loading to false');
@@ -154,15 +203,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (isSupabaseConfigured()) {
       const initializeAuth = async () => {
         try {
-          const { data: { session } } = await supabase!.auth.getSession();
+          const { data: { session }, error } = await supabase!.auth.getSession();
+          
+          if (error) {
+            console.error('Session error:', error);
+            clearAuthData();
+            return;
+          }
           
           if (session?.user) {
             const userProfile = await fetchUserProfile(session.user);
-            setUser(userProfile);
-            setIsAuthenticated(!!userProfile);
+            if (userProfile) {
+              setUser(userProfile);
+              setIsAuthenticated(true);
+            } else {
+              // If we can't fetch user profile, clear auth data
+              clearAuthData();
+            }
+          } else {
+            clearAuthData();
           }
         } catch (error) {
           console.error('Error getting Supabase session:', error);
+          clearAuthData();
         }
       };
 
@@ -175,11 +238,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           
           if (session?.user) {
             const userProfile = await fetchUserProfile(session.user);
-            setUser(userProfile);
-            setIsAuthenticated(!!userProfile);
+            if (userProfile) {
+              setUser(userProfile);
+              setIsAuthenticated(true);
+            } else {
+              clearAuthData();
+            }
           } else {
-            setUser(null);
-            setIsAuthenticated(false);
+            clearAuthData();
           }
         }
       );
@@ -199,12 +265,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
+      // Clear any existing auth data before attempting login
+      clearAuthData();
+      
+      // Add a small delay to ensure cache is cleared
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       const { data, error } = await supabase!.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
+        console.error('Login error:', error);
+        // Clear any partial auth data on error
+        clearAuthData();
         return { error };
       }
 
@@ -217,6 +292,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { error: null };
     } catch (error) {
       console.error('Login error:', error);
+      // Clear any partial auth data on error
+      clearAuthData();
       return { error };
     }
   };
@@ -227,12 +304,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
+      // Clear any existing auth data before attempting signup
+      clearAuthData();
+      
       const { data, error } = await supabase!.auth.signUp({
         email,
         password,
       });
 
       if (error) {
+        console.error('Signup error:', error);
+        clearAuthData();
         return { error };
       }
 
@@ -307,17 +389,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     if (!isSupabaseConfigured()) {
-      setUser(null);
-      setIsAuthenticated(false);
+      clearAuthData();
       return;
     }
 
     try {
       await supabase!.auth.signOut();
-      setUser(null);
-      setIsAuthenticated(false);
+      clearAuthData();
+      
+      // Navigate to home page instead of reloading
+      window.location.href = '/';
     } catch (error) {
       console.error('Logout error:', error);
+      // Even if signOut fails, clear local data
+      clearAuthData();
+      window.location.href = '/';
     }
   };
 
@@ -390,6 +476,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const forceClearCache = () => {
+    clearAuthData();
+    // Force reload the page to clear any remaining cache
+    window.location.reload();
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -399,6 +491,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       signup,
       logout,
       updateProfile,
+      clearAuthData,
+      forceClearCache,
     }}>
       {children}
     </AuthContext.Provider>

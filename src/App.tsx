@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
+import { useEffect } from "react";
 import Index from "./pages/Index";
 import FindProjects from "./pages/FindProjects";
 import ProjectDetail from "./pages/ProjectDetail";
@@ -19,6 +20,29 @@ import ProjectWizard from "./pages/ProjectWizard";
 const queryClient = new QueryClient();
 
 export default function App() {
+  // Clear any cached auth data on app startup
+  useEffect(() => {
+    const clearCachedAuth = () => {
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.includes('supabase') || key.includes('auth') || key.includes('sb-')) {
+          localStorage.removeItem(key);
+        }
+      });
+      
+      const sessionKeys = Object.keys(sessionStorage);
+      sessionKeys.forEach(key => {
+        if (key.includes('supabase') || key.includes('auth') || key.includes('sb-')) {
+          sessionStorage.removeItem(key);
+        }
+      });
+      
+      console.log('App startup: Cached auth data cleared');
+    };
+    
+    clearCachedAuth();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
@@ -7,15 +7,70 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Calendar, Users, Clock, DollarSign, Plus } from "lucide-react";
-import type { Contractor, ContractorRole, ContractorTask, Project } from '@/types';
+import type { Contractor, ContractorRole, ContractorTask, projects } from '@/types';
 import { CONTRACTOR_TYPE_OPTIONS, ContractorType } from '@/constants/contractorType';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/lib/supabaseClient';
+import { useAuth } from '@/context/AuthContext';
 
 const columns = ["Pending", "Submitted", "Confirmed"];
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  // Dummy data matching types.ts structure
+  const { user } = useAuth();
+  const [projects, setProjects] = useState<any[]>([]);
+  const [contractorRoles, setContractorRoles] = useState<any[]>([]);
+  const [contractorTasks, setContractorTasks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch projects and related data from Supabase
+  useEffect(() => {
+    const fetchProjects = async () => {
+      if (!user) return;
+
+      try {
+        setLoading(true);
+        
+        // Fetch projects owned by the current user
+        const { data: projectsData, error: projectsError } = await supabase
+          .from('projects')
+          .select('*')
+          .eq('owner_id', user.id);
+
+        if (projectsError) {
+          console.error('Error fetching projects:', projectsError);
+          return;
+        }
+
+        setProjects(projectsData || []);
+
+        // Fetch contractor roles for these projects
+        if (projectsData && projectsData.length > 0) {
+          const { data: rolesData, error: rolesError } = await supabase
+            .from('ContractorRole')
+            .select('*')
+            .eq('owner_id', user.id);
+
+          if (rolesError) {
+            console.error('Error fetching contractor roles:', rolesError);
+          } else {
+            setContractorRoles(rolesData || []);
+          }
+
+          // For now, we'll use empty tasks since ContractorTask table doesn't exist yet
+          setContractorTasks([]);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, [user]);
+
+  // Dummy data for contractors (fallback)
   const contractors: Contractor[] = [
     {
       id: "contractor-1",
@@ -28,128 +83,10 @@ const Dashboard = () => {
       wocScore: 85,
       modifiedDate: "2024-01-15T10:00:00Z",
       createdDate: "2024-01-01T10:00:00Z"
-    },
-    {
-      id: "contractor-2",
-      fullName: "Big nozzabigga",
-      email: "big@example.com",
-      skills: ["Marketing", "SEO", "Content"],
-      interests: ["Digital Marketing & Growth", "Sales & Business Development"],
-      experience: "3 years",
-      type: "task",
-      wocScore: 92,
-      modifiedDate: "2024-01-15T10:00:00Z",
-      createdDate: "2024-01-01T10:00:00Z"
-    },
-    {
-      id: "contractor-3",
-      fullName: "John Doe",
-      email: "john@example.com",
-      skills: ["Mobile Development", "React Native"],
-      interests: ["Start-ups & Innovation", "Product Management"],
-      experience: "4 years",
-      type: "timesheet",
-      wocScore: 78,
-      modifiedDate: "2024-01-15T10:00:00Z",
-      createdDate: "2024-01-01T10:00:00Z"
-    },
-    {
-      id: "contractor-4",
-      fullName: "Jane Smith",
-      email: "jane@example.com",
-      skills: ["UI/UX", "Figma", "Design"],
-      interests: ["UX / UI Design", "Consulting & Strategy"],
-      experience: "6 years",
-      type: "timesheet",
-      wocScore: 88,
-      modifiedDate: "2024-01-15T10:00:00Z",
-      createdDate: "2024-01-01T10:00:00Z"
     }
   ];
 
-  const contractorRoles: ContractorRole[] = [
-    {
-      id: "role-1",
-      role: "Software Engineer",
-      description: "Building a software engine",
-      category: ["Development"],
-      contractor: "contractor-1",
-      originalProject: "project-1",
-      score: 85,
-      modifiedDate: "2024-01-15T10:00:00Z",
-      createdDate: "2024-01-01T10:00:00Z"
-    },
-    {
-      id: "role-2",
-      role: "Marketing Specialist",
-      description: "User engagement marketing",
-      category: ["Marketing"],
-      contractor: "contractor-2",
-      originalProject: "project-1",
-      score: 92,
-      modifiedDate: "2024-01-15T10:00:00Z",
-      createdDate: "2024-01-01T10:00:00Z"
-    },
-    {
-      id: "role-3",
-      role: "Mobile Developer",
-      description: "Mobile app development",
-      category: ["Development"],
-      contractor: "contractor-3",
-      originalProject: "project-2",
-      score: 78,
-      modifiedDate: "2024-01-15T10:00:00Z",
-      createdDate: "2024-01-01T10:00:00Z"
-    },
-    {
-      id: "role-4",
-      role: "UI/UX Designer",
-      description: "Design and user experience",
-      category: ["Design"],
-      contractor: "contractor-4",
-      originalProject: "project-2",
-      score: 88,
-      modifiedDate: "2024-01-15T10:00:00Z",
-      createdDate: "2024-01-01T10:00:00Z"
-    }
-  ];
-
-  const contractorTasks: ContractorTask[] = [
-    {
-      id: "task-1",
-      name: "Building a software engine",
-      description: "Develop core software engine components",
-      role: "role-1",
-      status: "Pending",
-      priority: "High",
-      price: 500,
-      modifiedDate: "2024-01-15T10:00:00Z",
-      createdDate: "2024-01-01T10:00:00Z"
-    },
-    {
-      id: "task-2",
-      name: "Building a software engine",
-      description: "Implement user interface components",
-      role: "role-1",
-      status: "Submitted",
-      priority: "Medium",
-      price: 300,
-      modifiedDate: "2024-01-15T10:00:00Z",
-      createdDate: "2024-01-01T10:00:00Z"
-    },
-    {
-      id: "task-3",
-      name: "Building a software engine",
-      description: "Marketing campaign implementation",
-      role: "role-2",
-      status: "Confirmed",
-      priority: "High",
-      price: 400,
-      modifiedDate: "2024-01-15T10:00:00Z",
-      createdDate: "2024-01-01T10:00:00Z"
-    }
-  ];
-
+  // Dummy data for business (fallback)
   const business = [
     {
       id: "business-1",
@@ -161,59 +98,28 @@ const Dashboard = () => {
     }
   ];
 
-  const projects: Project[] = [
-    {
-      id: "project-1",
-      projectName: "Convose user engagement marketer",
-      projectDescription: "Marketing campaign for user engagement",
-      business: "business-1",
-      status: "Active",
-      contractorRoles: contractorRoles.filter(role => role.originalProject === "project-1"),
-      category: ["Marketing", "Development"],
-      weeklyHours: 20,
-      modifiedDate: "2024-01-15T10:00:00Z",
-      createdDate: "2024-01-01T10:00:00Z"
-    },
-    {
-      id: "project-2",
-      projectName: "Mobile App Development",
-      projectDescription: "Complete mobile application development",
-      status: "Active",
-      contractorRoles: contractorRoles.filter(role => role.originalProject === "project-2"),
-      category: ["Development", "Design"],
-      weeklyHours: 40,
-      modifiedDate: "2024-01-15T10:00:00Z",
-      createdDate: "2024-01-01T10:00:00Z"
-    }
-  ];
-  
-  // Dummy business data related to 'business-1'
-
 
   // Helper: Get contractor name by role ID
-  const getContractorNameByRoleId = (roleId: string): string => {
+  const getContractorNameByRoleId = (roleId: number): string => {
     const role = contractorRoles.find(r => r.id === roleId);
     if (role) {
-      const contractor = contractors.find(c => c.id === role.contractor);
-      return contractor?.fullName || "Unknown";
+      return role.role || "Unknown";
     }
     return "Unknown";
   };
 
   // Helper: Get tasks by project
-  const getTasksByProject = (projectId: string): ContractorTask[] => {
-    const projectRoles = contractorRoles.filter(role => role.originalProject === projectId);
-    const roleIds = projectRoles.map(role => role.id);
-    return contractorTasks.filter(task => roleIds.includes(task.role || ""));
+  const getTasksByProject = (projectId: number): any[] => {
+    // For now, return empty array since ContractorTask table doesn't exist
+    return [];
   };
 
   // Helper: Get timesheets by project (simulated)
-  const getTimesheetsByProject = (projectId: string) => {
-    const projectRoles = contractorRoles.filter(role => role.originalProject === projectId);
+  const getTimesheetsByProject = (projectId: number) => {
+    const projectRoles = contractorRoles.filter(role => role.owner_id === user?.id && role.project_id === projectId);
     return projectRoles.map(role => {
-      const contractor = contractors.find(c => c.id === role.contractor);
       return {
-        contractor: contractor?.fullName || "Unknown",
+        contractor: "Contractor", // We'll need to join with contractors table later
         role: role.role || "Unknown",
         hours: Math.floor(Math.random() * 20) + 30, // Random hours for demo
         status: Math.random() > 0.5 ? "Approved" : "Pending"
@@ -221,7 +127,12 @@ const Dashboard = () => {
     });
   };
 
-
+  const handleCreateProject = () => {
+    // Clear any existing project wizard state
+    localStorage.removeItem('projectWizardState');
+    sessionStorage.removeItem('projectWizardState');
+    navigate('/ProjectWizard');
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -231,7 +142,7 @@ const Dashboard = () => {
         {/* Dashboard Header */}
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">Project Dashboard</h1>
-          <Button className="gap-2" onClick={() => navigate('/ProjectWizard')}>
+          <Button className="gap-2" onClick={handleCreateProject}>
             <Plus className="h-4 w-4" />
             Create a Project
           </Button>
@@ -244,7 +155,7 @@ const Dashboard = () => {
               <div className="flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-primary" />
                 <div>
-                  <p className="text-2xl font-bold">12</p>
+                  <p className="text-2xl font-bold">{projects.length}</p>
                   <p className="text-sm text-muted-foreground">Active Projects</p>
                 </div>
               </div>
@@ -256,8 +167,8 @@ const Dashboard = () => {
               <div className="flex items-center gap-2">
                 <Users className="h-5 w-5 text-primary" />
                 <div>
-                  <p className="text-2xl font-bold">48</p>
-                  <p className="text-sm text-muted-foreground">Contractors</p>
+                  <p className="text-2xl font-bold">{contractorRoles.length}</p>
+                  <p className="text-sm text-muted-foreground">Contractor Roles</p>
                 </div>
               </div>
             </CardContent>
@@ -268,8 +179,8 @@ const Dashboard = () => {
               <div className="flex items-center gap-2">
                 <Clock className="h-5 w-5 text-primary" />
                 <div>
-                  <p className="text-2xl font-bold">156</p>
-                  <p className="text-sm text-muted-foreground">Hours This Week</p>
+                  <p className="text-2xl font-bold">{contractorTasks.length}</p>
+                  <p className="text-sm text-muted-foreground">Total Tasks</p>
                 </div>
               </div>
             </CardContent>
@@ -280,7 +191,7 @@ const Dashboard = () => {
               <div className="flex items-center gap-2">
                 <DollarSign className="h-5 w-5 text-primary" />
                 <div>
-                  <p className="text-2xl font-bold">$24.5k</p>
+                  <p className="text-2xl font-bold">${contractorTasks.reduce((sum, task) => sum + (task.price || 0), 0).toLocaleString()}</p>
                   <p className="text-sm text-muted-foreground">Total Budget</p>
                 </div>
               </div>
@@ -290,11 +201,29 @@ const Dashboard = () => {
 
         {/* Projects List */}
         <div className="space-y-6">
-          {projects.map((project) => {
+          {loading ? (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                <p className="text-muted-foreground">Loading your projects...</p>
+              </CardContent>
+            </Card>
+          ) : projects.length === 0 ? (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <p className="text-muted-foreground mb-4">No projects found. Create your first project to get started!</p>
+                <Button onClick={handleCreateProject}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Your First Project
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            projects.map((project) => {
             const projectTasks = getTasksByProject(project.id);
             const projectTimesheets = getTimesheetsByProject(project.id);
-            const progress = Math.floor((projectTasks.filter(t => t.status === "Confirmed").length / projectTasks.length) * 100) || 0;
-            const projectType = projectTasks.length > 0 ? "Pay per Task" : "Pay per Hour";
+            const progress = projectTasks.length > 0 ? Math.floor((projectTasks.filter(t => t.status === "Confirmed").length / projectTasks.length) * 100) : 0;
+            const projectType: string = "Pay per Hour"; // Default to hourly since tasks aren't implemented yet
             
             return (
               <Card key={project.id}>
@@ -307,8 +236,8 @@ const Dashboard = () => {
                           {projectType}
                         </Badge>
                       </div>
-                      <CardTitle>{project.projectName}</CardTitle>
-                      <CardDescription> {project.business}</CardDescription>
+                      <CardTitle>{project.project_name}</CardTitle>
+                      <CardDescription>{project.project_description}</CardDescription>
                     </div>
                     <div className="text-right">
                       <p className="text-sm text-muted-foreground">Progress</p>
@@ -340,55 +269,8 @@ const Dashboard = () => {
                     
                     {projectType === "Pay per Task" && (
                       <TabsContent value="tasks" className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div>
-                            <h4 className="font-semibold mb-3 text-center">Pending</h4>
-                            <div className="space-y-2">
-                              {projectTasks.filter(task => task.status === "Pending").map((task) => (
-                                <Card key={task.id} className="p-3">
-                                  <p className="font-medium text-sm">{task.name}</p>
-                                  <p className="text-xs text-muted-foreground">{getContractorNameByRoleId(task.role || "")}</p>
-                                  <div className="flex justify-center mt-2">
-                                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Confirm</Button>
-                                  </div>
-                                </Card>
-                              ))}
-                            </div>
-                          </div>
-                          
-                          <div>
-                            <h4 className="font-semibold mb-3 text-center">Submitted</h4>
-                            <div className="space-y-2">
-                              {projectTasks.filter(task => task.status === "Submitted").map((task) => (
-                                <Card key={task.id} className="p-3 bg-warning/10">
-                                  <p className="font-medium text-sm">{task.name}</p>
-                                  <p className="text-xs text-muted-foreground">{getContractorNameByRoleId(task.role || "")}</p>
-                                  <div className="flex justify-center mt-2">
-                                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Confirm</Button>
-                                  </div>
-                                </Card>
-                              ))}
-                            </div>
-                          </div>
-                          
-                          <div>
-                            <h4 className="font-semibold mb-3 text-center">Confirmed</h4>
-                            <div className="space-y-2">
-                              {projectTasks.filter(task => task.status === "Confirmed").map((task) => (
-                                <Card key={task.id} className="p-3 bg-success/10">
-                                  <p className="font-medium text-sm">{task.name}</p>
-                                  <p className="text-xs text-muted-foreground">{getContractorNameByRoleId(task.role || "")}</p>
-                                </Card>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex justify-center">
-                          <Button className="gap-2">
-                            <Plus className="h-4 w-4" />
-                            Add Task
-                          </Button>
+                        <div className="text-center text-muted-foreground py-8">
+                          Task management coming soon when ContractorTask table is implemented
                         </div>
                       </TabsContent>
                     )}
@@ -439,7 +321,8 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
             );
-          })}
+          })
+          )}
         </div>
       </div>
     </div>

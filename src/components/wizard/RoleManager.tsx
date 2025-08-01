@@ -36,6 +36,8 @@ export default function RoleManager({ roles, onUpdate, onNext, onBack }) {
     }
   };
 
+  
+
   const removeRole = (index) => {
     setCurrentRoles(currentRoles.filter((_, i) => i !== index));
   };
@@ -62,8 +64,10 @@ export default function RoleManager({ roles, onUpdate, onNext, onBack }) {
   };
 
   const handleNext = () => {
+    // First update the context with current roles
     onUpdate(currentRoles);
-    onNext();
+    // Then proceed to next step
+    onNext(currentRoles);
   };
 
   return (

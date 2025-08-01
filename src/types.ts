@@ -103,25 +103,21 @@ export interface Offer {
 
 // Contractor Task
 export interface ContractorTask {
-  id: string;
+  id: number;
   description?: string; //description of what needs to be done
-  deliverables?: string //what needs to be delivered
+  deliverables?: string; //what needs to be delivered
   feedback?: string;
-  files?: string[]; // List of file URLs
-  labels?: string[];
+  files?: string; // File URLs as string (can be JSON array)
+  labels?: string; // Labels as string (can be JSON array)
   name?: string;
-  ogContractorTask?: string; // Project ID
+  Project?: number; // Project ID
   owner?: string; // User ID
   priority?: string;
-  role?: string; // Contractor Role ID
+  role?: number; // Contractor Role ID
   price?: number; //price of milestone
   score?: number;
   status?: string;
-  visibility?: boolean;
-  creator?: string; // User ID
-  modifiedDate: string;
-  createdDate: string;
-  slug?: string;
+  created_at: string;
 }
 
 // Contract

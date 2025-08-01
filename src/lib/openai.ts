@@ -87,7 +87,7 @@ Parse this into a JSON object with the following structure:
           "name": "string - task name",
           "description": "string - task description",
           "deliverables": "string - expected deliverables",
-          "price": number - task price
+          "price": number - task price, this must be included every single time
         }
       ]
     }

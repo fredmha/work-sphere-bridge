@@ -8,7 +8,7 @@ import { Clock, Target, CheckCircle, FileText, Users, Calendar } from 'lucide-re
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProjectWizard } from './ProjectContext';
 
-export default function ProjectSummary({ projectData, onSubmit, onBack }) {
+export default function ProjectSummary({ projectData, onSubmit, onBack, isCompleting = false }) {
   const { state, actions } = useProjectWizard();
   const milestoneRoles = projectData.contractorRoles?.filter(role => role.type === 'milestone') || [];
   const timesheetRoles = projectData.contractorRoles?.filter(role => role.type === 'timesheet') || [];
@@ -122,9 +122,9 @@ export default function ProjectSummary({ projectData, onSubmit, onBack }) {
                     </CardTitle>
                     <p className="text-gray-600 mt-1">{role.description}</p>
                   </div>
-                  <Button variant="outline" className="text-emerald-600 border-emerald-300 hover:bg-emerald-50">
+                  {/* <Button variant="outline" className="text-emerald-600 border-emerald-300 hover:bg-emerald-50">
                     Apply Now
-                  </Button>
+                  </Button> */}
                 </CardHeader>
                 <CardContent className="px-6 pb-6">
                   <h4 className="font-semibold text-gray-800 mb-3">Tasks & Milestones</h4>
@@ -161,9 +161,9 @@ export default function ProjectSummary({ projectData, onSubmit, onBack }) {
                     </CardTitle>
                     <p className="text-gray-600 mt-1">{role.description}</p>
                   </div>
-                  <Button variant="outline" className="text-blue-600 border-blue-300 hover:bg-blue-50">
+                  {/* <Button variant="outline" className="text-blue-600 border-blue-300 hover:bg-blue-50">
                     Apply Now
-                  </Button>
+                  </Button> */}
                 </CardHeader>
                 <CardContent className="px-6 pb-6">
                   <Badge className="text-base bg-blue-100 text-blue-800 hover:bg-blue-200">
@@ -181,9 +181,23 @@ export default function ProjectSummary({ projectData, onSubmit, onBack }) {
           <Button variant="ghost" onClick={onBack}>
             Go Back
           </Button>
-          <Button onClick={handleSubmit} size="lg" className="bg-emerald-600 hover:bg-emerald-700 font-semibold shadow-lg shadow-emerald-500/20">
-            <CheckCircle className="w-5 h-5 mr-2" />
-            Launch Project
+          <Button 
+            onClick={handleSubmit} 
+            disabled={isCompleting}
+            size="lg" 
+            className="bg-emerald-600 hover:bg-emerald-700 font-semibold shadow-lg shadow-emerald-500/20"
+          >
+            {isCompleting ? (
+              <>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                Saving to Database...
+              </>
+            ) : (
+              <>
+                <CheckCircle className="w-5 h-5 mr-2" />
+                Launch Project
+              </>
+            )}
           </Button>
         </div>
       </div>
