@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Header from "@/components/layout/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,112 +7,98 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabaseClient";
 import {
   Edit,
   Save,
+  Award,
   Settings,
   Bell,
   CreditCard,
   Shield,
-  Award,
-  Star
+  Star,
+  Upload
 } from "lucide-react";
 
-type FormData = {
-  company: string;
-  email: string;
-  name: string;
-  university: string;
-  degree: string;
-  year: string;
-  wam: string;
-  summary: string;
-  skills: string;
-  interests: string;
-};
-
-const ProfileSettings: React.FC = () => {
+const ProfileSettings = () => {
   const { user, updateProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const [formData, setFormData] = useState<FormData>({
-    company: '',
+  const [formData, setFormData] = useState({
+    name: user?.fullName || '',
     email: user?.email || '',
-    name: user?.['full name'] || user?.['fullName'] || '',
-    university: user?.university || '',
-    degree: user?.degree || '',
-    year: user?.year || '',
-    wam: user?.wam || '',
-    summary: user?.summary || '',
-    skills: user?.skills?.join(', ') || '',
-    interests: user?.interests?.join(', ') || ''
+    description: user?.contractorProfile?.description || user?.description || '',
+    skills: user?.contractorProfile?.skills?.join(', ') || '',
+    interests: user?.contractorProfile?.interests?.join(', ') || '',
+    resume: user?.contractorProfile?.resume || ''
   });
 
-  // Load business name
-  useEffect(() => {
-    if (user?.role === 'business' && user.id) {
-      (async () => {
-        const { data, error } = await supabase
-          .from('business')
-          .select('name')
-          .eq('linkeduser', user.id)
-          .single();
-        if (!error && data?.name !== undefined) {
-          setFormData(f => ({ ...f, company: data.name || '' }));
-        }
-      })();
-    }
-  }, [user]);
-
-  // Save handler
   const handleSave = async () => {
-    setLoading(true);
-    try {
-      // Update email on user record
-      if (formData.email !== user?.email) {
-        await updateProfile({ email: formData.email });
-      }
-
-      if (user?.role === 'business' && user.id) {
-        const { error } = await supabase
-          .from('business')
-          .update({ name: formData.company })
-          .eq('linkeduser', user.id);
-        if (error) throw error;
-      } else {
-        // Contractor fields
-        await updateProfile({
-          fullName: formData.name,
-          university: formData.university,
-          degree: formData.degree,
-          year: formData.year,
-          wam: formData.wam,
-          summary: formData.summary,
-          skills: formData.skills.split(',').map(s => s.trim()),
-          interests: formData.interests.split(',').map(s => s.trim())
-        });
-      }
-
-      setIsEditing(false);
-    } catch (err) {
-      console.error('Update failed:', err);
-    } finally {
-      setLoading(false);
-    }
+    await updateProfile({
+      fullName: formData.name,
+      ...(user?.role === 'contractor'
+        ? {
+            description: formData.description,
+            contractorProfile: {
+              description: formData.description,
+              skills: formData.skills.split(',').map(s => s.trim()),
+              interests: formData.interests.split(',').map(s => s.trim()),
+              resume: formData.resume,
+            },
+          }
+        : {}),
+    });
+    setIsEditing(false);
   };
 
-  // Business view
+  const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user || !supabase) return;
+    const { data: uploadData, error } = await supabase.storage
+      .from('resumes')
+      .upload(`${user.id}/${file.name}`, file, { upsert: true });
+    if (error) {
+      console.error('Resume upload failed:', error);
+      return;
+    }
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from('resumes').getPublicUrl(uploadData.path);
+    setFormData({ ...formData, resume: publicUrl });
+  };
+
+  const pastProjects = [
+    {
+      id: "1",
+      title: "React Dashboard Development",
+      company: "TechCorp",
+      role: "Frontend Developer",
+      duration: "3 months",
+      rating: 4.8,
+      feedback: "Excellent work on UI components and responsive design. Very professional and delivered ahead of schedule.",
+    },
+    {
+      id: "2",
+      title: "API Integration Project",
+      company: "StartupXYZ",
+      role: "Full Stack Developer",
+      duration: "2 months",
+      rating: 4.9,
+      feedback: "Outstanding problem-solving skills and clean code. Great communication throughout the project.",
+    }
+  ];
+
   if (user?.role === 'business') {
     return (
       <div className="min-h-screen bg-background">
         <Header />
+
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold mb-2">Company Profile & Settings</h1>
-            <p className="text-muted-foreground mb-6">Manage your business account and preferences</p>
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold mb-2">Company Profile & Settings</h1>
+              <p className="text-muted-foreground">Manage your business account and preferences</p>
+            </div>
 
             <Tabs defaultValue="profile" className="space-y-6">
               <TabsList className="grid w-full grid-cols-4">
@@ -123,75 +109,109 @@ const ProfileSettings: React.FC = () => {
               </TabsList>
 
               <TabsContent value="profile">
-  <Card>
-    <CardHeader className="relative pb-0">
-      <div>
-        <CardTitle>Company Information</CardTitle>
-        <CardDescription>Update your company details</CardDescription>
-      </div>
-      <div className="absolute top-4 right-4">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => setIsEditing(prev => !prev)}
-          disabled={loading}
-        >
-          <Edit className="h-4 w-4 mr-2" />
-          {isEditing ? 'Cancel' : 'Edit'}
-        </Button>
-      </div>
-    </CardHeader>
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle>Company Information</CardTitle>
+                        <CardDescription>Update your company profile and contact details</CardDescription>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsEditing(!isEditing)}
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        {isEditing ? 'Cancel' : 'Edit'}
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="company-name">Company Name</Label>
+                        <Input
+                          id="company-name"
+                          value={user?.businessProfile?.name || formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          disabled={!isEditing}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="contact-email">Contact Email</Label>
+                        <Input
+                          id="contact-email"
+                          type="email"
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          disabled={!isEditing}
+                        />
+                      </div>
+                    </div>
 
-    <CardContent className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label htmlFor="company-name">Company Name</Label>
-          <Input
-            id="company-name"
-            value={formData.company}
-            onChange={e => setFormData(f => ({ ...f, company: e.target.value }))}
-            disabled={!isEditing || loading}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="contact-email">Contact Email</Label>
-          <Input
-            id="contact-email"
-            type="email"
-            value={formData.email}
-            onChange={e => setFormData(f => ({ ...f, email: e.target.value }))}
-            disabled={!isEditing || loading}
-          />
-        </div>
-      </div>
+                    {isEditing && (
+                      <div className="flex gap-2">
+                        <Button onClick={handleSave}>
+                          <Save className="h-4 w-4 mr-2" />
+                          Save Changes
+                        </Button>
+                        <Button variant="outline" onClick={() => setIsEditing(false)}>
+                          Cancel
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
-      {isEditing && (
-        <div className="flex flex-col items-end gap-2">
-          <Button
-            type="button"
-            onClick={handleSave}
-            disabled={loading}
-          >
-            <Save className="h-4 w-4 mr-2" />
-            {loading ? 'Saving...' : 'Save Changes'}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setIsEditing(false)}
-            disabled={loading}
-          >
-            Cancel
-          </Button>
-        </div>
-      )}
-    </CardContent>
-  </Card>
-</TabsContent>
+              <TabsContent value="projects">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Company Projects</CardTitle>
+                    <CardDescription>Manage your posted projects and teams</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Button>Go to Dashboard</Button>
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
+              <TabsContent value="settings">
+                <div className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Settings className="h-5 w-5" />
+                        Account Settings
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <Button variant="outline" className="w-full justify-start">
+                        <Shield className="h-4 w-4 mr-2" />
+                        Change Password
+                      </Button>
+                      <Button variant="outline" className="w-full justify-start">
+                        <Bell className="h-4 w-4 mr-2" />
+                        Notification Preferences
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
 
-              {/* Remaining tabs unchanged */}
+              <TabsContent value="billing">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <CreditCard className="h-5 w-5" />
+                      Billing & Payments
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">Payment methods and billing history</p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
             </Tabs>
           </div>
         </div>
@@ -199,15 +219,17 @@ const ProfileSettings: React.FC = () => {
     );
   }
 
-  // Contractor view
   return (
     <div className="min-h-screen bg-background">
       <Header />
+  
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold mb-2">Profile & Settings</h1>
-          <p className="text-muted-foreground mb-6">Manage your contractor profile</p>
-
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold mb-2">Profile & Settings</h1>
+            <p className="text-muted-foreground">Manage your contractor profile and account preferences</p>
+          </div>
+  
           <Tabs defaultValue="profile" className="space-y-6">
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="profile">Profile</TabsTrigger>
@@ -215,144 +237,210 @@ const ProfileSettings: React.FC = () => {
               <TabsTrigger value="settings">Settings</TabsTrigger>
               <TabsTrigger value="performance">Performance</TabsTrigger>
             </TabsList>
-
+  
             <TabsContent value="profile">
               <Card>
-                <CardHeader className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Profile Information</CardTitle>
-                    <CardDescription>Your public profile visible to businesses</CardDescription>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>Profile Information</CardTitle>
+                      <CardDescription>Your public profile information visible to businesses</CardDescription>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsEditing(!isEditing)}
+                    >
+                      <Edit className="h-4 w-4 mr-2" />
+                      {isEditing ? 'Cancel' : 'Edit Profile'}
+                    </Button>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => setIsEditing(!isEditing)}>
-                    <Edit className="h-4 w-4 mr-2" />
-                    {isEditing ? 'Cancel' : 'Edit Profile'}
-                  </Button>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="flex items-center gap-6">
-                    <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
-                      <span className="text-2xl font-bold text-primary">{user?.['full name']?.charAt(0)}</span>
-                    </div>
-                    <div className="flex-1 space-y-2">
-                      <Label htmlFor="name">Full Name</Label>
-                      <Input
-                        id="name"
-                        value={formData.name}
-                        onChange={e => setFormData(f => ({ ...f, name: e.target.value }))}
-                        disabled={!isEditing}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={e => setFormData(f => ({ ...f, email: e.target.value }))}
-                        disabled={!isEditing}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="university">University</Label>
-                      <Input
-                        id="university"
-                        value={formData.university}
-                        onChange={e => setFormData(f => ({ ...f, university: e.target.value }))}
-                        disabled={!isEditing}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="degree">Degree</Label>
-                      <Input
-                        id="degree"
-                        value={formData.degree}
-                        onChange={e => setFormData(f => ({ ...f, degree: e.target.value }))}
-                        disabled={!isEditing}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="year">Year}</Label>
-                      <Input
-                        id="year"
-                        value={formData.year}
-                        onChange={e => setFormData(f => ({ ...f, year: e.target.value }))}
-                        disabled={!isEditing}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="wam">WAM}</Label>
-                      <Input
-                        id="wam"
-                        value={formData.wam}
-                        onChange={e => setFormData(f => ({ ...f, wam: e.target.value }))}
-                        disabled={!isEditing}
-                      />
-                    </div>
-                  </div>
-
                   <div className="space-y-2">
-                    <Label htmlFor="summary">Summary</Label>
+                    <Label htmlFor="name">Full Name</Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={e => setFormData({ ...formData, name: e.target.value })}
+                      disabled={!isEditing}
+                    />
+                  </div>
+  
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={e => setFormData({ ...formData, email: e.target.value })}
+                      disabled={!isEditing}
+                    />
+                  </div>
+  
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Profile Summary</Label>
                     <Textarea
-                      id="summary"
-                      value={formData.summary}
-                      onChange={e => setFormData(f => ({ ...f, summary: e.target.value }))}
+                      id="description"
+                      value={formData.description}
+                      onChange={e => setFormData({ ...formData, description: e.target.value })}
                       disabled={!isEditing}
                       rows={4}
                     />
                   </div>
-
+  
                   <div className="space-y-2">
                     <Label htmlFor="skills">Skills (comma separated)</Label>
                     <Input
                       id="skills"
                       value={formData.skills}
-                      onChange={e => setFormData(f => ({ ...f, skills: e.target.value }))}
+                      onChange={e => setFormData({ ...formData, skills: e.target.value })}
                       disabled={!isEditing}
                       placeholder="React, Node.js, Python"
                     />
-                    {!isEditing && user?.skills && (
+                    {!isEditing && !!formData.skills && (
                       <div className="flex flex-wrap gap-2 mt-2">
-                        {user.skills.map((skill, idx) => <Badge key={idx}>{skill}</Badge>)}
+                        {formData.skills.split(',').map((skill, idx) => (
+                          <Badge key={idx}>{skill.trim()}</Badge>
+                        ))}
                       </div>
                     )}
                   </div>
-
+  
                   <div className="space-y-2">
                     <Label htmlFor="interests">Interests (comma separated)</Label>
                     <Input
                       id="interests"
                       value={formData.interests}
-                      onChange={e => setFormData(f => ({ ...f, interests: e.target.value }))}
+                      onChange={e => setFormData({ ...formData, interests: e.target.value })}
                       disabled={!isEditing}
                       placeholder="Software Engineering, AI"
                     />
-                    {!isEditing && user?.interests && (
+                    {!isEditing && !!formData.interests && (
                       <div className="flex flex-wrap gap-2 mt-2">
-                        {user.interests.map((i, idx) => <Badge key={idx} variant="outline">{i}</Badge>)}
+                        {formData.interests.split(',').map((i, idx) => (
+                          <Badge key={idx} variant="outline">{i.trim()}</Badge>
+                        ))}
                       </div>
                     )}
                   </div>
-
+  
+                  <div className="space-y-2">
+                    <Label htmlFor="resume">Resume</Label>
+                    {isEditing ? (
+                      <div className="flex items-center gap-2">
+                        <Input
+                          id="resume"
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          onChange={handleResumeUpload}
+                          disabled={!isEditing}
+                        />
+                        {formData.resume && (
+                          <a
+                            href={formData.resume}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline text-blue-600"
+                          >
+                            View Uploaded Resume
+                          </a>
+                        )}
+                      </div>
+                    ) : (
+                      formData.resume && (
+                        <a
+                          href={formData.resume}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline text-blue-600"
+                        >
+                          View Uploaded Resume
+                        </a>
+                      )
+                    )}
+                  </div>
+  
                   {isEditing && (
                     <div className="flex gap-2">
-                      <Button onClick={handleSave}><Save className="h-4 w-4 mr-2"/>Save Changes</Button>
-                      <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+                      <Button onClick={handleSave}>
+                        <Save className="h-4 w-4 mr-2" />
+                        Save Changes
+                      </Button>
+                      <Button variant="outline" onClick={() => setIsEditing(false)}>
+                        Cancel
+                      </Button>
                     </div>
                   )}
                 </CardContent>
               </Card>
             </TabsContent>
-
-            {/* Past Projects, Settings & Performance tabs unchanged */}
-
+  
+            <TabsContent value="projects">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Past Projects</CardTitle>
+                  <CardDescription>Project experience and feedback</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {pastProjects.map(proj => (
+                    <div key={proj.id} className="border rounded-xl p-4 mb-2">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="font-semibold">{proj.title}</div>
+                          <div className="text-muted-foreground text-sm">{proj.company} – {proj.role}</div>
+                          <div className="text-xs text-muted-foreground">{proj.duration}</div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Star className="w-4 h-4 text-yellow-500" />
+                          <span className="font-bold">{proj.rating}</span>
+                        </div>
+                      </div>
+                      <div className="mt-2 text-sm">{proj.feedback}</div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </TabsContent>
+  
+            <TabsContent value="settings">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Settings className="h-5 w-5" />
+                    Account Settings
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Button variant="outline" className="w-full justify-start">
+                    <Shield className="h-4 w-4 mr-2" />
+                    Change Password
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start">
+                    <Bell className="h-4 w-4 mr-2" />
+                    Notification Preferences
+                  </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+  
+            <TabsContent value="performance">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Award className="h-5 w-5" />
+                    Performance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">Performance metrics and achievements coming soon.</p>
+                </CardContent>
+              </Card>
+            </TabsContent>
           </Tabs>
         </div>
       </div>
     </div>
   );
-};
-
-export default ProfileSettings;
+}
+ export default ProfileSettings;
