@@ -22,8 +22,8 @@ const queryClient = new QueryClient();
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
+      <TooltipProvider>
+        <AuthProvider>
           <AppProvider>
             <Router>
               <Routes>
@@ -48,8 +48,8 @@ export default function App() {
               </Routes>
             </Router>
           </AppProvider>
-        </TooltipProvider>
-      </AuthProvider>
+        </AuthProvider>
+      </TooltipProvider>
     </QueryClientProvider>
   );
 }
