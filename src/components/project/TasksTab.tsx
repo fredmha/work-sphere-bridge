@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Project, Task, TaskStatus } from '@/types/entities';
-import { useApp } from '@/contexts/AppContext';
+import { useApp } from '@/context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

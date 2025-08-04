@@ -1,5 +1,5 @@
 import { Project, ContractorRole } from '@/types/entities';
-import { useApp } from '@/contexts/AppContext';
+import { useApp } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

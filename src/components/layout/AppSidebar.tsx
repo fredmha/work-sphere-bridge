@@ -10,7 +10,7 @@ import {
     FileText
   } from 'lucide-react';
   import { NavLink, useLocation } from 'react-router-dom';
-  import { useApp } from '@/contexts/AppContext';
+  import { useApp } from '@/context/AppContext';
   import {
     Sidebar,
     SidebarContent,

@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useState } from 'react';
-import { useApp } from '@/contexts/AppContext';
+import { useApp } from '@/context/AppContext';
 import { ProjectHeader } from '@/components/project/ProjectHeader';
 import { ProjectTabs } from '@/components/project/ProjectTabs';
 import { RolesTab } from '@/components/project/RolesTab';
@@ -74,3 +74,5 @@ export function ProjectDetailPage() {
     </div>
   );
 }
+
+export default ProjectDetailPage;
