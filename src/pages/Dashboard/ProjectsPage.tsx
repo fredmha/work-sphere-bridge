@@ -60,11 +60,11 @@ export function ProjectsPage() {
     };
     
     dispatch({ type: 'CREATE_PROJECT', payload: newProject });
-    navigate(`project/${newProject.id}`);
+    navigate(`/dashboard/project/${newProject.id}`);
   };
 
   const handleViewProject = (projectId: string) => {
-    navigate(`project/${projectId}`);
+    navigate(`/dashboard/project/${projectId}`);
   };
 
   const handleArchiveProject = (projectId: string) => {
