@@ -60,11 +60,11 @@ export function ProjectsPage() {
     };
     
     dispatch({ type: 'CREATE_PROJECT', payload: newProject });
-    navigate(`/project/${newProject.id}`);
+    navigate(`project/${newProject.id}`);
   };
 
   const handleViewProject = (projectId: string) => {
-    navigate(`/project/${projectId}`);
+    navigate(`project/${projectId}`);
   };
 
   const handleArchiveProject = (projectId: string) => {
@@ -75,7 +75,7 @@ export function ProjectsPage() {
     switch (status) {
       case 'Draft': return 'secondary';
       case 'Published': return 'default';
-      case 'Active': return 'warning';
+      case 'Active': return 'destructive';
       default: return 'secondary';
     }
   };

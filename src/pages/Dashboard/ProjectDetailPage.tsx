@@ -11,14 +11,14 @@ import { PaymentsTab } from '@/components/project/PaymentsTab';
 import { ComplianceModal } from '@/components/compliance/ComplianceModal';
 
 export function ProjectDetailPage() {
-  const { projectId = 'project-1' } = useParams(); // Default to first project for demo
+  const { id = 'project-1' } = useParams(); // Default to first project for demo
   const { state } = useApp();
   const [activeTab, setActiveTab] = useState('roles');
   const [complianceModalOpen, setComplianceModalOpen] = useState(false);
   const [selectedContractor, setSelectedContractor] = useState<string | null>(null);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
 
-  const project = state.projects.find(p => p.id === projectId);
+  const project = state.projects.find(p => p.id === id);
   
   if (!project) {
     return (
