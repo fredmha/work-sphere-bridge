@@ -34,38 +34,78 @@ const ProfileSettings = () => {
   });
 
   const handleSave = async () => {
-    await updateProfile({
-      fullName: formData.name,
-      ...(user?.role === 'contractor'
-        ? {
-            description: formData.description,
-            contractorProfile: {
-              description: formData.description,
-              skills: formData.skills.split(',').map(s => s.trim()),
-              interests: formData.interests.split(',').map(s => s.trim()),
-              resume: formData.resume,
-            },
-          }
-        : {}),
-    });
-    setIsEditing(false);
+    alert("Saving profile...");
+    console.log("Saving with formData:", formData);
+  
+    try {
+      await updateProfile({
+        fullName: formData.name,
+        ...(user?.role === 'contractor'
+          ? {
+              contractorProfile: {
+                description: formData.description,
+                skills: formData.skills.split(',').map(s => s.trim()).filter(s => s), // Convert to array
+                interests: formData.interests.split(',').map(s => s.trim()).filter(s => s), // Convert to array
+                resume: formData.resume,
+              }
+            }
+          : {}),
+      });
+      
+      alert("Profile saved!");
+      setIsEditing(false);
+    } catch (e) {
+      alert("Profile save failed: " + e.message);
+      console.error("Save error:", e);
+    }
   };
+  
 
   const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !user || !supabase) return;
+    if (!file || !user || !supabase) {
+      alert("Missing file, user, or supabase instance");
+      return;
+    }
+  
+    console.log("Uploading file...", file);
+  
     const { data: uploadData, error } = await supabase.storage
-      .from('resumes')
+      .from('resume')
       .upload(`${user.id}/${file.name}`, file, { upsert: true });
     if (error) {
+      alert('Resume upload failed: ' + error.message);
       console.error('Resume upload failed:', error);
       return;
     }
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from('resumes').getPublicUrl(uploadData.path);
-    setFormData({ ...formData, resume: publicUrl });
+    console.log("Upload success:", uploadData);
+  
+    const { data: { publicUrl } } = supabase.storage.from('resume').getPublicUrl(uploadData.path);
+    console.log("Resume public URL:", publicUrl);
+  
+    setFormData(prev => ({ ...prev, resume: publicUrl }));
+    alert("Resume uploaded. URL: " + publicUrl);
+  
+    // Immediately update the contractor profile in DB with the new resume URL
+    if (user?.role === 'contractor') {
+      try {
+        await updateProfile({
+          contractorProfile: {
+            skills: user?.contractorProfile?.skills ?? [],
+            interests: user?.contractorProfile?.interests ?? [],
+            description: user?.contractorProfile?.description ?? '',
+            resume: publicUrl,
+          }
+        });
+
+        alert("Profile updated in DB with new resume!");
+      } catch (e) {
+        alert("Profile update failed: " + e.message);
+        console.error("Profile update error:", e);
+      }
+    }
   };
+  
 
   const pastProjects = [
     {
