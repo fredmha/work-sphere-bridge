@@ -220,8 +220,9 @@ const syncContractorRolesToSupabase = async (rolesData: ContractorRole[] | any[]
       type: role.type,
       pay: role.pay,
       project_id: projectId,
-      
-      // score and contractor_id are not directly from AI response, assuming nullable or default
+      contractor_id: null, // Explicitly set to null for new roles
+      status: null, // Explicitly set to null for new roles
+      score: null // Explicitly set to null for new roles
     }));
 
     const { data, error } = await supabase

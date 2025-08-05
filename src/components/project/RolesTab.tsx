@@ -32,13 +32,8 @@ interface RolesTabProps {
 }
 
 export function RolesTab({ project, onOpenCompliance }: RolesTabProps) {
-  const getStatusVariant = (status: string | null) => {
-    switch (status) {
-      case 'open': return 'secondary';
-      case 'assigned': return 'default';
-      case 'completed': return 'outline';
-      default: return 'secondary';
-    }
+  const getStatusVariant = (hasContractor: boolean) => {
+    return hasContractor ? 'default' : 'secondary';
   };
 
   const getTypeVariant = (type: string | null) => {
@@ -50,6 +45,7 @@ export function RolesTab({ project, onOpenCompliance }: RolesTabProps) {
   };
 
   const renderRoleCard = (role: ContractorRoleRow) => {
+    // A role is truly assigned only if it has a contractor_id
     const isAssigned = !!role.contractor_id;
     const applications = 0; // TODO: Implement applications table
 
@@ -63,8 +59,8 @@ export function RolesTab({ project, onOpenCompliance }: RolesTabProps) {
                 <Badge variant="outline">
                   {role.type || 'General'}
                 </Badge>
-                <Badge variant={getStatusVariant(role.status)}>
-                  {role.status || 'open'}
+                <Badge variant={getStatusVariant(isAssigned)}>
+                  {isAssigned ? 'Assigned' : 'Unassigned'}
                 </Badge>
                 {role.pay && (
                   <span className="text-sm text-muted-foreground">
@@ -106,19 +102,21 @@ export function RolesTab({ project, onOpenCompliance }: RolesTabProps) {
             
             <div className="flex items-center gap-2">
               {isAssigned && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onOpenCompliance(role.contractor_id!, role.id.toString())}
-                >
-                  <CheckCircle className="w-4 h-4 mr-1" />
-                  Compliance
-                </Button>
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onOpenCompliance(role.contractor_id!, role.id.toString())}
+                  >
+                    <CheckCircle className="w-4 h-4 mr-1" />
+                    Compliance
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <MessageSquare className="w-4 h-4 mr-1" />
+                    Message
+                  </Button>
+                </>
               )}
-              <Button variant="outline" size="sm">
-                <MessageSquare className="w-4 h-4 mr-1" />
-                Message
-              </Button>
             </div>
           </div>
         </CardContent>
