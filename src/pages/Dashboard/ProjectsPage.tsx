@@ -48,19 +48,9 @@ export function ProjectsPage() {
   }, [filteredProjects]);
 
   const handleCreateProject = () => {
-    const newProject: Project = {
-      id: `project-${Date.now()}`,
-      title: 'New Project',
-      description: 'Project description',
-      state: 'Draft',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      createdBy: 'admin',
-      roles: []
-    };
-    
-    dispatch({ type: 'CREATE_PROJECT', payload: newProject });
-    navigate(`/dashboard/project/${newProject.id}`);
+    localStorage.removeItem('projectWizardState');
+    sessionStorage.removeItem('projectWizardState');
+    navigate('/projectwizard');
   };
 
   const handleViewProject = (projectId: string) => {
@@ -227,7 +217,7 @@ export function ProjectsPage() {
   );
 
   return (
-    <div className="container mx-autoc space-y-6">
+    <div className="container mx-autoc space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

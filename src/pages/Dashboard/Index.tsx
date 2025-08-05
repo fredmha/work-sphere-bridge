@@ -14,9 +14,13 @@ import {
   Clock
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
+
 
 export default function Index() {
   const { state } = useApp();
+  const navigate = useNavigate();
 
   const totalProjects = state.projects.length;
   const activeProjects = state.projects.filter(p => p.state === 'Active').length;
@@ -24,6 +28,12 @@ export default function Index() {
   const totalRoles = state.projects.flatMap(p => p.roles).length;
   const assignedRoles = state.projects.flatMap(p => p.roles).filter(r => r.assignedContractor).length;
 
+
+  const handleCreateProject = () => {
+    localStorage.removeItem('projectWizardState');
+    sessionStorage.removeItem('projectWizardState');
+    navigate('/projectwizard');
+  };
   // Calculate compliance stats
   const totalComplianceItems = state.complianceChecklists.length * 6; // 6 items per checklist
   const completedComplianceItems = state.complianceChecklists.reduce((sum, checklist) => {
@@ -63,7 +73,7 @@ export default function Index() {
             <Calendar className="w-4 h-4" />
             Schedule Meeting
           </Button>
-          <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70">
+          <Button onClick={handleCreateProject} className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70">
             <Plus className="w-4 h-4" />
             New Project
           </Button>
