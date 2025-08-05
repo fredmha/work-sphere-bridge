@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/lib/supabaseClient';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,22 +23,116 @@ import {
   Archive
 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Project, ProjectState } from '@/types/entities';
+import type { Database } from '@/types/supabase';
+
+type Tables = Database['public']['Tables'];
+type ProjectRow = Tables['projects']['Row'];
+type ContractorRoleRow = Tables['ContractorRole']['Row'];
+
+// Define the project state type based on the original code
+type ProjectState = 'Draft' | 'Published' | 'Active';
+
+// Extended project type that includes computed fields
+interface Project extends ProjectRow {
+  state: ProjectState;
+  title: string;
+  description: string;
+  roles: ContractorRoleRow[];
+}
 
 export function ProjectsPage() {
-  const { state, dispatch } = useApp();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<ProjectState | 'all'>('all');
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [contractorRoles, setContractorRoles] = useState<ContractorRoleRow[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch projects and roles on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user?.id || !supabase) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        // Fetch projects for the current user
+        const { data: projectsData, error: projectsError } = await supabase
+          .from('projects')
+          .select('*')
+          .eq('owner_id', user.id);
+
+        if (projectsError) throw projectsError;
+
+        // Fetch contractor roles for the current user
+        const { data: rolesData, error: rolesError } = await supabase
+          .from('ContractorRole')
+          .select('*')
+          .eq('owner_id', user.id);
+
+        if (rolesError) throw rolesError;
+
+        // Transform projects to include computed fields
+        const transformedProjects: Project[] = (projectsData || []).map(project => {
+          // For now, we'll associate roles with projects based on the owner_id
+          // In a real implementation, you might need a junction table or different relationship
+          const projectRoles = (rolesData || []).filter(role => 
+            // Since there's no direct project_id in ContractorRole, we'll use a simple mapping
+            // This is a temporary solution - you may need to adjust based on your actual data model
+            role.owner_id === user.id
+          );
+          
+          // Determine project state based on roles and assignments
+          let state: ProjectState = 'Draft';
+          if (projectRoles.length > 0) {
+            const hasAssignedRoles = projectRoles.some(role => role.contractor_id);
+            const hasUnassignedRoles = projectRoles.some(role => !role.contractor_id);
+            
+            if (hasAssignedRoles && hasUnassignedRoles) {
+              state = 'Active';
+            } else if (hasAssignedRoles) {
+              state = 'Active';
+            } else {
+              state = 'Published';
+            }
+          }
+
+          return {
+            ...project,
+            state,
+            title: project.project_name || 'Untitled Project',
+            description: project.project_description || 'No description available',
+            roles: projectRoles
+          };
+        });
+
+        setProjects(transformedProjects);
+        setContractorRoles(rolesData || []);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError(err instanceof Error ? err.message : 'Failed to fetch projects');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user?.id]);
 
   const filteredProjects = useMemo(() => {
-    return state.projects.filter(project => {
+    return projects.filter(project => {
       const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           project.description.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = statusFilter === 'all' || project.state === statusFilter;
       return matchesSearch && matchesStatus;
     });
-  }, [state.projects, searchQuery, statusFilter]);
+  }, [projects, searchQuery, statusFilter]);
 
   const projectsByStatus = useMemo(() => {
     return {
@@ -53,12 +148,32 @@ export function ProjectsPage() {
     navigate('/projectwizard');
   };
 
-  const handleViewProject = (projectId: string) => {
+  const handleViewProject = (projectId: number) => {
     navigate(`/dashboard/project/${projectId}`);
   };
 
-  const handleArchiveProject = (projectId: string) => {
-    dispatch({ type: 'UPDATE_PROJECT', payload: { id: projectId, updates: { state: 'Draft' as ProjectState } } });
+  const handleArchiveProject = async (projectId: number) => {
+    if (!supabase) return;
+
+    try {
+      // Update project description to indicate it's archived
+      const { error } = await supabase
+        .from('projects')
+        .update({ project_description: 'Archived' })
+        .eq('id', projectId);
+
+      if (error) throw error;
+
+      // Update local state
+      setProjects(prev => prev.map(project => 
+        project.id === projectId 
+          ? { ...project, state: 'Draft' as ProjectState }
+          : project
+      ));
+    } catch (err) {
+      console.error('Error archiving project:', err);
+      setError(err instanceof Error ? err.message : 'Failed to archive project');
+    }
   };
 
   const getStatusBadgeVariant = (status: ProjectState) => {
@@ -71,20 +186,19 @@ export function ProjectsPage() {
   };
 
   const getProjectMetrics = (project: Project) => {
-    const applications = state.applications.filter(app => 
-      project.roles.some(role => role.id === app.roleId)
-    );
-    const assignedRoles = project.roles.filter(role => role.assignedContractor);
-    const complianceIssues = state.complianceChecklists.filter(checklist => 
-      project.roles.some(role => role.id === checklist.roleId) &&
-      [checklist.abnTfnStatus, checklist.bankDetailsStatus, checklist.superDetailsStatus, 
-       checklist.workRightsStatus, checklist.contractStatus, checklist.fairWorkStatus]
-        .some(status => status === 'Incomplete' || status === 'Pending Review')
-    ).length;
+    // Since the current schema doesn't have a direct relationship between projects and roles,
+    // we'll use the roles associated with the user for now
+    const projectRoles = contractorRoles.filter(role => role.owner_id === user?.id);
+    const assignedRoles = projectRoles.filter(role => role.contractor_id);
+    
+    // For now, we'll use placeholder values for applications and compliance issues
+    // since these tables aren't in the current schema
+    const applicationCount = 0; // Would need applications table
+    const complianceIssues = 0; // Would need compliance table
 
     return {
-      roleCount: project.roles.length,
-      applicationCount: applications.length,
+      roleCount: projectRoles.length,
+      applicationCount,
       assignedCount: assignedRoles.length,
       complianceIssues
     };
@@ -142,7 +256,7 @@ export function ProjectsPage() {
             </div>
             <div className="flex items-center gap-2 text-sm">
               <Calendar className="w-4 h-4 text-muted-foreground" />
-              <span>{new Date(project.createdAt).toLocaleDateString()}</span>
+              <span>{new Date(project.created_at).toLocaleDateString()}</span>
             </div>
           </div>
 
@@ -216,8 +330,35 @@ export function ProjectsPage() {
     </div>
   );
 
+  if (isLoading) {
+    return (
+      <div className="container mx-auto space-y-6 p-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading projects...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto space-y-6 p-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <AlertTriangle className="w-12 h-12 text-destructive mx-auto mb-4" />
+            <p className="text-destructive mb-2">Error loading projects</p>
+            <p className="text-muted-foreground text-sm">{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="container mx-autoc space-y-6 p-6">
+    <div className="container mx-auto space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -306,7 +447,7 @@ export function ProjectsPage() {
               <div>
                 <p className="text-sm text-muted-foreground">Total Roles</p>
                 <p className="text-2xl font-bold">
-                  {state.projects.reduce((acc, project) => acc + project.roles.length, 0)}
+                  {projects.reduce((acc, project) => acc + project.roles.length, 0)}
                 </p>
               </div>
             </div>
