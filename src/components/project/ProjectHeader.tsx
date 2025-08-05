@@ -1,15 +1,26 @@
-import { Project } from '@/types/entities';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar, MapPin, User } from 'lucide-react';
+import type { Database } from '@/types/supabase';
+
+type Tables = Database['public']['Tables'];
+type ProjectRow = Tables['projects']['Row'];
+type ContractorRoleRow = Tables['ContractorRole']['Row'];
+
+// Extended project type that includes computed fields
+interface Project extends ProjectRow {
+  title: string;
+  description: string;
+  roles: ContractorRoleRow[];
+}
 
 interface ProjectHeaderProps {
   project: Project;
 }
 
 export function ProjectHeader({ project }: ProjectHeaderProps) {
-  const getStateVariant = (state: string) => {
-    switch (state) {
+  const getStatusVariant = (status: string) => {
+    switch (status) {
       case 'Draft': return 'secondary';
       case 'Published': return 'default';
       case 'Active': return 'default';
@@ -18,8 +29,8 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
     }
   };
 
-  const getStateColor = (state: string) => {
-    switch (state) {
+  const getStatusColor = (status: string) => {
+    switch (status) {
       case 'Draft': return 'text-muted-foreground';
       case 'Published': return 'text-warning';
       case 'Active': return 'text-success';
@@ -34,8 +45,8 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
         <div className="space-y-3">
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold text-foreground">{project.title}</h1>
-            <Badge variant={getStateVariant(project.state)} className={getStateColor(project.state)}>
-              {project.state}
+            <Badge variant={getStatusVariant(project.status || 'Draft')} className={getStatusColor(project.status || 'Draft')}>
+              {project.status || 'Draft'}
             </Badge>
           </div>
           
@@ -46,7 +57,7 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
           <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
-              <span>Created {new Date(project.createdAt).toLocaleDateString()}</span>
+              <span>Created {new Date(project.created_at).toLocaleDateString()}</span>
             </div>
             <div className="flex items-center gap-2">
               <User className="w-4 h-4" />
@@ -56,17 +67,17 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-2">
-          {project.state === 'Draft' && (
+          {project.status === 'Draft' && (
             <Button variant="default" className="flex-1 sm:flex-none">
               Publish Project
             </Button>
           )}
-          {project.state === 'Published' && (
+          {project.status === 'Published' && (
             <Button variant="outline" className="flex-1 sm:flex-none">
               View Applications
             </Button>
           )}
-          {project.state === 'Active' && (
+          {project.status === 'Active' && (
             <Button variant="outline" className="flex-1 sm:flex-none">
               Export Report
             </Button>

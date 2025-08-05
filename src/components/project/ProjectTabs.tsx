@@ -1,7 +1,18 @@
-import { Project } from '@/types/entities';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Users, CheckSquare, Clock, CreditCard, UserCheck } from 'lucide-react';
+import type { Database } from '@/types/supabase';
+
+type Tables = Database['public']['Tables'];
+type ProjectRow = Tables['projects']['Row'];
+type ContractorRoleRow = Tables['ContractorRole']['Row'];
+
+// Extended project type that includes computed fields
+interface Project extends ProjectRow {
+  title: string;
+  description: string;
+  roles: ContractorRoleRow[];
+}
 
 interface ProjectTabsProps {
   activeTab: string;
@@ -10,12 +21,9 @@ interface ProjectTabsProps {
 }
 
 export function ProjectTabs({ activeTab, onTabChange, project }: ProjectTabsProps) {
-  const milestoneRoles = project.roles.filter(role => role.type === 'Milestone');
-  const timesheetRoles = project.roles.filter(role => role.type === 'Timesheet');
-  const totalTasks = milestoneRoles.reduce((acc, role) => acc + (role.tasks?.length || 0), 0);
-  const pendingTasks = milestoneRoles.reduce((acc, role) => 
-    acc + (role.tasks?.filter(task => task.status === 'Pending').length || 0), 0
-  );
+  // For now, we'll use simple role counting since the database schema doesn't have tasks yet
+  const totalRoles = project.roles.length;
+  const assignedRoles = project.roles.filter(role => role.contractor_id).length;
 
   return (
     <div className="glass-card border border-border/50 rounded-lg overflow-hidden">
@@ -25,21 +33,19 @@ export function ProjectTabs({ activeTab, onTabChange, project }: ProjectTabsProp
             <Users className="w-4 h-4" />
             <span className="hidden sm:inline">Roles</span>
             <Badge variant="secondary" className="ml-1">
-              {project.roles.length}
+              {totalRoles}
             </Badge>
           </TabsTrigger>
           
-          <TabsTrigger value="tasks" className="flex items-center gap-2 py-3 data-[state=active]:bg-primary/10" disabled={milestoneRoles.length === 0}>
+          <TabsTrigger value="tasks" className="flex items-center gap-2 py-3 data-[state=active]:bg-primary/10">
             <CheckSquare className="w-4 h-4" />
             <span className="hidden sm:inline">Tasks</span>
-            {totalTasks > 0 && (
-              <Badge variant="secondary" className="ml-1">
-                {pendingTasks}/{totalTasks}
-              </Badge>
-            )}
+            <Badge variant="secondary" className="ml-1">
+              0
+            </Badge>
           </TabsTrigger>
           
-          <TabsTrigger value="timesheets" className="flex items-center gap-2 py-3 data-[state=active]:bg-primary/10" disabled={timesheetRoles.length === 0}>
+          <TabsTrigger value="timesheets" className="flex items-center gap-2 py-3 data-[state=active]:bg-primary/10">
             <Clock className="w-4 h-4" />
             <span className="hidden sm:inline">Timesheets</span>
           </TabsTrigger>
@@ -47,6 +53,9 @@ export function ProjectTabs({ activeTab, onTabChange, project }: ProjectTabsProp
           <TabsTrigger value="team" className="flex items-center gap-2 py-3 data-[state=active]:bg-primary/10">
             <UserCheck className="w-4 h-4" />
             <span className="hidden sm:inline">Team</span>
+            <Badge variant="secondary" className="ml-1">
+              {assignedRoles}
+            </Badge>
           </TabsTrigger>
           
           <TabsTrigger value="payments" className="flex items-center gap-2 py-3 data-[state=active]:bg-primary/10">
