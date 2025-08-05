@@ -29,12 +29,11 @@ type Tables = Database['public']['Tables'];
 type ProjectRow = Tables['projects']['Row'];
 type ContractorRoleRow = Tables['ContractorRole']['Row'];
 
-// Define the project state type based on the original code
-type ProjectState = 'Draft' | 'Published' | 'Active';
+// Define the project status type based on the database schema
+type ProjectStatus = 'Draft' | 'Published' | 'Active';
 
 // Extended project type that includes computed fields
 interface Project extends ProjectRow {
-  state: ProjectState;
   title: string;
   description: string;
   roles: ContractorRoleRow[];
@@ -44,7 +43,7 @@ export function ProjectsPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<ProjectState | 'all'>('all');
+  const [statusFilter, setStatusFilter] = useState<ProjectStatus | 'all'>('all');
   const [projects, setProjects] = useState<Project[]>([]);
   const [contractorRoles, setContractorRoles] = useState<ContractorRoleRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -80,32 +79,13 @@ export function ProjectsPage() {
 
         // Transform projects to include computed fields
         const transformedProjects: Project[] = (projectsData || []).map(project => {
-          // For now, we'll associate roles with projects based on the owner_id
-          // In a real implementation, you might need a junction table or different relationship
+          // Get roles for this specific project using the project_id relationship
           const projectRoles = (rolesData || []).filter(role => 
-            // Since there's no direct project_id in ContractorRole, we'll use a simple mapping
-            // This is a temporary solution - you may need to adjust based on your actual data model
-            role.owner_id === user.id
+            role.project_id === project.id
           );
-          
-          // Determine project state based on roles and assignments
-          let state: ProjectState = 'Draft';
-          if (projectRoles.length > 0) {
-            const hasAssignedRoles = projectRoles.some(role => role.contractor_id);
-            const hasUnassignedRoles = projectRoles.some(role => !role.contractor_id);
-            
-            if (hasAssignedRoles && hasUnassignedRoles) {
-              state = 'Active';
-            } else if (hasAssignedRoles) {
-              state = 'Active';
-            } else {
-              state = 'Published';
-            }
-          }
 
           return {
             ...project,
-            state,
             title: project.project_name || 'Untitled Project',
             description: project.project_description || 'No description available',
             roles: projectRoles
@@ -129,16 +109,16 @@ export function ProjectsPage() {
     return projects.filter(project => {
       const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           project.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus = statusFilter === 'all' || project.state === statusFilter;
+      const matchesStatus = statusFilter === 'all' || project.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
   }, [projects, searchQuery, statusFilter]);
 
   const projectsByStatus = useMemo(() => {
     return {
-      Draft: filteredProjects.filter(p => p.state === 'Draft'),
-      Published: filteredProjects.filter(p => p.state === 'Published'),
-      Active: filteredProjects.filter(p => p.state === 'Active')
+      Draft: filteredProjects.filter(p => p.status === 'Draft'),
+      Published: filteredProjects.filter(p => p.status === 'Published'),
+      Active: filteredProjects.filter(p => p.status === 'Active')
     };
   }, [filteredProjects]);
 
@@ -156,10 +136,10 @@ export function ProjectsPage() {
     if (!supabase) return;
 
     try {
-      // Update project description to indicate it's archived
+      // Update project status to Draft (archived)
       const { error } = await supabase
         .from('projects')
-        .update({ project_description: 'Archived' })
+        .update({ status: 'Draft' })
         .eq('id', projectId);
 
       if (error) throw error;
@@ -167,7 +147,7 @@ export function ProjectsPage() {
       // Update local state
       setProjects(prev => prev.map(project => 
         project.id === projectId 
-          ? { ...project, state: 'Draft' as ProjectState }
+          ? { ...project, status: 'Draft' }
           : project
       ));
     } catch (err) {
@@ -176,7 +156,7 @@ export function ProjectsPage() {
     }
   };
 
-  const getStatusBadgeVariant = (status: ProjectState) => {
+  const getStatusBadgeVariant = (status: ProjectStatus) => {
     switch (status) {
       case 'Draft': return 'secondary';
       case 'Published': return 'default';
@@ -186,9 +166,8 @@ export function ProjectsPage() {
   };
 
   const getProjectMetrics = (project: Project) => {
-    // Since the current schema doesn't have a direct relationship between projects and roles,
-    // we'll use the roles associated with the user for now
-    const projectRoles = contractorRoles.filter(role => role.owner_id === user?.id);
+    // Get roles for this specific project
+    const projectRoles = project.roles;
     const assignedRoles = projectRoles.filter(role => role.contractor_id);
     
     // For now, we'll use placeholder values for applications and compliance issues
@@ -216,8 +195,8 @@ export function ProjectsPage() {
                 <CardTitle className="text-lg group-hover:text-primary transition-colors">
                   {project.title}
                 </CardTitle>
-                <Badge variant={getStatusBadgeVariant(project.state)}>
-                  {project.state}
+                <Badge variant={getStatusBadgeVariant(project.status as ProjectStatus)}>
+                  {project.status}
                 </Badge>
               </div>
               <p className="text-sm text-muted-foreground line-clamp-2">
@@ -260,7 +239,7 @@ export function ProjectsPage() {
             </div>
           </div>
 
-          {project.state === 'Published' && (
+          {project.status === 'Published' && (
             <div className="space-y-2 mb-4">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Applications</span>
@@ -273,7 +252,7 @@ export function ProjectsPage() {
             </div>
           )}
 
-          {project.state === 'Active' && (
+          {project.status === 'Active' && (
             <div className="space-y-2 mb-4">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Assigned Roles</span>
@@ -294,8 +273,8 @@ export function ProjectsPage() {
             className="w-full"
             onClick={() => handleViewProject(project.id)}
           >
-            {project.state === 'Draft' ? 'Continue Editing' : 
-             project.state === 'Published' ? 'View Applications' : 
+            {project.status === 'Draft' ? 'Continue Editing' : 
+             project.status === 'Published' ? 'View Applications' : 
              'Manage Project'}
           </Button>
         </CardContent>
@@ -386,7 +365,7 @@ export function ProjectsPage() {
                 className="pl-10"
               />
             </div>
-            <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as ProjectState | 'all')}>
+            <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as ProjectStatus | 'all')}>
               <SelectTrigger className="w-full sm:w-48">
                 <Filter className="w-4 h-4 mr-2" />
                 <SelectValue placeholder="Filter by status" />
