@@ -2,12 +2,88 @@ import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Users, Building2, Search, Plus, CheckCircle } from "lucide-react";
+import { ArrowRight, Users, Building2, Search, Plus, CheckCircle, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabaseClient";
+import { useState, useEffect } from "react";
+import type { Database } from '@/types/supabase';
+
+type Tables = Database['public']['Tables'];
+type ProjectRow = Tables['projects']['Row'];
+
+interface Project extends ProjectRow {
+  title: string;
+  description: string;
+}
 
 const Index = () => {
   const { user, isLoading } = useAuth();
+  const [recentProjects, setRecentProjects] = useState<Project[]>([]);
+  const [projectsLoading, setProjectsLoading] = useState(true);
+  const [projectsError, setProjectsError] = useState<string | null>(null);
+  
+  // Fetch recent projects from Supabase
+  useEffect(() => {
+    const fetchRecentProjects = async () => {
+      if (!supabase) {
+        setProjectsLoading(false);
+        return;
+      }
+
+      try {
+        setProjectsLoading(true);
+        setProjectsError(null);
+
+        // Fetch recent projects (limit to 6 for the homepage)
+        const { data: projectsData, error } = await supabase
+          .from('projects')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(6);
+
+        if (error) {
+          console.error('Error fetching projects:', error);
+          setProjectsError('Failed to load projects');
+          return;
+        }
+
+        // Transform projects to include computed fields
+        const transformedProjects: Project[] = (projectsData || []).map(project => ({
+          ...project,
+          title: project.project_name || 'Untitled Project',
+          description: project.project_description || 'No description available'
+        }));
+
+        setRecentProjects(transformedProjects);
+      } catch (err) {
+        console.error('Error fetching projects:', err);
+        setProjectsError('Failed to load projects');
+      } finally {
+        setProjectsLoading(false);
+      }
+    };
+
+    fetchRecentProjects();
+  }, []);
+
+  const getStatusBadgeVariant = (status: string | null) => {
+    switch (status) {
+      case 'Draft': return 'secondary';
+      case 'Published': return 'default';
+      case 'Active': return 'destructive';
+      default: return 'outline';
+    }
+  };
+
+  const getStatusDisplayText = (status: string | null) => {
+    switch (status) {
+      case 'Draft': return 'Draft';
+      case 'Published': return 'Published';
+      case 'Active': return 'Active';
+      default: return 'Unknown';
+    }
+  };
   
   // Show loading state while auth is initializing
   if (isLoading) {
@@ -51,33 +127,6 @@ const Index = () => {
     { number: "150+", label: "Projects Completed" },
     { number: "25+", label: "Partner Companies" },
     { number: "95%", label: "Success Rate" }
-  ];
-
-  const currentOpportunities = [
-    {
-      id: 123,
-      title: "Data Analysis and Visualization Tool",
-      company: "Born",
-      description: "This project involves developing a comprehensive data analysis and visualization tool aimed at enhancing decision-making processes for businesses. The tool will allow users to input raw data and receive insightful visual representations, making complex data more accessible and understandable. The project requires skills in data science...",
-      roles: ["Data Scientist", "Software Developer"],
-      type: "Pay per Task"
-    },
-    {
-      id: 124,
-      title: "Automated Testing Framework Development",
-      company: "TechTest",
-      description: "This project involves creating a robust automated testing framework to enhance software quality and reduce manual testing efforts. The framework will integrate with existing development workflows and provide comprehensive reporting capabilities.",
-      roles: ["QA Engineer", "DevOps Engineer"],
-      type: "Pay per Hour"
-    },
-    {
-      id: 125,
-      title: "Mapping of skills to create an industry-based framework",
-      company: "AUKUS Jobs",
-      description: "This project is an innovative initiative designed to map out and identify essential skills within the chosen sector. These skills frameworks will provide valuable insights for workforce development and strategic planning.",
-      roles: ["Research Analyst", "Data Scientist"],
-      type: "Pay per Task"
-    }
   ];
 
   return (
@@ -176,60 +225,70 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Current Opportunities */}
+      {/* Recent Projects */}
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <Badge variant="outline" className="mb-4 text-primary border-primary/20">
-              Projects You Could Join Today
+              Recent Projects
             </Badge>
-            <h2 className="text-4xl font-bold mb-4">Explore Our Current Opportunities</h2>
+            <h2 className="text-4xl font-bold mb-4">Explore Our Recent Projects</h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              These hand-picked projects from innovative companies help you build real-world experience while making a meaningful impact.
+              Check out the latest projects from our community. Real opportunities for real experience.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentOpportunities.map((opportunity) => (
-              <Card key={opportunity.id} className="hover:shadow-medium transition-all duration-300 border-0 shadow-soft">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="font-semibold text-primary">{opportunity.company}</span>
-                  </div>
-                  <CardTitle className="text-lg leading-tight">
-                    {opportunity.id}: {opportunity.title}
-                  </CardTitle>
-                  <Badge variant={opportunity.type === "Pay per Task" ? "default" : "secondary"} className="w-fit">
-                    {opportunity.type}
-                  </Badge>
-                </CardHeader>
-                
-                <CardContent className="space-y-4">
-                  <CardDescription className="leading-relaxed line-clamp-4">
-                    {opportunity.description}
-                  </CardDescription>
-                  
-                  {/* <div>
-                    <h4 className="font-semibold mb-2 text-sm">Available Roles:</h4>
-                    <div className="flex flex-wrap gap-1">
-                      {opportunity.roles.map((role, roleIndex) => (
-                        <Badge key={roleIndex} variant="outline" className="text-xs">
-                          {role}
-                        </Badge>
-                      ))}
+          {projectsLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+                <p className="text-muted-foreground">Loading recent projects...</p>
+              </div>
+            </div>
+          ) : projectsError ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">{projectsError}</p>
+            </div>
+          ) : recentProjects.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No projects available yet.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {recentProjects.map((project) => (
+                <Card key={project.id} className="hover:shadow-medium transition-all duration-300 border-0 shadow-soft">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-semibold text-primary">Project #{project.id}</span>
+                      <Badge variant={getStatusBadgeVariant(project.status)}>
+                        {getStatusDisplayText(project.status)}
+                      </Badge>
                     </div>
-                  </div> */}
+                    <CardTitle className="text-lg leading-tight">
+                      {project.title}
+                    </CardTitle>
+                  </CardHeader>
                   
-                  <Link to={`/projects/${opportunity.id}`}>
-                    <Button className="w-full gap-2 group">
-                      View Project
-                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  <CardContent className="space-y-4">
+                    <CardDescription className="leading-relaxed line-clamp-4">
+                      {project.description}
+                    </CardDescription>
+                    
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span>Created {new Date(project.created_at).toLocaleDateString()}</span>
+                    </div>
+                    
+                    <Link to={`/projects/${project.id}`}>
+                      <Button className="w-full gap-2 group">
+                        View Project
+                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
           
           <div className="text-center mt-12">
             <Link to="/find-projects">

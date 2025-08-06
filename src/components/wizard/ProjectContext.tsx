@@ -244,9 +244,83 @@ const syncContractorRolesToSupabase = async (rolesData: ContractorRole[] | any[]
 
 // Sync tasks to ContractorTask table
 const syncTasksToSupabase = async (rolesData: ContractorRole[] | any[], projectId: number, ownerId: string, insertedRoles: any[]) => {
-  // TODO: Implement when ContractorTask table is available
-  console.log('Task sync skipped - ContractorTask table not available yet');
-  return [];
+  if (!supabase) {
+    throw new Error('Supabase client not configured');
+  }
+
+  try {
+    const tasksToInsert: any[] = [];
+    
+    console.log('Starting task sync for project:', projectId);
+    console.log('Roles data:', rolesData);
+    console.log('Inserted roles:', insertedRoles);
+    
+    // Map through roles and their tasks
+    rolesData.forEach((role, roleIndex) => {
+      console.log(`Processing role ${roleIndex}:`, role);
+      
+      if (role.tasks && role.tasks.length > 0) {
+        const roleId = insertedRoles[roleIndex]?.id;
+        console.log(`Role ${roleIndex} has ${role.tasks.length} tasks, roleId:`, roleId);
+        
+        if (roleId) {
+          role.tasks.forEach((task: any, taskIndex: number) => {
+            console.log(`Processing task ${taskIndex}:`, task);
+            
+            // Validate required fields
+            if (!task.name || !task.description || !task.deliverables || task.price === undefined) {
+              console.warn(`Task ${taskIndex} missing required fields:`, task);
+              return; // Skip this task
+            }
+            
+            tasksToInsert.push({
+              name: task.name,
+              description: task.description,
+              deliverables: task.deliverables,
+              price: task.price,
+              owner: ownerId,
+              Project: projectId,
+              role: roleId,
+              status: 'Pending',
+              priority: 'Medium',
+              score: null,
+              feedback: null,
+              files: null,
+              labels: null
+            });
+          });
+        } else {
+          console.warn(`No roleId found for role ${roleIndex}`);
+        }
+      } else {
+        console.log(`Role ${roleIndex} has no tasks`);
+      }
+    });
+
+    console.log('Tasks to insert:', tasksToInsert);
+
+    if (tasksToInsert.length > 0) {
+      const { data, error } = await supabase
+        .from('ContractorTask')
+        .insert(tasksToInsert)
+        .select();
+
+      if (error) {
+        console.error('Supabase contractor tasks insert error:', error);
+        throw new Error(`Database error: ${error.message}`);
+      }
+
+      console.log('Successfully inserted tasks:', data);
+      return data;
+    } else {
+      console.log('No tasks to insert');
+    }
+
+    return [];
+  } catch (error) {
+    console.error('Supabase contractor tasks sync failed:', error);
+    throw error;
+  }
 };
 
 export function ProjectWizardProvider({ children }: { children: ReactNode }) {
@@ -371,8 +445,16 @@ export function ProjectWizardProvider({ children }: { children: ReactNode }) {
         }
 
         // Finally, create the tasks for each role
-        if (projectData.contractorRoles && projectData.contractorRoles.length > 0) {
-          await syncTasksToSupabase(projectData.contractorRoles, projectId, user.id, insertedRoles);
+        if (projectData.contractorRoles && projectData.contractorRoles.length > 0 && insertedRoles.length > 0) {
+          try {
+            const insertedTasks = await syncTasksToSupabase(projectData.contractorRoles, projectId, user.id, insertedRoles);
+            console.log('Inserted tasks:', insertedTasks);
+          } catch (taskError) {
+            console.error('Task insertion failed, but project was created:', taskError);
+            // Don't fail the entire project creation if tasks fail
+          }
+        } else {
+          console.log('No roles or tasks to insert');
         }
 
         // Success feedback
