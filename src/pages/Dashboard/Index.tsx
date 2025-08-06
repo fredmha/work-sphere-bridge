@@ -1,4 +1,6 @@
-import { useApp } from '@/context/AppContext';
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/lib/supabaseClient';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,50 +13,135 @@ import {
   TrendingUp,
   AlertCircle,
   CheckCircle2,
-  Clock
+  Clock,
+  Loader2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import type { Database } from '@/types/supabase';
 
+type Tables = Database['public']['Tables'];
+type ProjectRow = Tables['projects']['Row'];
+type ContractorRoleRow = Tables['ContractorRole']['Row'];
 
+interface ProjectWithRoles extends ProjectRow {
+  title: string;
+  description: string;
+  roles: ContractorRoleRow[];
+}
 
 export default function Index() {
-  const { state } = useApp();
+  const { user } = useAuth();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+  const [projects, setProjects] = useState<ProjectWithRoles[]>([]);
+  const [stats, setStats] = useState({
+    totalProjects: 0,
+    activeProjects: 0,
+    totalRoles: 0,
+    assignedRoles: 0,
+    totalRevenue: 0
+  });
 
-  const totalProjects = state.projects.length;
-  const activeProjects = state.projects.filter(p => p.state === 'Active').length;
-  const totalContractors = state.contractors.length;
-  const totalRoles = state.projects.flatMap(p => p.roles).length;
-  const assignedRoles = state.projects.flatMap(p => p.roles).filter(r => r.assignedContractor).length;
+  // Fetch projects and calculate stats
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      if (!user?.id || !supabase) {
+        setIsLoading(false);
+        return;
+      }
 
+      try {
+        setIsLoading(true);
+
+        // Fetch projects for the current user
+        const { data: projectsData, error: projectsError } = await supabase
+          .from('projects')
+          .select('*')
+          .eq('owner_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (projectsError) throw projectsError;
+
+        // Fetch roles for all projects
+        const projectIds = projectsData?.map(p => p.id) || [];
+        let allRoles: ContractorRoleRow[] = [];
+        
+        if (projectIds.length > 0) {
+          const { data: rolesData, error: rolesError } = await supabase
+            .from('ContractorRole')
+            .select('*')
+            .in('project_id', projectIds);
+
+          if (rolesError) throw rolesError;
+          allRoles = rolesData || [];
+        }
+
+        // Transform projects with roles
+        const transformedProjects: ProjectWithRoles[] = (projectsData || []).map(project => ({
+          ...project,
+          title: project.project_name || 'Untitled Project',
+          description: project.project_description || 'No description available',
+          roles: allRoles.filter(role => role.project_id === project.id)
+        }));
+
+        setProjects(transformedProjects);
+
+        // Calculate stats
+        const totalProjects = transformedProjects.length;
+        const activeProjects = transformedProjects.filter(p => p.status === 'Active').length;
+        const totalRoles = allRoles.length;
+        const assignedRoles = allRoles.filter(r => r.contractor_id).length;
+        
+        // Calculate revenue (sum of all role pay rates for assigned roles)
+        const totalRevenue = allRoles
+          .filter(r => r.contractor_id && r.pay)
+          .reduce((sum, role) => sum + (role.pay || 0), 0);
+
+        setStats({
+          totalProjects,
+          activeProjects,
+          totalRoles,
+          assignedRoles,
+          totalRevenue
+        });
+
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [user?.id]);
 
   const handleCreateProject = () => {
     localStorage.removeItem('projectWizardState');
     sessionStorage.removeItem('projectWizardState');
     navigate('/projectwizard');
   };
-  // Calculate compliance stats
-  const totalComplianceItems = state.complianceChecklists.length * 6; // 6 items per checklist
-  const completedComplianceItems = state.complianceChecklists.reduce((sum, checklist) => {
-    const items = [
-      checklist.abnTfnStatus,
-      checklist.bankDetailsStatus,
-      checklist.superDetailsStatus,
-      checklist.workRightsStatus,
-      checklist.contractStatus,
-      checklist.fairWorkStatus
-    ];
-    return sum + items.filter(status => status === 'Complete').length;
-  }, 0);
 
-  const recentProjects = state.projects.slice(0, 3);
+  const recentProjects = projects.slice(0, 3);
   const projectsByStatus = {
-    Draft: state.projects.filter(p => p.state === 'Draft').length,
-    Published: state.projects.filter(p => p.state === 'Published').length,
-    Active: state.projects.filter(p => p.state === 'Active').length,
-    Completed: state.projects.filter(p => p.state === 'Completed').length,
+    Draft: projects.filter(p => p.status === 'Draft').length,
+    Published: projects.filter(p => p.status === 'Published').length,
+    Active: projects.filter(p => p.status === 'Active').length,
+    Completed: projects.filter(p => p.status === 'Completed').length,
   };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
+            <p className="text-muted-foreground">Loading dashboard...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-6 space-y-8">
@@ -90,9 +177,9 @@ export default function Index() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalProjects}</div>
+            <div className="text-2xl font-bold">{stats.totalProjects}</div>
             <p className="text-xs text-muted-foreground">
-              {activeProjects} currently active
+              {stats.activeProjects} currently active
             </p>
           </CardContent>
         </Card>
@@ -105,9 +192,9 @@ export default function Index() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalContractors}</div>
+            <div className="text-2xl font-bold">{stats.assignedRoles}</div>
             <p className="text-xs text-muted-foreground">
-              {assignedRoles}/{totalRoles} roles assigned
+              {stats.assignedRoles}/{stats.totalRoles} roles assigned
             </p>
           </CardContent>
         </Card>
@@ -121,10 +208,10 @@ export default function Index() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {totalComplianceItems > 0 ? Math.round((completedComplianceItems / totalComplianceItems) * 100) : 0}%
+              {stats.totalRoles > 0 ? Math.round((stats.assignedRoles / stats.totalRoles) * 100) : 0}%
             </div>
             <p className="text-xs text-muted-foreground">
-              {completedComplianceItems}/{totalComplianceItems} items complete
+              {stats.assignedRoles}/{stats.totalRoles} roles assigned
             </p>
           </CardContent>
         </Card>
@@ -137,9 +224,9 @@ export default function Index() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$24,580</div>
+            <div className="text-2xl font-bold">${stats.totalRevenue.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
-              +12% from last month
+              Total from assigned roles
             </p>
           </CardContent>
         </Card>
@@ -152,49 +239,57 @@ export default function Index() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-xl">Recent Projects</CardTitle>
-                <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80">
-                  View All
-                </Button>
+                <Link to="/dashboard/projects">
+                  <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80">
+                    View All
+                  </Button>
+                </Link>
               </div>
             </CardHeader>
             <CardContent className="flex flex-col space-y-4">
-              {recentProjects.map(project => {
-                const assignedRoles = project.roles.filter(r => r.assignedContractor).length;
-                const totalRoles = project.roles.length;
-                const progress = totalRoles > 0 ? (assignedRoles / totalRoles) * 100 : 0;
+              {recentProjects.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">No projects yet. Create your first project to get started!</p>
+                </div>
+              ) : (
+                recentProjects.map(project => {
+                  const assignedRoles = project.roles.filter(r => r.contractor_id).length;
+                  const totalRoles = project.roles.length;
+                  const progress = totalRoles > 0 ? (assignedRoles / totalRoles) * 100 : 0;
 
-                return (
-                  <Link key={project.id} to={`/project/${project.id}`}>
-                    <div className="p-4 rounded-lg border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-md hover:shadow-primary/5 cursor-pointer group">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1">
-                          <h3 className="font-semibold group-hover:text-primary transition-colors">
-                            {project.title}
-                          </h3>
-                          <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                            {project.description}
-                          </p>
+                  return (
+                    <Link key={project.id} to={`/dashboard/project/${project.id}`}>
+                      <div className="p-4 rounded-lg border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-md hover:shadow-primary/5 cursor-pointer group">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <h3 className="font-semibold group-hover:text-primary transition-colors">
+                              {project.title}
+                            </h3>
+                            <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                              {project.description}
+                            </p>
+                          </div>
+                          <Badge variant={
+                            project.status === 'Active' ? 'default' :
+                            project.status === 'Draft' ? 'secondary' :
+                            project.status === 'Published' ? 'warning' : 'outline'
+                          }>
+                            {project.status}
+                          </Badge>
                         </div>
-                        <Badge variant={
-                          project.state === 'Active' ? 'default' :
-                          project.state === 'Draft' ? 'secondary' :
-                          project.state === 'Published' ? 'warning' : 'outline'
-                        }>
-                          {project.state}
-                        </Badge>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-xs text-muted-foreground">
-                          <span>Team Assignment</span>
-                          <span>{assignedRoles}/{totalRoles} roles filled</span>
+                        
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-xs text-muted-foreground">
+                            <span>Team Assignment</span>
+                            <span>{assignedRoles}/{totalRoles} roles filled</span>
+                          </div>
+                          <Progress value={progress} className="h-1.5" />
                         </div>
-                        <Progress value={progress} className="h-1.5" />
                       </div>
-                    </div>
-                  </Link>
-                );
-              })}
+                    </Link>
+                  );
+                })
+              )}
             </CardContent>
           </Card>
         </div>
@@ -249,8 +344,12 @@ export default function Index() {
             <CardHeader>
               <CardTitle className="text-lg">Quick Actions</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <Button variant="outline" className="w-full justify-start gap-3 h-auto py-3">
+            <CardContent className="flex flex-col space-y-2">
+              <Button 
+                onClick={handleCreateProject}
+                variant="outline" 
+                className="w-full justify-start gap-3 h-auto py-3"
+              >
                 <Plus className="w-4 h-4" />
                 <div className="text-left">
                   <div className="font-medium">Create Project</div>
@@ -258,21 +357,25 @@ export default function Index() {
                 </div>
               </Button>
               
-              <Button variant="outline" className="w-full justify-start gap-3 h-auto py-3">
-                <Users className="w-4 h-4" />
-                <div className="text-left">
-                  <div className="font-medium">Manage Contractors</div>
-                  <div className="text-xs text-muted-foreground">View all contractors</div>
-                </div>
-              </Button>
+              <Link to="/dashboard/projects">
+                <Button variant="outline" className="w-full justify-start gap-3 h-auto py-3">
+                  <Users className="w-4 h-4" />
+                  <div className="text-left">
+                    <div className="font-medium">Manage Projects</div>
+                    <div className="text-xs text-muted-foreground">View all projects</div>
+                  </div>
+                </Button>
+              </Link>
 
-              <Button variant="outline" className="w-full justify-start gap-3 h-auto py-3">
-                <CheckCircle2 className="w-4 h-4" />
-                <div className="text-left">
-                  <div className="font-medium">Review Compliance</div>
-                  <div className="text-xs text-muted-foreground">Check pending items</div>
-                </div>
-              </Button>
+              <Link to="/dashboard/contractors">
+                <Button variant="outline" className="w-full justify-start gap-3 h-auto py-3">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <div className="text-left">
+                    <div className="font-medium">Contractors</div>
+                    <div className="text-xs text-muted-foreground">Manage contractors</div>
+                  </div>
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </div>
