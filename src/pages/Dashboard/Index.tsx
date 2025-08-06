@@ -157,7 +157,7 @@ export default function Index() {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="flex flex-col space-y-4">
               {recentProjects.map(project => {
                 const assignedRoles = project.roles.filter(r => r.assignedContractor).length;
                 const totalRoles = project.roles.length;
