@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Users, Building2, Search, Plus, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthProvider";
 
 const Index = () => {
   const { user, isLoading } = useAuth();
