@@ -11,7 +11,7 @@ import type { Contractor, ContractorRole, ContractorTask, projects } from '@/typ
 import { CONTRACTOR_TYPE_OPTIONS, ContractorType } from '@/constants/contractorType';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/AuthProvider';
 
 const columns = ["Pending", "Submitted", "Confirmed"];
 

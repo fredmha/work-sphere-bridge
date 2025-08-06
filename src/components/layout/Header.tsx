@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthProvider";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { useState } from "react";
 import { LogOut, User, Building2, Briefcase, Loader2 } from "lucide-react";
