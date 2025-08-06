@@ -19,7 +19,7 @@ type ProjectRow = Tables['projects']['Row'];
 type ContractorRoleRow = Tables['ContractorRole']['Row'];
 
 // Extended project type that includes computed fields
-interface Project extends ProjectRow {
+interface DatabaseProject extends ProjectRow {
   title: string;
   description: string;
   roles: ContractorRoleRow[];
@@ -34,7 +34,7 @@ export function ProjectDetailPage() {
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   
   // Project data state
-  const [project, setProject] = useState<Project | null>(null);
+  const [project, setProject] = useState<DatabaseProject | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -74,7 +74,7 @@ export function ProjectDetailPage() {
         if (rolesError) throw rolesError;
 
         // Transform project data
-        const transformedProject: Project = {
+        const transformedProject: DatabaseProject = {
           ...projectData,
           title: projectData.project_name || 'Untitled Project',
           description: projectData.project_description || 'No description available',
@@ -97,6 +97,15 @@ export function ProjectDetailPage() {
     setSelectedContractor(contractorId);
     setSelectedRole(roleId);
     setComplianceModalOpen(true);
+  };
+
+  const handleRolesUpdate = (updatedRoles: ContractorRoleRow[]) => {
+    if (project) {
+      setProject({
+        ...project,
+        roles: updatedRoles
+      });
+    }
   };
 
   // Loading state
@@ -151,6 +160,7 @@ export function ProjectDetailPage() {
           <RolesTab 
             project={project} 
             onOpenCompliance={openComplianceModal}
+            onRolesUpdate={handleRolesUpdate}
           />
         )}
         {activeTab === 'tasks' && <TasksTab project={project} />}

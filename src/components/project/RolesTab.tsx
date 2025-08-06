@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -11,8 +12,11 @@ import {
   AlertCircle,
   MessageSquare,
   FileText,
-  Plus
+  Plus,
+  Edit3
 } from 'lucide-react';
+import { RoleModal } from './RoleModal';
+import { supabase } from '@/lib/supabaseClient';
 import type { Database } from '@/types/supabase';
 
 type Tables = Database['public']['Tables'];
@@ -20,18 +24,22 @@ type ProjectRow = Tables['projects']['Row'];
 type ContractorRoleRow = Tables['ContractorRole']['Row'];
 
 // Extended project type that includes computed fields
-interface Project extends ProjectRow {
+interface DatabaseProject extends ProjectRow {
   title: string;
   description: string;
   roles: ContractorRoleRow[];
 }
 
 interface RolesTabProps {
-  project: Project;
+  project: DatabaseProject;
   onOpenCompliance: (contractorId: string, roleId: string) => void;
+  onRolesUpdate?: (roles: ContractorRoleRow[]) => void;
 }
 
-export function RolesTab({ project, onOpenCompliance }: RolesTabProps) {
+export function RolesTab({ project, onOpenCompliance, onRolesUpdate }: RolesTabProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingRole, setEditingRole] = useState<ContractorRoleRow | null>(null);
+
   const getStatusVariant = (hasContractor: boolean) => {
     return hasContractor ? 'default' : 'secondary';
   };
@@ -44,28 +52,86 @@ export function RolesTab({ project, onOpenCompliance }: RolesTabProps) {
     }
   };
 
+  const handleAddRole = () => {
+    setEditingRole(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEditRole = (role: ContractorRoleRow) => {
+    setEditingRole(role);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveRole = async (roleData: Partial<ContractorRoleRow>) => {
+    try {
+      if (editingRole) {
+        // Update existing role
+        const { error } = await supabase
+          .from('ContractorRole')
+          .update(roleData)
+          .eq('id', editingRole.id);
+
+        if (error) throw error;
+      } else {
+        // Create new role
+        const { error } = await supabase
+          .from('ContractorRole')
+          .insert(roleData);
+
+        if (error) throw error;
+      }
+
+      // Refresh roles by calling the update callback
+      if (onRolesUpdate) {
+        const { data: updatedRoles } = await supabase
+          .from('ContractorRole')
+          .select('*')
+          .eq('project_id', project.id);
+        
+        onRolesUpdate(updatedRoles || []);
+      }
+
+      setIsModalOpen(false);
+      setEditingRole(null);
+    } catch (error) {
+      console.error('Error saving role:', error);
+      alert('Failed to save role. Please try again.');
+    }
+  };
+
   const renderRoleCard = (role: ContractorRoleRow) => {
     // A role is truly assigned only if it has a contractor_id
     const isAssigned = !!role.contractor_id;
     const applications = 0; // TODO: Implement applications table
 
     return (
-      <Card key={role.id} className="glass-card border-border/50 hover:border-border transition-colors">
+      <Card key={role.id} className="glass-card border-border/50 hover:border-border transition-colors relative">
+        {/* Edit button in top right corner */}
+        <div className="absolute top-3 right-3 z-10">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleEditRole(role)}
+            className="h-8 w-8 p-0 hover:bg-background/80"
+          >
+            <Edit3 className="w-4 h-4" />
+          </Button>
+        </div>
+
         <CardHeader className="pb-4">
           <div className="flex items-start justify-between">
-            <div className="space-y-2">
+            <div className="space-y-2 pr-12">
               <CardTitle className="text-lg font-semibold">{role.role}</CardTitle>
               <div className="flex items-center gap-2">
                 <Badge variant="outline">
                   {role.type || 'General'}
                 </Badge>
-                <Badge variant={getStatusVariant(isAssigned)}>
-                  {isAssigned ? 'Assigned' : 'Unassigned'}
-                </Badge>
                 {role.pay && (
-                  <span className="text-sm text-muted-foreground">
-                    ${role.pay}/hour
-                  </span>
+                  <Badge variant={getStatusVariant(isAssigned)}>
+                    <span className="text-lm">
+                      ${role.pay}/hour
+                    </span>
+                  </Badge>
                 )}
               </div>
             </div>
@@ -133,7 +199,7 @@ export function RolesTab({ project, onOpenCompliance }: RolesTabProps) {
             Manage contractor roles and assignments for this project
           </p>
         </div>
-        <Button>
+        <Button onClick={handleAddRole}>
           <Plus className="w-4 h-4 mr-2" />
           Add Role
         </Button>
@@ -147,7 +213,7 @@ export function RolesTab({ project, onOpenCompliance }: RolesTabProps) {
             <p className="text-muted-foreground mb-4">
               Create contractor roles to start building your project team.
             </p>
-            <Button>
+            <Button onClick={handleAddRole}>
               <Plus className="w-4 h-4 mr-2" />
               Create First Role
             </Button>
@@ -158,6 +224,17 @@ export function RolesTab({ project, onOpenCompliance }: RolesTabProps) {
           {project.roles.map(renderRoleCard)}
         </div>
       )}
+
+      <RoleModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingRole(null);
+        }}
+        onSave={handleSaveRole}
+        role={editingRole}
+        projectId={project.id}
+      />
     </div>
   );
 }
