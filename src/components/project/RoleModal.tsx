@@ -34,7 +34,7 @@ export function RoleModal({ isOpen, onClose, onSave, role, projectId }: RoleModa
       setFormData({
         role: role.role || '',
         description: role.description || '',
-        type: (role.type as 'Milestone' | 'Timesheet') || 'Milestone',
+        type: (role.type === 'milestone' ? 'Milestone' : role.type === 'timesheet' ? 'Timesheet' : 'Milestone') as 'Milestone' | 'Timesheet',
         pay: role.pay,
       });
     } else {
@@ -57,9 +57,10 @@ export function RoleModal({ isOpen, onClose, onSave, role, projectId }: RoleModa
     const roleData: Partial<ContractorRoleRow> = {
       role: formData.role,
       description: formData.description,
-      type: formData.type,
+      type: formData.type === 'Milestone' ? 'milestone' : 'timesheet',
       pay: formData.type === 'Timesheet' ? formData.pay : null,
       project_id: projectId,
+      contractor_id: null,
       created_at: new Date().toISOString(),
     };
 
