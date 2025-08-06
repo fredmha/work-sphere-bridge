@@ -1,60 +1,77 @@
 import { useState } from 'react';
-import { useApp } from '@/context/AppContext';
+import { supabase } from '@/lib/supabaseClient';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Task } from '@/types/entities';
+import { useParams } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
 interface AddTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
   roleId: string;
   availableContractors?: { id: string; name: string }[];
+  onTaskAdded?: () => void;
 }
 
-export function AddTaskModal({ isOpen, onClose, roleId, availableContractors = [] }: AddTaskModalProps) {
-  const { dispatch } = useApp();
+export function AddTaskModal({ isOpen, onClose, roleId, availableContractors = [], onTaskAdded }: AddTaskModalProps) {
+  const { id: projectId } = useParams<{ id: string }>();
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     deliverables: '',
     price: '',
-    assignedContractor: ''
+    priority: 'Medium'
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const newTask: Task = {
-      id: `task-${Date.now()}`,
-      roleId,
-      name: formData.name,
-      description: formData.description,
-      deliverables: formData.deliverables,
-      price: parseFloat(formData.price) || 0,
-      status: 'Pending',
-      labels: [],
-      files: [],
-      position: 0,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
+    if (!projectId || !user) return;
 
-    dispatch({ type: 'ADD_TASK', payload: newTask });
+    setIsLoading(true);
     
-    // Reset form
-    setFormData({
-      name: '',
-      description: '',
-      deliverables: '',
-      price: '',
-      assignedContractor: ''
-    });
-    
-    onClose();
+    try {
+      const { error } = await supabase
+        .from('ContractorTask')
+        .insert({
+          name: formData.name,
+          description: formData.description,
+          deliverables: formData.deliverables,
+          price: parseFloat(formData.price) || 0,
+          priority: formData.priority,
+          status: 'Pending',
+          Project: parseInt(projectId),
+          role: parseInt(roleId),
+          owner: user.id
+        });
+
+      if (error) throw error;
+
+      // Reset form
+      setFormData({
+        name: '',
+        description: '',
+        deliverables: '',
+        price: '',
+        priority: 'Medium'
+      });
+      
+      // Notify parent component to refresh tasks
+      onTaskAdded?.();
+      onClose();
+      
+    } catch (error) {
+      console.error('Error creating task:', error);
+      alert('Failed to create task. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -112,6 +129,23 @@ export function AddTaskModal({ isOpen, onClose, roleId, availableContractors = [
             />
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="priority">Priority</Label>
+            <Select
+              value={formData.priority}
+              onValueChange={(value) => setFormData({ ...formData, priority: value })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select priority" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Low">Low</SelectItem>
+                <SelectItem value="Medium">Medium</SelectItem>
+                <SelectItem value="High">High</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {availableContractors.length > 0 && (
             <div className="space-y-2">
               <Label htmlFor="contractor">Assign to Contractor (Optional)</Label>
@@ -135,10 +169,12 @@ export function AddTaskModal({ isOpen, onClose, roleId, availableContractors = [
           )}
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
               Cancel
             </Button>
-            <Button type="submit">Add Task</Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? 'Adding...' : 'Add Task'}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

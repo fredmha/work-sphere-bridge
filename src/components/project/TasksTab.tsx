@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { Project, Task, TaskStatus } from '@/types/entities';
-import { useApp } from '@/context/AppContext';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { supabase } from '@/lib/supabaseClient';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -19,15 +19,22 @@ import {
   MessageSquare, 
   DollarSign,
   Clock,
-  User
+  User,
+  Loader2
 } from 'lucide-react';
+import type { Database } from '@/types/supabase';
+
+type Tables = Database['public']['Tables'];
+type ProjectRow = Tables['projects']['Row'];
+type ContractorRoleRow = Tables['ContractorRole']['Row'];
+type ContractorTaskRow = Tables['ContractorTask']['Row'];
 
 interface TasksTabProps {
-  project: Project;
+  project?: ProjectRow;
 }
 
 interface TaskColumn {
-  id: TaskStatus;
+  id: string;
   title: string;
   color: string;
 }
@@ -40,80 +47,161 @@ const columns: TaskColumn[] = [
 ];
 
 export function TasksTab({ project }: TasksTabProps) {
-  const { state, dispatch } = useApp();
-  const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const { id: projectId } = useParams<{ id: string }>();
+  const [selectedRole, setSelectedRole] = useState<number | null>(null);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [feedbackModal, setFeedbackModal] = useState<{
     isOpen: boolean;
-    taskId?: string;
+    taskId?: number;
     taskName?: string;
   }>({ isOpen: false });
+  
+  // Data states
+  const [roles, setRoles] = useState<ContractorRoleRow[]>([]);
+  const [tasks, setTasks] = useState<ContractorTaskRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const milestoneRoles = project.roles.filter(role => role.type === 'Milestone');
-  const currentRole = selectedRole 
-    ? milestoneRoles.find(r => r.id === selectedRole)
-    : milestoneRoles[0];
+  // Fetch roles and tasks for the project
+  useEffect(() => {
+    const fetchProjectData = async () => {
+      if (!projectId) return;
 
-  const getContractorById = (id: string) => {
-    return state.contractors.find(c => c.id === id);
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Fetch contractor roles for this project
+        const { data: rolesData, error: rolesError } = await supabase
+          .from('ContractorRole')
+          .select('*')
+          .eq('project_id', parseInt(projectId))
+          .eq('type', 'milestone');
+
+        if (rolesError) throw rolesError;
+
+        setRoles(rolesData || []);
+        
+        // Set first role as selected if available
+        if (rolesData && rolesData.length > 0 && !selectedRole) {
+          setSelectedRole(rolesData[0].id);
+        }
+
+        // Fetch tasks for this project
+        const { data: tasksData, error: tasksError } = await supabase
+          .from('ContractorTask')
+          .select('*')
+          .eq('Project', parseInt(projectId));
+
+        if (tasksError) throw tasksError;
+
+        setTasks(tasksData || []);
+
+      } catch (err) {
+        console.error('Error fetching project data:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load project data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjectData();
+  }, [projectId, selectedRole]);
+
+  // Function to refresh tasks
+  const refreshTasks = async () => {
+    if (!projectId) return;
+
+    try {
+      const { data: tasksData, error: tasksError } = await supabase
+        .from('ContractorTask')
+        .select('*')
+        .eq('Project', parseInt(projectId));
+
+      if (tasksError) throw tasksError;
+
+      setTasks(tasksData || []);
+    } catch (err) {
+      console.error('Error refreshing tasks:', err);
+    }
   };
 
-  const handleDragEnd = (result: DropResult) => {
+  const currentRole = selectedRole 
+    ? roles.find(r => r.id === selectedRole)
+    : roles[0];
+
+  const getTasksForRole = (roleId: number) => {
+    return tasks.filter(task => task.role === roleId);
+  };
+
+  const handleDragEnd = async (result: DropResult) => {
     if (!result.destination || !currentRole) return;
 
-    const taskId = result.draggableId;
-    const newStatus = result.destination.droppableId as TaskStatus;
-    const task = currentRole.tasks?.find(t => t.id === taskId);
+    const taskId = parseInt(result.draggableId);
+    const newStatus = result.destination.droppableId;
+    const task = tasks.find(t => t.id === taskId);
 
-    // If moving to "Accepted", trigger feedback modal and payment sync
-    if (newStatus === 'Accepted' && task) {
+    if (!task) return;
+
+    // If moving to "Accepted", trigger feedback modal
+    if (newStatus === 'Accepted') {
       setFeedbackModal({
         isOpen: true,
         taskId: task.id,
-        taskName: task.name
-      });
-      
-      // Move task amount to payments section (visual sync)
-      dispatch({
-        type: 'ADD_PAYMENT',
-        payload: {
-          id: `payment-${Date.now()}`,
-          contractorId: currentRole.assignedContractor!,
-          roleId: currentRole.id,
-          taskId: task.id,
-          amount: task.price,
-          currency: 'AUD',
-          status: 'Pending',
-          auditLog: [],
-          createdAt: new Date().toISOString()
-        }
+        taskName: task.name || 'Unknown Task'
       });
     }
 
-    dispatch({
-      type: 'UPDATE_TASK_STATUS',
-      payload: { id: taskId, status: newStatus }
-    });
+    // Update task status in database
+    try {
+      const { error } = await supabase
+        .from('ContractorTask')
+        .update({ status: newStatus })
+        .eq('id', taskId);
+
+      if (error) throw error;
+
+      // Update local state
+      setTasks(prev => prev.map(t => 
+        t.id === taskId ? { ...t, status: newStatus } : t
+      ));
+
+    } catch (err) {
+      console.error('Error updating task status:', err);
+    }
   };
 
-  const handleFeedbackSubmit = (rating: number, feedback: string) => {
-    // Here you would typically save the feedback to your backend
-    console.log('Task feedback submitted:', { 
-      taskId: feedbackModal.taskId, 
-      rating, 
-      feedback 
-    });
+  const handleFeedbackSubmit = async (rating: number, feedback: string) => {
+    if (!feedbackModal.taskId) return;
+
+    try {
+      const { error } = await supabase
+        .from('ContractorTask')
+        .update({ 
+          score: rating,
+          feedback: feedback
+        })
+        .eq('id', feedbackModal.taskId);
+
+      if (error) throw error;
+
+      // Update local state
+      setTasks(prev => prev.map(t => 
+        t.id === feedbackModal.taskId 
+          ? { ...t, score: rating, feedback: feedback }
+          : t
+      ));
+
+    } catch (err) {
+      console.error('Error updating task feedback:', err);
+    }
     
     setFeedbackModal({ isOpen: false });
   };
 
-  const renderTaskCard = (task: Task, index: number) => {
-    const contractor = currentRole?.assignedContractor 
-      ? getContractorById(currentRole.assignedContractor)
-      : null;
-
+  const renderTaskCard = (task: ContractorTaskRow, index: number) => {
     return (
-      <Draggable key={task.id} draggableId={task.id} index={index}>
+      <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
         {(provided, snapshot) => (
           <div
             ref={provided.innerRef}
@@ -139,18 +227,10 @@ export function TasksTab({ project }: TasksTabProps) {
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  {contractor && (
-                    <Avatar className="w-6 h-6">
-                      <AvatarImage src={contractor.profilePicture} />
-                      <AvatarFallback className="text-xs">
-                        {contractor.name.split(' ').map(n => n[0]).join('')}
-                      </AvatarFallback>
-                    </Avatar>
-                  )}
-                  {task.deliverables && task.deliverables.length > 0 && (
+                  {task.deliverables && (
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Paperclip className="w-3 h-3" />
-                      {task.deliverables.length}
+                      Deliverables
                     </div>
                   )}
                 </div>
@@ -169,7 +249,8 @@ export function TasksTab({ project }: TasksTabProps) {
   };
 
   const renderColumn = (column: TaskColumn) => {
-    const tasks = currentRole?.tasks?.filter(task => task.status === column.id) || [];
+    const roleTasks = currentRole ? getTasksForRole(currentRole.id) : [];
+    const tasksInColumn = roleTasks.filter(task => task.status === column.id);
 
     return (
       <div key={column.id} className="flex-1 min-h-[500px]">
@@ -178,11 +259,11 @@ export function TasksTab({ project }: TasksTabProps) {
             <div className="flex items-center gap-2">
               <h3 className="font-semibold text-sm">{column.title}</h3>
               <Badge variant="secondary" className="text-xs">
-                {tasks.length}
+                {tasksInColumn.length}
               </Badge>
             </div>
-            {column.id === 'Pending' && currentRole?.type === 'Milestone' && 
-             currentRole?.status === 'open' && !currentRole?.assignedContractor && (
+            {column.id === 'Pending' && currentRole?.type === 'milestone' && 
+             currentRole?.status === 'open' && !currentRole?.contractor_id && (
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -203,10 +284,10 @@ export function TasksTab({ project }: TasksTabProps) {
                   snapshot.isDraggingOver ? 'bg-primary/5 rounded-lg' : ''
                 }`}
               >
-                {tasks.map((task, index) => renderTaskCard(task, index))}
+                {tasksInColumn.map((task, index) => renderTaskCard(task, index))}
                 {provided.placeholder}
                 
-                {tasks.length === 0 && (
+                {tasksInColumn.length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
                     <p className="text-xs">No {column.title.toLowerCase()} tasks</p>
                   </div>
@@ -218,6 +299,26 @@ export function TasksTab({ project }: TasksTabProps) {
       </div>
     );
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-8 h-8 animate-spin" />
+        <span className="ml-2">Loading tasks...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-500 mb-4">Error: {error}</p>
+        <Button onClick={() => window.location.reload()}>Retry</Button>
+      </div>
+    );
+  }
+
+  const milestoneRoles = roles.filter(role => role.type === 'milestone');
 
   if (milestoneRoles.length === 0) {
     return (
@@ -236,34 +337,22 @@ export function TasksTab({ project }: TasksTabProps) {
       {/* Role Selector */}
       {milestoneRoles.length > 1 && (
         <div className="flex gap-2 flex-wrap">
-          {milestoneRoles.map(role => {
-            const contractor = role.assignedContractor ? getContractorById(role.assignedContractor) : null;
-            
-            return (
-              <Button
-                key={role.id}
-                variant={selectedRole === role.id || (!selectedRole && role === milestoneRoles[0]) ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedRole(role.id)}
-                className="flex items-center gap-2"
-              >
-                {contractor && (
-                  <Avatar className="w-4 h-4">
-                    <AvatarImage src={contractor.profilePicture} />
-                    <AvatarFallback className="text-xs">
-                      {contractor.name.split(' ').map(n => n[0]).join('')}
-                    </AvatarFallback>
-                  </Avatar>
-                )}
-                {role.name}
-                {role.tasks && (
-                  <Badge variant="secondary" className="text-xs">
-                    {role.tasks.length}
-                  </Badge>
-                )}
-              </Button>
-            );
-          })}
+          {milestoneRoles.map(role => (
+            <Button
+              key={role.id}
+              variant={selectedRole === role.id || (!selectedRole && role === milestoneRoles[0]) ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedRole(role.id)}
+              className="flex items-center gap-2"
+            >
+              {role.role}
+              {getTasksForRole(role.id).length > 0 && (
+                <Badge variant="secondary" className="text-xs">
+                  {getTasksForRole(role.id).length}
+                </Badge>
+              )}
+            </Button>
+          ))}
         </div>
       )}
 
@@ -272,11 +361,11 @@ export function TasksTab({ project }: TasksTabProps) {
         <Card className="glass-card border-border/50">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">{currentRole.name}</CardTitle>
+              <CardTitle className="text-lg">{currentRole.role}</CardTitle>
               <div className="flex items-center gap-2">
                 <Badge variant="outline">Milestone Role</Badge>
                 <span className="text-sm text-muted-foreground">
-                  ${currentRole.payRate}/milestone
+                  ${currentRole.pay}/milestone
                 </span>
               </div>
             </div>
@@ -286,11 +375,11 @@ export function TasksTab({ project }: TasksTabProps) {
               <p className="text-sm text-muted-foreground">
                 {currentRole.description}
               </p>
-              {currentRole.assignedContractor && (
+              {currentRole.contractor_id && (
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4 text-muted-foreground" />
                   <span className="text-sm">
-                    {getContractorById(currentRole.assignedContractor)?.name}
+                    Contractor Assigned
                   </span>
                 </div>
               )}
@@ -308,7 +397,7 @@ export function TasksTab({ project }: TasksTabProps) {
         </DragDropContext>
       )}
 
-      {!currentRole?.assignedContractor && (
+      {!currentRole?.contractor_id && (
         <div className="text-center py-8 glass-card rounded-lg border border-border/50">
           <User className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
           <h3 className="text-lg font-semibold mb-2">No Contractor Assigned</h3>
@@ -323,7 +412,8 @@ export function TasksTab({ project }: TasksTabProps) {
         <AddTaskModal
           isOpen={showAddTaskModal}
           onClose={() => setShowAddTaskModal(false)}
-          roleId={currentRole.id}
+          roleId={currentRole.id.toString()}
+          onTaskAdded={refreshTasks}
         />
       )}
 
