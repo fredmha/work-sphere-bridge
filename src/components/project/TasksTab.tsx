@@ -423,9 +423,17 @@ export function TasksTab({ project }: TasksTabProps) {
               <CardTitle className="text-lg">{currentRole.role}</CardTitle>
               <div className="flex items-center gap-2">
                 <Badge variant="outline">Milestone Role</Badge>
-                <span className="text-sm text-muted-foreground">
+                {/* <span className="text-sm text-muted-foreground">
                   ${currentRole.pay}/milestone
-                </span>
+                </span> */}
+                <Button
+                  size="sm"
+                  onClick={() => setShowAddTaskModal(true)}
+                  className="ml-2"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Task
+                </Button>
               </div>
             </div>
           </CardHeader>
