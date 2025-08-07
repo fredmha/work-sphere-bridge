@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -6,69 +6,97 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useParams } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
+import type { Database } from '@/types/supabase';
 
-interface AddTaskModalProps {
+type Tables = Database['public']['Tables'];
+type ContractorTaskRow = Tables['ContractorTask']['Row'];
+
+interface EditTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
-  roleId: string;
-  availableContractors?: { id: string; name: string }[];
-  onTaskAdded?: () => void;
+  task: ContractorTaskRow | null;
+  onTaskUpdated?: () => void;
 }
 
-export function AddTaskModal({ isOpen, onClose, roleId, availableContractors = [], onTaskAdded }: AddTaskModalProps) {
-  const { id: projectId } = useParams<{ id: string }>();
-  const { user } = useAuth();
+export function EditTaskModal({ isOpen, onClose, task, onTaskUpdated }: EditTaskModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     deliverables: '',
     price: '',
-    priority: 'Medium'
+    priority: 'Medium',
+    status: 'Pending'
   });
+
+  // Update form data when task changes
+  useEffect(() => {
+    if (task) {
+      setFormData({
+        name: task.name || '',
+        description: task.description || '',
+        deliverables: task.deliverables || '',
+        price: task.price?.toString() || '',
+        priority: task.priority || 'Medium',
+        status: task.status || 'Pending'
+      });
+    }
+  }, [task]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!projectId || !user) return;
+    if (!task) return;
 
     setIsLoading(true);
     
     try {
       const { error } = await supabase
         .from('ContractorTask')
-        .insert({
+        .update({
           name: formData.name,
           description: formData.description,
           deliverables: formData.deliverables,
           price: parseFloat(formData.price) || 0,
           priority: formData.priority,
-          status: 'Pending',
-          Project: parseInt(projectId),
-          role: parseInt(roleId),
-          owner: user.id
-        });
+          status: formData.status
+        })
+        .eq('id', task.id);
 
       if (error) throw error;
 
-      // Reset form
-      setFormData({
-        name: '',
-        description: '',
-        deliverables: '',
-        price: '',
-        priority: 'Medium'
-      });
-      
       // Notify parent component to refresh tasks
-      onTaskAdded?.();
+      onTaskUpdated?.();
       onClose();
       
     } catch (error) {
-      console.error('Error creating task:', error);
-      alert('Failed to create task. Please try again.');
+      console.error('Error updating task:', error);
+      alert('Failed to update task. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!task || !confirm('Are you sure you want to delete this task?')) return;
+
+    setIsLoading(true);
+    
+    try {
+      const { error } = await supabase
+        .from('ContractorTask')
+        .delete()
+        .eq('id', task.id);
+
+      if (error) throw error;
+
+      // Notify parent component to refresh tasks
+      onTaskUpdated?.();
+      onClose();
+      
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      alert('Failed to delete task. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +106,7 @@ export function AddTaskModal({ isOpen, onClose, roleId, availableContractors = [
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Add New Task</DialogTitle>
+          <DialogTitle>Edit Task</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -146,41 +174,44 @@ export function AddTaskModal({ isOpen, onClose, roleId, availableContractors = [
             </Select>
           </div>
 
-          {availableContractors.length > 0 && (
-            <div className="space-y-2">
-              <Label htmlFor="contractor">Assign to Contractor (Optional)</Label>
-              <Select
-                value=""
-                onValueChange={(value) => {
-                  // Handle contractor assignment if needed
-                  console.log('Contractor selected:', value);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select contractor" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">Unassigned</SelectItem>
-                  {availableContractors.map((contractor) => (
-                    <SelectItem key={contractor.id} value={contractor.id}>
-                      {contractor.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
+          <div className="space-y-2">
+            <Label htmlFor="status">Status</Label>
+            <Select
+              value={formData.status}
+              onValueChange={(value) => setFormData({ ...formData, status: value })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Pending">Pending</SelectItem>
+                <SelectItem value="Submitted">Submitted</SelectItem>
+                <SelectItem value="Accepted">Accepted</SelectItem>
+                <SelectItem value="Completed">Completed</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'Adding...' : 'Add Task'}
-            </Button>
+          <DialogFooter className="flex justify-between">
+            {/* <Button 
+              type="button" 
+              variant="destructive" 
+              onClick={handleDelete}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Deleting...' : 'Delete Task'}
+            </Button> */}
+            <div className="flex gap-2">
+              {/* <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
+                Cancel
+              </Button> */}
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? 'Updating...' : 'Update Task'}
+              </Button>
+            </div>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
   );
-}
+} 

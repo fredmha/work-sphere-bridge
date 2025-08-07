@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AddTaskModal } from './AddTaskModal';
+import { EditTaskModal } from './EditTaskModal';
 import { FeedbackModal } from './FeedbackModal';
 import { 
   DragDropContext, 
@@ -20,9 +21,13 @@ import {
   DollarSign,
   Clock,
   User,
-  Loader2
+  Loader2,
+  MoreVertical,
+  Edit,
+  Trash2
 } from 'lucide-react';
 import type { Database } from '@/types/supabase';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 type Tables = Database['public']['Tables'];
 type ProjectRow = Tables['projects']['Row'];
@@ -61,6 +66,7 @@ export function TasksTab({ project }: TasksTabProps) {
   const [tasks, setTasks] = useState<ContractorTaskRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editingTask, setEditingTask] = useState<ContractorTaskRow | null>(null);
 
   // Fetch roles and tasks for the project
   useEffect(() => {
@@ -123,6 +129,26 @@ export function TasksTab({ project }: TasksTabProps) {
       setTasks(tasksData || []);
     } catch (err) {
       console.error('Error refreshing tasks:', err);
+    }
+  };
+
+  // Function to delete a task
+  const handleDeleteTask = async (taskId: number) => {
+    if (!confirm('Are you sure you want to delete this task?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('ContractorTask')
+        .delete()
+        .eq('id', taskId);
+
+      if (error) throw error;
+
+      // Refresh tasks after deletion
+      await refreshTasks();
+    } catch (err) {
+      console.error('Error deleting task:', err);
+      alert('Failed to delete task. Please try again.');
     }
   };
 
@@ -207,16 +233,49 @@ export function TasksTab({ project }: TasksTabProps) {
             ref={provided.innerRef}
             {...provided.draggableProps}
             {...provided.dragHandleProps}
-            className={`glass-card border border-border/50 rounded-lg p-4 mb-3 transition-all ${
-              snapshot.isDragging ? 'rotate-3 shadow-lg' : 'hover:shadow-md'
+            className={`bg-white border border-border/50 rounded-lg p-4 mb-3 transition-all shadow-sm group hover:shadow-lg ${
+              snapshot.isDragging ? 'rotate-3 shadow-lg' : ''
             }`}
           >
             <div className="space-y-3">
               <div className="flex items-start justify-between">
-                <h4 className="font-medium text-sm line-clamp-2">{task.name}</h4>
-                <Badge variant="outline" className="text-xs">
-                  ${task.price}
-                </Badge>
+                <h4 className="font-medium text-sm line-clamp-2 group-hover:text-primary transition-colors">{task.name}</h4>
+                <div className="flex items-center gap-2">
+                  <Badge 
+                    variant={task.priority === 'High' ? 'destructive' : task.priority === 'Medium' ? 'default' : 'secondary'}
+                    className="text-xs"
+                  >
+                    {task.priority}
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    ${task.price}
+                  </Badge>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-100"
+                      >
+                        <MoreVertical className="w-3 h-3" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => {
+                        setEditingTask(task);
+                      }}>
+                        <Edit className="w-3 h-3 mr-2" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => {
+                        handleDeleteTask(task.id);
+                      }}>
+                        <Trash2 className="w-3 h-3 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
 
               {task.description && (
@@ -416,6 +475,14 @@ export function TasksTab({ project }: TasksTabProps) {
           onTaskAdded={refreshTasks}
         />
       )}
+
+      {/* Edit Task Modal */}
+      <EditTaskModal
+        isOpen={!!editingTask}
+        onClose={() => setEditingTask(null)}
+        task={editingTask}
+        onTaskUpdated={refreshTasks}
+      />
 
       {/* Feedback Modal */}
       <FeedbackModal
