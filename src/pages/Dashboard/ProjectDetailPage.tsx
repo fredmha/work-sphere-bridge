@@ -38,7 +38,37 @@ export function ProjectDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const projectIdNum = id ? parseInt(id) : null;
+
   // Fetch project data
+  const refreshProject = async () => {
+    if (!projectIdNum || !user?.id || !supabase) return;
+
+    // Fetch the specific project
+    const { data: projectData } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('id', projectIdNum)
+      .eq('owner_id', user.id)
+      .single();
+
+    // Fetch contractor roles for this project
+    const { data: rolesData } = await supabase
+      .from('ContractorRole')
+      .select('*')
+      .eq('project_id', projectIdNum);
+
+    if (projectData) {
+      const transformedProject: DatabaseProject = {
+        ...projectData,
+        title: projectData.project_name || 'Untitled Project',
+        description: projectData.project_description || 'No description available',
+        roles: rolesData || []
+      };
+      setProject(transformedProject);
+    }
+  };
+
   useEffect(() => {
     const fetchProject = async () => {
       if (!id || !user?.id || !supabase) {
@@ -50,38 +80,7 @@ export function ProjectDetailPage() {
         setIsLoading(true);
         setError(null);
 
-        // Fetch the specific project
-        const { data: projectData, error: projectError } = await supabase
-          .from('projects')
-          .select('*')
-          .eq('id', parseInt(id))
-          .eq('owner_id', user.id)
-          .single();
-
-        if (projectError) {
-          if (projectError.code === 'PGRST116') {
-            throw new Error('Project not found');
-          }
-          throw projectError;
-        }
-
-        // Fetch contractor roles for this project
-        const { data: rolesData, error: rolesError } = await supabase
-          .from('ContractorRole')
-          .select('*')
-          .eq('project_id', parseInt(id));
-
-        if (rolesError) throw rolesError;
-
-        // Transform project data
-        const transformedProject: DatabaseProject = {
-          ...projectData,
-          title: projectData.project_name || 'Untitled Project',
-          description: projectData.project_description || 'No description available',
-          roles: rolesData || []
-        };
-
-        setProject(transformedProject);
+        await refreshProject();
       } catch (err) {
         console.error('Error fetching project:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch project');
@@ -106,6 +105,68 @@ export function ProjectDetailPage() {
         roles: updatedRoles
       });
     }
+  };
+
+  const handleUpdateProject = async (updates: { title?: string; description?: string }) => {
+    if (!projectIdNum) return;
+    const payload: any = {};
+    if (updates.title !== undefined) payload.project_name = updates.title;
+    if (updates.description !== undefined) payload.project_description = updates.description;
+    const { error: updateError } = await supabase
+      .from('projects')
+      .update(payload)
+      .eq('id', projectIdNum);
+    if (updateError) throw updateError;
+    await refreshProject();
+  };
+
+  const handlePublish = async () => {
+    if (!projectIdNum) return;
+
+    // Validation: For each milestone role, ensure at least 1 task exists
+    const { data: milestoneRoles, error: rolesErr } = await supabase
+      .from('ContractorRole')
+      .select('id, type')
+      .eq('project_id', projectIdNum)
+      .in('type', ['milestone', 'Milestone']);
+
+    if (rolesErr) {
+      alert('Failed to validate roles before publish.');
+      return;
+    }
+
+    if (!milestoneRoles || milestoneRoles.length === 0) {
+      // No milestone roles, can still publish
+    } else {
+      const roleIds = milestoneRoles.map(r => r.id);
+      const { data: tasksForProject, error: tasksErr } = await supabase
+        .from('ContractorTask')
+        .select('id, role')
+        .eq('Project', projectIdNum)
+        .in('role', roleIds);
+      if (tasksErr) {
+        alert('Failed to validate tasks before publish.');
+        return;
+      }
+      const roleIdToHasTask: Record<number, boolean> = {};
+      roleIds.forEach(id => { roleIdToHasTask[id] = false; });
+      (tasksForProject || []).forEach(t => { if (t.role) roleIdToHasTask[t.role] = true; });
+      const violating = roleIds.filter(id => !roleIdToHasTask[id]);
+      if (violating.length > 0) {
+        alert('Each milestone role must have at least 1 task before publishing.');
+        return;
+      }
+    }
+
+    const { error: publishErr } = await supabase
+      .from('projects')
+      .update({ status: 'Published' })
+      .eq('id', projectIdNum);
+    if (publishErr) {
+      alert('Failed to publish project.');
+      return;
+    }
+    await refreshProject();
   };
 
   // Loading state
@@ -147,7 +208,7 @@ export function ProjectDetailPage() {
 
   return (
     <div className="space-y-6 p-6">
-      <ProjectHeader project={project} />
+      <ProjectHeader project={project} onPublish={handlePublish} onUpdateProject={handleUpdateProject} />
       
       <ProjectTabs 
         activeTab={activeTab} 

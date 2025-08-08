@@ -13,11 +13,15 @@ import {
   MessageSquare,
   FileText,
   Plus,
-  Edit3
+  Edit3,
+  MoreVertical,
+  Edit,
+  Trash2
 } from 'lucide-react';
 import { RoleModal } from './RoleModal';
 import { supabase } from '@/lib/supabaseClient';
 import type { Database } from '@/types/supabase';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 type Tables = Database['public']['Tables'];
 type ProjectRow = Tables['projects']['Row'];
@@ -39,6 +43,7 @@ interface RolesTabProps {
 export function RolesTab({ project, onOpenCompliance, onRolesUpdate }: RolesTabProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<ContractorRoleRow | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const getStatusVariant = (hasContractor: boolean) => {
     return hasContractor ? 'default' : 'secondary';
@@ -62,6 +67,42 @@ export function RolesTab({ project, onOpenCompliance, onRolesUpdate }: RolesTabP
     setIsModalOpen(true);
   };
 
+  const refreshRoles = async () => {
+    if (!onRolesUpdate) return;
+    const { data: updatedRoles } = await supabase
+      .from('ContractorRole')
+      .select('*')
+      .eq('project_id', project.id);
+    onRolesUpdate(updatedRoles || []);
+  };
+
+  const handleDeleteRole = async (role: ContractorRoleRow) => {
+    if (!confirm('Delete this role and all its tasks?')) return;
+    try {
+      setDeleting(true);
+      // Delete tasks associated with this role
+      const { error: taskErr } = await supabase
+        .from('ContractorTask')
+        .delete()
+        .eq('role', role.id);
+      if (taskErr) throw taskErr;
+
+      // Delete the role itself
+      const { error: roleErr } = await supabase
+        .from('ContractorRole')
+        .delete()
+        .eq('id', role.id);
+      if (roleErr) throw roleErr;
+
+      await refreshRoles();
+    } catch (err) {
+      console.error('Error deleting role:', err);
+      alert('Failed to delete role. Please try again.');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const handleSaveRole = async (roleData: Partial<ContractorRoleRow>) => {
     try {
       if (editingRole) {
@@ -81,16 +122,7 @@ export function RolesTab({ project, onOpenCompliance, onRolesUpdate }: RolesTabP
         if (error) throw error;
       }
 
-      // Refresh roles by calling the update callback
-      if (onRolesUpdate) {
-        const { data: updatedRoles } = await supabase
-          .from('ContractorRole')
-          .select('*')
-          .eq('project_id', project.id);
-        
-        onRolesUpdate(updatedRoles || []);
-      }
-
+      await refreshRoles();
       setIsModalOpen(false);
       setEditingRole(null);
     } catch (error) {
@@ -102,20 +134,33 @@ export function RolesTab({ project, onOpenCompliance, onRolesUpdate }: RolesTabP
   const renderRoleCard = (role: ContractorRoleRow) => {
     // A role is truly assigned only if it has a contractor_id
     const isAssigned = !!role.contractor_id;
-    const applications = 0; // TODO: Implement applications table
+    const applications: number = 0; // TODO: Implement applications table
 
     return (
-      <Card key={role.id} className="glass-card border-border/50 hover:border-border transition-colors relative">
-        {/* Edit button in top right corner */}
+      <Card key={role.id} className="glass-card border-border/50 hover:border-border transition-colors relative group">
+        {/* Actions menu in top right corner */}
         <div className="absolute top-3 right-3 z-10">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => handleEditRole(role)}
-            className="h-8 w-8 p-0 hover:bg-background/80"
-          >
-            <Edit3 className="w-4 h-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background/80"
+              >
+                <MoreVertical className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handleEditRole(role)}>
+                <Edit className="w-4 h-4 mr-2" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleDeleteRole(role)} disabled={deleting}>
+                <Trash2 className="w-4 h-4 mr-2" />
+                {deleting ? 'Deleting...' : 'Delete'}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <CardHeader className="pb-4">
