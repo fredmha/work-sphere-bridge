@@ -4,9 +4,14 @@ import { User as SupabaseUser, Session } from '@supabase/supabase-js';
 import type { Database } from '@/types/supabase';
 
 type Tables = Database['public']['Tables'];
+// Row types
 type UserRow = Tables['users']['Row'];
 type ContractorRow = Tables['contractor']['Row'];
 type BusinessRow = Tables['business']['Row'];
+// Insert types (fixes TS overload errors on .insert)
+type UserInsert = Tables['users']['Insert'];
+type ContractorInsert = Tables['contractor']['Insert'];
+type BusinessInsert = Tables['business']['Insert'];
 
 interface User {
   id: string;
@@ -60,86 +65,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
 
   // Check if Supabase is properly configured
-  const isSupabaseConfigured = () => {
-    return supabase !== null;
-  };
+  const isSupabaseConfigured = () => supabase !== null;
 
-  // Clear all auth-related data
+  // STATE-ONLY clear (do NOT wipe storage so sessions persist across reloads)
   const clearAuthData = () => {
     setUser(null);
     setIsAuthenticated(false);
-    
-    // Clear all Supabase-related storage
-    const supabaseKeys = [
-      'supabase.auth.token',
-      'supabase.auth.expires_at',
-      'supabase.auth.refresh_token',
-      'supabase.auth.expires_in',
-      'supabase.auth.access_token',
-      'supabase.auth.user',
-      'supabase.auth.session',
-      'sb-cwngvhypysvajbjtbdhx-auth-token', // Your specific project key
-      'sb-cwngvhypysvajbjtbdhx-auth-refresh-token',
-    ];
-    
-    // Clear specific Supabase keys
-    supabaseKeys.forEach(key => {
-      localStorage.removeItem(key);
-      sessionStorage.removeItem(key);
-    });
-    
-    // Clear any other auth-related storage
-    Object.keys(localStorage).forEach(key => {
-      if (key.includes('supabase') || key.includes('auth') || key.includes('sb-')) {
-        localStorage.removeItem(key);
-      }
-    });
-    Object.keys(sessionStorage).forEach(key => {
-      if (key.includes('supabase') || key.includes('auth') || key.includes('sb-')) {
-        sessionStorage.removeItem(key);
-      }
-    });
-    
-    // Clear cookies that might contain auth data
-    document.cookie.split(";").forEach(function(c) { 
-      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
-    });
-    
-    console.log('Auth data cleared');
   };
 
-  // Fetch user profile data from database
+  // Fetch user profile data from database (3 queries; no implicit joins required)
   const fetchUserProfile = async (supabaseUser: SupabaseUser): Promise<User | null> => {
     if (!supabase) return null;
-    
     try {
-      // Get user data from users table
       const { data: userData, error: userError } = await supabase
         .from('users')
         .select('*')
         .eq('id', supabaseUser.id)
         .single();
+      if (userError || !userData) return null;
 
-      if (userError) {
-        console.error('Error fetching user data:', userError);
-        return null;
-      }
+      let contractorProfile: User['contractorProfile'] | undefined;
+      let businessProfile: User['businessProfile'] | undefined;
 
-      if (!userData) {
-        console.error('No user data found');
-        return null;
-      }
-
-      // Get contractor profile if user is a contractor
-      let contractorProfile = undefined;
       if (userData.role === 'contractor') {
-        const { data: contractorData, error: contractorError } = await supabase
+        const { data: contractorData } = await supabase
           .from('contractor')
           .select('*')
           .eq('linkeduser', supabaseUser.id)
-          .single();
-
-        if (!contractorError && contractorData) {
+          .maybeSingle();
+        if (contractorData) {
           contractorProfile = {
             skills: contractorData.skills,
             interests: contractorData.interests,
@@ -149,26 +103,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
 
-      // Get business profile if user is a business
-      let businessProfile = undefined;
       if (userData.role === 'business') {
-        const { data: businessData, error: businessError } = await supabase
+        const { data: businessData } = await supabase
           .from('business')
           .select('*')
           .eq('linkeduser', supabaseUser.id)
-          .single();
-
-        if (!businessError && businessData) {
-          businessProfile = {
-            name: businessData.name,
-          };
+          .maybeSingle();
+        if (businessData) {
+          businessProfile = { name: businessData.name };
         }
       }
 
       return {
         id: userData.id,
         email: userData.email,
-        fullName: userData['full name'],
+        fullName: (userData as any)['full name'],
         role: userData.role,
         businessName: userData.business_name,
         businessWebsite: userData.business_website,
@@ -185,78 +134,60 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Initialize auth state
+  // Initialize auth state — no cache nuking, no timers; rely on persisted session
   useEffect(() => {
-    console.log('AuthContext: Initializing...');
-    console.log('AuthContext: Supabase configured:', isSupabaseConfigured());
-    
-    // Clear any cached auth data on app startup
-    clearAuthData();
-    
-    // Always set loading to false after a short delay
-    const timer = setTimeout(() => {
-      console.log('AuthContext: Setting loading to false');
+    if (!isSupabaseConfigured()) {
+      clearAuthData();
       setIsLoading(false);
-    }, 100);
-
-    // If Supabase is configured, try to get session
-    if (isSupabaseConfigured()) {
-      const initializeAuth = async () => {
-        try {
-          const { data: { session }, error } = await supabase!.auth.getSession();
-          
-          if (error) {
-            console.error('Session error:', error);
-            clearAuthData();
-            return;
-          }
-          
-          if (session?.user) {
-            const userProfile = await fetchUserProfile(session.user);
-            if (userProfile) {
-              setUser(userProfile);
-              setIsAuthenticated(true);
-            } else {
-              // If we can't fetch user profile, clear auth data
-              clearAuthData();
-            }
-          } else {
-            clearAuthData();
-          }
-        } catch (error) {
-          console.error('Error getting Supabase session:', error);
-          clearAuthData();
-        }
-      };
-
-      initializeAuth();
-
-      // Set up auth listener
-      const { data: { subscription } } = supabase!.auth.onAuthStateChange(
-        async (event, session) => {
-          console.log('Auth state changed:', event, session?.user?.id);
-          
-          if (session?.user) {
-            const userProfile = await fetchUserProfile(session.user);
-            if (userProfile) {
-              setUser(userProfile);
-              setIsAuthenticated(true);
-            } else {
-              clearAuthData();
-            }
-          } else {
-            clearAuthData();
-          }
-        }
-      );
-
-      return () => {
-        clearTimeout(timer);
-        subscription.unsubscribe();
-      };
+      return;
     }
 
-    return () => clearTimeout(timer);
+    let unsub: { unsubscribe: () => void } | null = null;
+    let settled = false;
+
+    const applySession = async (session: Session | null) => {
+      if (session?.user) {
+        const profile = await fetchUserProfile(session.user);
+        if (profile) {
+          setUser(profile);
+          setIsAuthenticated(true);
+        } else {
+          clearAuthData();
+        }
+      } else {
+        clearAuthData();
+      }
+    };
+
+    const init = async () => {
+      setIsLoading(true);
+      try {
+        // Prime from persisted session
+        const { data: { session } } = await supabase!.auth.getSession();
+        await applySession(session);
+
+        // Subscribe (handles INITIAL_SESSION on modern SDKs)
+        const { data } = supabase!.auth.onAuthStateChange(async (event, sessionNow) => {
+          await applySession(sessionNow ?? null);
+          if (event === 'INITIAL_SESSION' && !settled) {
+            settled = true;
+            setIsLoading(false);
+          }
+        });
+        unsub = data.subscription;
+      } catch (e) {
+        console.error('Error during auth init:', e);
+        clearAuthData();
+      } finally {
+        if (!settled) {
+          settled = true;
+          setIsLoading(false);
+        }
+      }
+    };
+
+    init();
+    return () => unsub?.unsubscribe();
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -265,35 +196,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
-      // Clear any existing auth data before attempting login
-      clearAuthData();
-      
-      // Add a small delay to ensure cache is cleared
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      const { data, error } = await supabase!.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        console.error('Login error:', error);
-        // Clear any partial auth data on error
-        clearAuthData();
-        return { error };
-      }
+      const { data, error } = await supabase!.auth.signInWithPassword({ email, password });
+      if (error) return { error };
 
       if (data.user) {
-        const userProfile = await fetchUserProfile(data.user);
-        setUser(userProfile);
-        setIsAuthenticated(!!userProfile);
+        const profile = await fetchUserProfile(data.user);
+        if (profile) {
+          setUser(profile);
+          setIsAuthenticated(true);
+        } else {
+          clearAuthData();
+        }
       }
-
       return { error: null };
     } catch (error) {
       console.error('Login error:', error);
-      // Clear any partial auth data on error
-      clearAuthData();
       return { error };
     }
   };
@@ -304,79 +221,64 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
-      // Clear any existing auth data before attempting signup
-      clearAuthData();
-      
-      const { data, error } = await supabase!.auth.signUp({
-        email,
-        password,
-      });
-
-      if (error) {
-        console.error('Signup error:', error);
-        clearAuthData();
-        return { error };
-      }
+      const { data, error } = await supabase!.auth.signUp({ email, password });
+      if (error) return { error };
 
       if (data.user) {
-        // STEP 1: Create user record in users table FIRST
+        // Create users row (use Insert type, not Row)
         const { error: userError } = await supabase!
           .from('users')
           .insert({
-            id: data.user.id, // This must match auth.users.id
-            email: email,
-            'full name': userData.fullName, // Note: space in field name
-            role: userData.role, // 'contractor' or 'business'
-            business_name: userData.businessName,
-            business_website: userData.businessWebsite,
-            industry: userData.industry,
-            description: userData.description,
+            id: data.user.id,
+            email,
+            'full name': userData.fullName ?? null,
+            role: userData.role ?? null,
+            business_name: userData.businessName ?? null,
+            business_website: userData.businessWebsite ?? null,
+            industry: userData.industry ?? null,
+            description: userData.description ?? null,
             completed_sign_up: false,
             created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          });
+            updated_at: new Date().toISOString(),
+          } satisfies UserInsert);
+        if (userError) return { error: userError };
 
-        if (userError) {
-          console.error('User table insert error:', userError);
-          alert('Failed to create user profile: ' + userError.message);
-          return;
+        // Create contractor profile if applicable
+        if (userData.role === 'contractor') {
+          const { error: contractorError } = await supabase!
+            .from('contractor')
+            .insert({
+              linkeduser: data.user.id,
+              name: userData.fullName ?? null,
+              description: userData.description ?? null,
+              skills: userData.contractorProfile?.skills ?? null,
+              interests: userData.contractorProfile?.interests ?? null,
+              resume: userData.contractorProfile?.resume ?? null,
+              created_at: new Date().toISOString(),
+            } satisfies ContractorInsert);
+          if (contractorError) return { error: contractorError };
         }
 
-        // STEP 2: Create contractor profile
-        const { error: contractorError } = await supabase!
-          .from('contractor')
-          .insert({
-            linkeduser: data.user.id, // Foreign key to auth.users.id
-            name: userData.fullName, // ✅ contractor table HAS name field
-            description: userData.description,
-            skills: userData.contractorProfile?.skills?.map(s => s.trim()).filter(Boolean),
-            interests: userData.contractorProfile?.interests?.map(s => s.trim()).filter(Boolean),
-            resume: userData.contractorProfile?.resume || null,
-            created_at: new Date().toISOString()
-          });
-
-        if (contractorError) {
-          console.error('Error creating contractor profile:', contractorError);
+        // Create business profile if applicable
+        if (userData.role === 'business') {
+          const { error: businessError } = await supabase!
+            .from('business')
+            .insert({
+              linkeduser: data.user.id,
+              name: userData.businessProfile?.name ?? userData.businessName ?? null,
+              created_at: new Date().toISOString(),
+            } satisfies BusinessInsert);
+          if (businessError) return { error: businessError };
         }
 
-        // STEP 3: Create business profile
-        const { error: businessError } = await supabase!
-          .from('business')
-          .insert({
-            linkeduser: data.user.id, // Foreign key to auth.users.id
-            name: userData.businessName,
-            created_at: new Date().toISOString()
-          });
-
-        if (businessError) {
-          console.error('Error creating business profile:', businessError);
-        }
-
-        // After successful signup, refresh the auth context
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          // This will trigger the AuthContext to fetch the new user profile
-          window.location.reload(); // Simple but effective
+        // Load profile into context without reloading
+        const { data: { user: supabaseUser } } = await supabase.auth.getUser();
+        if (supabaseUser) {
+          const profile = await fetchUserProfile(supabaseUser);
+          if (profile) {
+            setUser(profile);
+            setIsAuthenticated(true);
+          }
         }
       }
 
@@ -395,13 +297,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       await supabase!.auth.signOut();
-      clearAuthData();
-      
-      // Navigate to home page instead of reloading
-      window.location.href = '/';
     } catch (error) {
       console.error('Logout error:', error);
-      // Even if signOut fails, clear local data
+    } finally {
       clearAuthData();
       window.location.href = '/';
     }
@@ -414,7 +312,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
-      // Update users table
       const { error: userError } = await supabase!
         .from('users')
         .update({
@@ -426,12 +323,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           completed_sign_up: data.completedSignUp,
         })
         .eq('id', user.id);
+      if (userError) return { error: userError };
 
-      if (userError) {
-        return { error: userError };
-      }
-
-      // Update contractor profile if applicable
       if (user.role === 'contractor' && data.contractorProfile) {
         const { error: contractorError } = await supabase!
           .from('contractor')
@@ -442,31 +335,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             description: data.contractorProfile.description,
           })
           .eq('linkeduser', user.id);
-
-        if (contractorError) {
-          console.error('Error updating contractor profile:', contractorError);
-        }
+        if (contractorError) return { error: contractorError };
       }
 
-      // Update business profile if applicable
       if (user.role === 'business' && data.businessProfile) {
         const { error: businessError } = await supabase!
           .from('business')
-          .update({
-            name: data.businessProfile.name,
-          })
+          .update({ name: data.businessProfile.name })
           .eq('linkeduser', user.id);
-
-        if (businessError) {
-          console.error('Error updating business profile:', businessError);
-        }
+        if (businessError) return { error: businessError };
       }
 
-      // Refresh user data
       const { data: { user: supabaseUser } } = await supabase!.auth.getUser();
       if (supabaseUser) {
         const updatedProfile = await fetchUserProfile(supabaseUser);
         setUser(updatedProfile);
+        setIsAuthenticated(!!updatedProfile);
       }
 
       return { error: null };
@@ -477,8 +361,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const forceClearCache = () => {
+    // Keep this state-only so we don't wipe the persisted session tokens
     clearAuthData();
-    // Force reload the page to clear any remaining cache
     window.location.reload();
   };
 
