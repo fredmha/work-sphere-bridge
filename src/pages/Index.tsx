@@ -220,7 +220,7 @@ const SkillConstellationWeave = ({ isActive }: { isActive: boolean }) => {
       
       // Draw domestic halo
       ctx.save();
-      ctx.strokeStyle = 'rgba(22, 163, 74, 0.2)';
+      ctx.strokeStyle = 'rgba(22, 163, 74, 0.4)';
       ctx.lineWidth = 1;
       ctx.setLineDash([5, 5]);
       ctx.beginPath();
@@ -413,7 +413,7 @@ const SkillConstellationWeave = ({ isActive }: { isActive: boolean }) => {
   }, [isActive]);
 
   return (
-    <div className="relative w-full h-96 mx-auto">
+    <div className="relative w-full h-96">
       <canvas
         ref={canvasRef}
         className="w-full h-full"
@@ -422,12 +422,12 @@ const SkillConstellationWeave = ({ isActive }: { isActive: boolean }) => {
       
       {/* Microcopy */}
       <div className="absolute bottom-4 left-4 text-green-300/70 text-xs">
-        Domestic-first priority
+        <span className="text-green-600 font-semibold">Domestic-first priority</span>
       </div>
       
       {/* Tooltip */}
       {showTooltip && (
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-950/90 backdrop-blur border border-green-400/30 rounded-lg px-4 py-2 text-green-200 text-sm animate-fade-in">
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white/95 backdrop-blur border border-slate-200 rounded-lg px-4 py-2 text-slate-700 text-sm animate-fade-in shadow-xl font-medium">
           We match even beyond where you're looking
         </div>
       )}
@@ -462,11 +462,11 @@ const OneClickPostForm = ({ onConstellationActivate }: { onConstellationActivate
 
   return (
     <>
-      <div className="bg-green-950/30 backdrop-blur border border-green-400/20 rounded-2xl p-8">
+      <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-2xl p-8 shadow-2xl">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-green-100 mb-2">Role/Skills Needed</label>
+              <label className="block text-sm font-bold text-slate-900 mb-2">Role/Skills Needed</label>
               <input
                 type="text"
                 value={formData.role}
@@ -474,16 +474,16 @@ const OneClickPostForm = ({ onConstellationActivate }: { onConstellationActivate
                 onFocus={() => onConstellationActivate(true)}
                 onBlur={() => onConstellationActivate(false)}
                 placeholder="e.g., React Developer, Data Analyst"
-                className="w-full px-4 py-3 bg-green-950/50 border border-green-400/30 rounded-lg text-green-50 placeholder-green-300/50 focus:border-green-400 focus:ring-1 focus:ring-green-400 focus:outline-none"
+                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 focus:outline-none font-medium transition-all duration-200"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-green-100 mb-2">Scope</label>
+              <label className="block text-sm font-bold text-slate-900 mb-2">Scope</label>
               <select
                 value={formData.scope}
                 onChange={(e) => setFormData({...formData, scope: e.target.value})}
-                className="w-full px-4 py-3 bg-green-950/50 border border-green-400/30 rounded-lg text-green-50 focus:border-green-400 focus:ring-1 focus:ring-green-400 focus:outline-none"
+                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 focus:outline-none font-medium transition-all duration-200"
               >
                 <option value="task">Tiny task</option>
                 <option value="project">Project</option>
@@ -492,22 +492,22 @@ const OneClickPostForm = ({ onConstellationActivate }: { onConstellationActivate
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-green-100 mb-2">Start Date</label>
+              <label className="block text-sm font-bold text-slate-900 mb-2">Start Date</label>
               <input
                 type="text"
                 value={formData.timeframe}
                 onChange={(e) => setFormData({...formData, timeframe: e.target.value})}
                 placeholder="e.g., Next week, End of month"
-                className="w-full px-4 py-3 bg-green-950/50 border border-green-400/30 rounded-lg text-green-50 placeholder-green-300/50 focus:border-green-400 focus:ring-1 focus:ring-green-400 focus:outline-none"
+                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 focus:outline-none font-medium transition-all duration-200"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-green-100 mb-2">Budget Range (AUD)</label>
+              <label className="block text-sm font-bold text-slate-900 mb-2">Budget Range (AUD)</label>
               <select
                 value={formData.budget}
                 onChange={(e) => setFormData({...formData, budget: e.target.value})}
-                className="w-full px-4 py-3 bg-green-950/50 border border-green-400/30 rounded-lg text-green-50 focus:border-green-400 focus:ring-1 focus:ring-green-400 focus:outline-none"
+                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 focus:outline-none font-medium transition-all duration-200"
               >
                 <option value="">Select range</option>
                 <option value="<5k">Under $5K</option>
@@ -521,23 +521,23 @@ const OneClickPostForm = ({ onConstellationActivate }: { onConstellationActivate
           <button
             type="submit"
             data-cta="post"
-            className="w-full bg-green-600 hover:bg-green-500 text-white py-4 px-8 rounded-lg font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-green-400/25"
+            className="w-full bg-green-600 hover:bg-green-700 text-white py-4 px-8 rounded-xl font-bold text-lg transition-all duration-200 shadow-xl shadow-green-600/25 hover:shadow-green-600/40 hover:scale-[1.02]"
           >
             Start Matching Process
           </button>
         </form>
         
-        <p className="text-green-300/70 text-sm text-center mt-4">
+        <p className="text-slate-500 text-sm text-center mt-6 font-medium">
           First matches in 24–48h. AU-grade compliance built-in.
         </p>
       </div>
 
       {/* Email Capture Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-green-950 border border-green-400/30 rounded-2xl p-8 max-w-md w-full">
-            <h3 className="text-2xl font-bold text-green-50 mb-4">Almost there!</h3>
-            <p className="text-green-200 mb-6">Enter your email to receive your first talent matches.</p>
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white border border-slate-200 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+            <h3 className="text-2xl font-bold text-slate-900 mb-4">Almost there!</h3>
+            <p className="text-slate-600 mb-6 font-medium">Enter your email to receive your first talent matches.</p>
             
             <form onSubmit={handleEmailSubmit} className="space-y-4">
               <input
@@ -546,20 +546,20 @@ const OneClickPostForm = ({ onConstellationActivate }: { onConstellationActivate
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
                 required
-                className="w-full px-4 py-3 bg-green-950/50 border border-green-400/30 rounded-lg text-green-50 placeholder-green-300/50 focus:border-green-400 focus:ring-1 focus:ring-green-400 focus:outline-none"
+                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 focus:outline-none font-medium"
               />
               
               <div className="flex gap-3">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 py-3 px-6 border border-green-400/30 text-green-200 rounded-lg hover:bg-green-900/30 transition-colors"
+                  className="flex-1 py-3 px-6 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-3 px-6 bg-green-600 hover:bg-green-500 text-white rounded-lg font-semibold transition-colors"
+                  className="flex-1 py-3 px-6 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg shadow-green-600/25"
                 >
                   Get Matches
                 </button>
@@ -579,11 +579,11 @@ const ScrollPanel = ({ title, description, step, isActive }: {
   step: number;
   isActive: boolean;
 }) => (
-  <div className={`flex-shrink-0 w-full md:w-96 p-8 transition-all duration-500 ${isActive ? 'opacity-100' : 'opacity-50'}`}>
-    <div className="bg-green-950/20 backdrop-blur border border-green-400/20 rounded-2xl p-8 h-full">
-      <div className="text-green-400 text-sm font-medium mb-2">Step {step}</div>
-      <h3 className="text-2xl font-bold text-green-50 mb-4">{title}</h3>
-      <p className="text-green-200 leading-relaxed">{description}</p>
+  <div className={`flex-shrink-0 w-full md:w-96 p-8 transition-all duration-500 ${isActive ? 'opacity-100 scale-105' : 'opacity-70 scale-100'}`}>
+    <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-2xl p-8 h-full shadow-xl">
+      <div className="text-green-600 text-sm font-bold mb-2 uppercase tracking-wide">Step {step}</div>
+      <h3 className="text-2xl font-bold text-slate-900 mb-4">{title}</h3>
+      <p className="text-slate-600 leading-relaxed font-medium">{description}</p>
     </div>
   </div>
 );
@@ -630,41 +630,41 @@ function App() {
   }, [panels.length]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-green-950 to-slate-900 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-slate-50 text-slate-900">
       {/* Grain overlay */}
-      <div className="fixed inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSBiYXNlRnJlcXVlbmN5PSIwLjkiIG51bU9jdGF2ZXM9IjQiIHJlc3VsdD0ibm9pc2UiLz48L2ZpbHRlcj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI25vaXNlKSIgb3BhY2l0eT0iMC4xIi8+PC9zdmc+')] pointer-events-none"></div>
+      <div className="fixed inset-0 opacity-[0.02] bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSBiYXNlRnJlcXVlbmN5PSIwLjkiIG51bU9jdGF2ZXM9IjQiIHJlc3VsdD0ibm9pc2UiLz48L2ZpbHRlcj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI25vaXNlKSIgb3BhY2l0eT0iMC4xIi8+PC9zdmc+')] pointer-events-none"></div>
 
       {/* Navigation */}
-      <nav className="relative z-10 flex items-center justify-between p-6 border-b border-green-400/10">
-        <div className="text-2xl font-bold text-green-400">TalentMatch</div>
+      <nav className="relative z-10 flex items-center justify-between px-8 py-6 bg-white/80 backdrop-blur-sm border-b border-slate-200/50">
+        <div className="text-2xl font-bold text-green-600">TalentMatch</div>
         <div className="flex items-center gap-4">
           <button 
             data-cta="demo"
-            className="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-medium transition-colors"
+            className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-green-600/20 hover:shadow-green-600/30"
           >
             Book demo
           </button>
-          <button className="px-6 py-2 border border-green-400/30 text-green-200 hover:bg-green-900/30 rounded-lg font-medium transition-colors">
+          <button className="px-6 py-3 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-xl font-semibold transition-all duration-200">
             Sign up
           </button>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative py-20 px-6">
+      <section className="relative py-24 px-8 bg-white/60 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             {/* Left: Content */}
             <div className="space-y-8">
               <div>
                 <h1 className="text-6xl lg:text-7xl font-bold leading-tight mb-6">
-                  <span className="text-green-50">Domestic talent,</span><br />
-                  <span className="text-green-400">matched in minutes.</span>
+                  <span className="text-slate-900">Domestic talent,</span><br />
+                  <span className="text-green-600">matched in minutes.</span>
                 </h1>
-                <p className="text-xl text-green-200 leading-relaxed mb-4">
+                <p className="text-xl text-slate-600 leading-relaxed mb-4 font-medium">
                   Project-based contracting with AI screening and AU-grade compliance—ABN/TFN, Fair Work, right-to-work, super & STP through Payroo. Private matching. No marketplace browsing.
                 </p>
-                <p className="text-green-300/70 text-sm">
+                <p className="text-slate-500 text-sm font-medium">
                   No marketplace browsing. We do the matching.
                 </p>
               </div>
@@ -672,55 +672,58 @@ function App() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <button 
                   data-cta="post"
-                  className="px-8 py-4 bg-green-600 hover:bg-green-500 text-white rounded-lg font-semibold text-lg transition-all duration-200 hover:shadow-lg hover:shadow-green-400/25 flex items-center justify-center gap-2"
+                  className="px-8 py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-lg transition-all duration-200 shadow-xl shadow-green-600/25 hover:shadow-green-600/40 hover:scale-105 flex items-center justify-center gap-2"
                 >
                   Start with a one-click post
                   <ArrowRight className="w-5 h-5" />
                 </button>
                 <button 
                   data-cta="demo"
-                  className="px-8 py-4 border border-green-400/30 text-green-200 hover:bg-green-900/30 rounded-lg font-semibold text-lg transition-all duration-200 flex items-center justify-center gap-2"
+                  className="px-8 py-4 border-2 border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 rounded-xl font-bold text-lg transition-all duration-200 flex items-center justify-center gap-2"
                 >
                   <Play className="w-5 h-5" />
                   Book a live demo
                 </button>
               </div>
               
-              <p className="text-green-300/60 text-sm">
+              <p className="text-slate-400 text-sm font-medium">
                 We match even beyond where you're looking.
               </p>
             </div>
 
             {/* Right: Radar */}
             <div className="flex justify-center lg:justify-end">
-              <SkillConstellationWeave isActive={constellationActive} />
+              <div className="relative w-full h-96">
+                <div className="absolute inset-0 bg-gradient-to-br from-green-100/20 to-green-200/20 blur-3xl opacity-50"></div>
+                <SkillConstellationWeave isActive={constellationActive} />
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* One-Click Post Form */}
-      <section className="py-16 px-6">
+      <section className="py-20 px-8 bg-gradient-to-b from-white/60 to-slate-50/80">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-green-50 mb-4">Post → Match → Evaluate → Start</h2>
-            <p className="text-xl text-green-200">Tell us what you need. We'll find who you need.</p>
+            <h2 className="text-5xl font-bold text-slate-900 mb-6">Post → Match → Evaluate → Start</h2>
+            <p className="text-xl text-slate-600 font-medium">Tell us what you need. We'll find who you need.</p>
           </div>
           
           <OneClickPostForm onConstellationActivate={setConstellationActive} />
           
-          <p className="text-center text-green-300/70 mt-6">
+          <p className="text-center text-slate-500 mt-8 font-medium">
             You'll see ratings, past performance, and evaluation scorecards after we match you.
           </p>
         </div>
       </section>
 
       {/* Scrollytelling Project → Pay */}
-      <section className="py-20 px-6">
+      <section className="py-24 px-8 bg-white/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-green-50 mb-6">Project → Pay</h2>
-            <p className="text-xl text-green-200">From brief to bank transfer, handled.</p>
+            <h2 className="text-5xl font-bold text-slate-900 mb-6">Project → Pay</h2>
+            <p className="text-xl text-slate-600 font-medium">From brief to bank transfer, handled.</p>
           </div>
           
           <div className="relative">
@@ -754,7 +757,7 @@ function App() {
                     }
                   }}
                   className={`w-3 h-3 rounded-full transition-colors ${
-                    index === currentPanel ? 'bg-green-400' : 'bg-green-400/30'
+                    index === currentPanel ? 'bg-green-600' : 'bg-slate-300'
                   }`}
                 />
               ))}
@@ -764,21 +767,21 @@ function App() {
       </section>
 
       {/* Compliance Spine */}
-      <section className="py-20 px-6 bg-green-950/10">
+      <section className="py-24 px-8 bg-gradient-to-b from-slate-50/80 to-white/60">
         <div className="max-w-4xl mx-auto">
           <div className="mb-16">
-            <h2 className="text-4xl font-bold text-green-50 mb-6">Compliance Spine</h2>
-            <p className="text-xl text-green-200 mb-4">
+            <h2 className="text-5xl font-bold text-slate-900 mb-6">Compliance Spine</h2>
+            <p className="text-xl text-slate-600 mb-4 font-medium">
               Onboarding without the paperwork pile. Payments stay blocked until all items complete.
             </p>
-            <p className="text-green-300/70">
+            <p className="text-slate-500 font-medium">
               We sync to Payroo for STP reporting and super.
             </p>
           </div>
           
           <div className="relative">
             {/* Timeline line */}
-            <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-green-400/30"></div>
+            <div className="absolute left-6 top-0 bottom-0 w-1 bg-gradient-to-b from-green-600 to-green-400 rounded-full"></div>
             
             <div className="space-y-8">
               {[
@@ -791,19 +794,19 @@ function App() {
                 'Payroo Integration & STP Setup'
               ].map((step, index) => (
                 <div key={index} className="flex items-center gap-6">
-                  <div className="relative z-10 w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
+                  <div className="relative z-10 w-12 h-12 bg-green-600 rounded-full flex items-center justify-center shadow-lg shadow-green-600/30">
                     <CheckCircle className="w-6 h-6 text-white" />
                   </div>
-                  <div className="flex-1 bg-green-950/20 backdrop-blur border border-green-400/20 rounded-lg p-4">
-                    <h3 className="font-semibold text-green-50">{step}</h3>
+                  <div className="flex-1 bg-white/60 backdrop-blur border border-slate-200 rounded-xl p-6 shadow-lg">
+                    <h3 className="font-bold text-slate-900 text-lg">{step}</h3>
                   </div>
                 </div>
               ))}
             </div>
           </div>
           
-          <div className="mt-12 p-6 bg-amber-500/10 border border-amber-400/20 rounded-lg">
-            <p className="text-amber-200 font-medium">
+          <div className="mt-12 p-6 bg-amber-50 border border-amber-200 rounded-xl shadow-lg">
+            <p className="text-amber-800 font-bold">
               Work and payments remain blocked until checklist is complete.
             </p>
           </div>
@@ -811,61 +814,61 @@ function App() {
       </section>
 
       {/* How You'll Work */}
-      <section className="py-20 px-6">
+      <section className="py-24 px-8 bg-white/80 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-green-50 mb-6">How you'll work</h2>
+            <h2 className="text-5xl font-bold text-slate-900 mb-6">How you'll work</h2>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Milestone roles */}
-            <div className="bg-green-950/20 backdrop-blur border border-green-400/20 rounded-2xl p-8">
-              <h3 className="text-2xl font-bold text-green-50 mb-6 flex items-center gap-3">
-                <CheckCircle className="w-8 h-8 text-green-400" />
+            <div className="bg-white/60 backdrop-blur border border-slate-200 rounded-2xl p-8 shadow-xl">
+              <h3 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+                <CheckCircle className="w-8 h-8 text-green-600" />
                 Milestone roles
               </h3>
               <div className="space-y-4">
-                <div className="flex justify-between items-center p-4 bg-green-950/30 rounded-lg">
-                  <span className="text-green-200">Pending</span>
-                  <span className="text-sm text-green-300/70">3 tasks</span>
+                <div className="flex justify-between items-center p-4 bg-slate-50 rounded-xl border border-slate-200">
+                  <span className="text-slate-700 font-semibold">Pending</span>
+                  <span className="text-sm text-slate-500 font-medium">3 tasks</span>
                 </div>
-                <div className="flex justify-between items-center p-4 bg-blue-900/30 border border-blue-400/30 rounded-lg">
-                  <span className="text-blue-200">Submitted</span>
-                  <span className="text-sm text-blue-300/70">1 task</span>
+                <div className="flex justify-between items-center p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                  <span className="text-blue-700 font-semibold">Submitted</span>
+                  <span className="text-sm text-blue-600 font-medium">1 task</span>
                 </div>
-                <div className="flex justify-between items-center p-4 bg-green-600/20 border border-green-400/30 rounded-lg">
-                  <span className="text-green-200">Completed</span>
-                  <span className="text-sm text-green-300/70">5 tasks</span>
+                <div className="flex justify-between items-center p-4 bg-green-50 border border-green-200 rounded-xl">
+                  <span className="text-green-700 font-semibold">Completed</span>
+                  <span className="text-sm text-green-600 font-medium">5 tasks</span>
                 </div>
               </div>
-              <p className="text-green-300/70 text-sm mt-4">
+              <p className="text-slate-500 text-sm mt-4 font-medium">
                 Payment eligibility triggers on completion.
               </p>
             </div>
 
             {/* Timesheet roles */}
-            <div className="bg-green-950/20 backdrop-blur border border-green-400/20 rounded-2xl p-8">
-              <h3 className="text-2xl font-bold text-green-50 mb-6 flex items-center gap-3">
-                <Clock className="w-8 h-8 text-green-400" />
+            <div className="bg-white/60 backdrop-blur border border-slate-200 rounded-2xl p-8 shadow-xl">
+              <h3 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+                <Clock className="w-8 h-8 text-green-600" />
                 Timesheet roles
               </h3>
               <div className="space-y-4">
-                <div className="flex justify-between items-center p-4 bg-green-950/30 rounded-lg">
+                <div className="flex justify-between items-center p-4 bg-slate-50 rounded-xl border border-slate-200">
                   <div>
-                    <div className="text-green-200">This week</div>
-                    <div className="text-sm text-green-300/70">32.5 hrs logged</div>
+                    <div className="text-slate-700 font-semibold">This week</div>
+                    <div className="text-sm text-slate-500 font-medium">32.5 hrs logged</div>
                   </div>
-                  <span className="text-green-400">Approved</span>
+                  <span className="text-green-600 font-bold">Approved</span>
                 </div>
-                <div className="flex justify-between items-center p-4 bg-amber-900/30 border border-amber-400/30 rounded-lg">
+                <div className="flex justify-between items-center p-4 bg-amber-50 border border-amber-200 rounded-xl">
                   <div>
-                    <div className="text-amber-200">Current period</div>
-                    <div className="text-sm text-amber-300/70">18.5 hrs pending</div>
+                    <div className="text-amber-700 font-semibold">Current period</div>
+                    <div className="text-sm text-amber-600 font-medium">18.5 hrs pending</div>
                   </div>
-                  <span className="text-amber-400">Review</span>
+                  <span className="text-amber-600 font-bold">Review</span>
                 </div>
               </div>
-              <p className="text-green-300/70 text-sm mt-4">
+              <p className="text-slate-500 text-sm mt-4 font-medium">
                 Period-based logging with manager approval and budget alerts.
               </p>
             </div>
@@ -874,36 +877,36 @@ function App() {
       </section>
 
       {/* Security & Audit */}
-      <section className="py-16 px-6 bg-green-950/10">
+      <section className="py-20 px-8 bg-gradient-to-b from-slate-50/80 to-white/60">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-green-50 mb-12 text-center">Security, Audit & Recordkeeping</h2>
+          <h2 className="text-4xl font-bold text-slate-900 mb-12 text-center">Security, Audit & Recordkeeping</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="flex items-start gap-4">
-              <Shield className="w-8 h-8 text-green-400 flex-shrink-0 mt-1" />
+              <Shield className="w-8 h-8 text-green-600 flex-shrink-0 mt-1" />
               <div>
-                <h3 className="font-semibold text-green-50 mb-2">Data Protection</h3>
-                <p className="text-green-200 text-sm">
+                <h3 className="font-bold text-slate-900 mb-2">Data Protection</h3>
+                <p className="text-slate-600 text-sm font-medium">
                   Encryption at rest/in transit for TFN, passport, bank data
                 </p>
               </div>
             </div>
             
             <div className="flex items-start gap-4">
-              <FileCheck className="w-8 h-8 text-green-400 flex-shrink-0 mt-1" />
+              <FileCheck className="w-8 h-8 text-green-600 flex-shrink-0 mt-1" />
               <div>
-                <h3 className="font-semibold text-green-50 mb-2">Audit Trail</h3>
-                <p className="text-green-200 text-sm">
+                <h3 className="font-bold text-slate-900 mb-2">Audit Trail</h3>
+                <p className="text-slate-600 text-sm font-medium">
                   Immutable audit logs & exports (PDF/CSV)
                 </p>
               </div>
             </div>
             
             <div className="flex items-start gap-4">
-              <Users className="w-8 h-8 text-green-400 flex-shrink-0 mt-1" />
+              <Users className="w-8 h-8 text-green-600 flex-shrink-0 mt-1" />
               <div>
-                <h3 className="font-semibold text-green-50 mb-2">Access Control</h3>
-                <p className="text-green-200 text-sm">
+                <h3 className="font-bold text-slate-900 mb-2">Access Control</h3>
+                <p className="text-slate-600 text-sm font-medium">
                   Role-based access to compliance data
                 </p>
               </div>
@@ -913,15 +916,15 @@ function App() {
       </section>
 
       {/* Pricing Teaser */}
-      <section className="py-16 px-6">
+      <section className="py-20 px-8 bg-white/80 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-green-50 mb-6">Simple, Usage-Based Pricing</h2>
-          <p className="text-xl text-green-200 mb-8">
+          <h2 className="text-4xl font-bold text-slate-900 mb-6">Simple, Usage-Based Pricing</h2>
+          <p className="text-xl text-slate-600 mb-8 font-medium">
             Pay for outcomes, not seats.
           </p>
           <button 
             data-cta="demo"
-            className="px-8 py-4 bg-green-600 hover:bg-green-500 text-white rounded-lg font-semibold text-lg transition-all duration-200 hover:shadow-lg hover:shadow-green-400/25 inline-flex items-center gap-2"
+            className="px-8 py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-lg transition-all duration-200 shadow-xl shadow-green-600/25 hover:shadow-green-600/40 hover:scale-105 inline-flex items-center gap-2"
           >
             Book a live demo
             <ArrowRight className="w-5 h-5" />
@@ -930,43 +933,43 @@ function App() {
       </section>
 
       {/* FAQ */}
-      <section className="py-20 px-6 bg-green-950/10">
+      <section className="py-24 px-8 bg-gradient-to-b from-slate-50/80 to-white/60">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-bold text-green-50 mb-12 text-center">Frequently Asked Questions</h2>
+          <h2 className="text-5xl font-bold text-slate-900 mb-16 text-center">Frequently Asked Questions</h2>
           
           <div className="space-y-8">
             <div>
-              <h3 className="text-xl font-semibold text-green-50 mb-3">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">
                 Do you list freelancers publicly?
               </h3>
-              <p className="text-green-200">
+              <p className="text-slate-600 font-medium">
                 No—private matching only. We maintain a curated network and match based on your specific requirements without exposing contractor profiles publicly.
               </p>
             </div>
             
             <div>
-              <h3 className="text-xl font-semibold text-green-50 mb-3">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">
                 Can I bring my own contractors?
               </h3>
-              <p className="text-green-200">
+              <p className="text-slate-600 font-medium">
                 Yes—we'll evaluate, onboard, and standardize compliance for your existing contractors alongside new matches from our network.
               </p>
             </div>
             
             <div>
-              <h3 className="text-xl font-semibold text-green-50 mb-3">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">
                 Do you support long-term engagements?
               </h3>
-              <p className="text-green-200">
+              <p className="text-slate-600 font-medium">
                 Yes—retainers, ongoing work, and extended project timelines are all supported with appropriate contract structures and payment schedules.
               </p>
             </div>
             
             <div>
-              <h3 className="text-xl font-semibold text-green-50 mb-3">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">
                 Is this legal advice?
               </h3>
-              <p className="text-green-200">
+              <p className="text-slate-600 font-medium">
                 No—information only. While we handle compliance processes, always seek independent legal advice for your specific situation and contractual arrangements.
               </p>
             </div>
@@ -975,23 +978,23 @@ function App() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 px-6">
+      <section className="py-24 px-8 bg-white/80 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-5xl font-bold text-green-50 mb-8">
+          <h2 className="text-6xl font-bold text-slate-900 mb-12">
             Ready to hire better at home?
           </h2>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <button 
               data-cta="post"
-              className="px-12 py-6 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold text-xl transition-all duration-200 hover:shadow-lg hover:shadow-green-400/25 flex items-center justify-center gap-3"
+              className="px-12 py-6 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-xl transition-all duration-200 shadow-2xl shadow-green-600/30 hover:shadow-green-600/50 hover:scale-105 flex items-center justify-center gap-3"
             >
               One-Click Post
               <Zap className="w-6 h-6" />
             </button>
             <button 
               data-cta="demo"
-              className="px-12 py-6 border-2 border-green-400/30 text-green-200 hover:bg-green-900/30 rounded-xl font-bold text-xl transition-all duration-200 flex items-center justify-center gap-3"
+              className="px-12 py-6 border-2 border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 rounded-xl font-bold text-xl transition-all duration-200 flex items-center justify-center gap-3"
             >
               <Play className="w-6 h-6" />
               Book Demo
