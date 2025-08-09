@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronRight, Shield, Lock, FileCheck, ArrowRight, Play, CheckCircle, Clock, Users, Zap } from 'lucide-react';
+import { AuthModal } from '@/components/auth/AuthModal';
+import { supabase } from '@/lib/supabaseClient';
 
 // Skill Constellation Weave Component
 const SkillConstellationWeave = ({ isActive }: { isActive: boolean }) => {
@@ -446,18 +448,46 @@ const OneClickPostForm = ({ onConstellationActivate }: { onConstellationActivate
   });
   const [showModal, setShowModal] = useState(false);
   const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setShowModal(true);
   };
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // API call would go here
-    console.log('Lead captured:', { email, intent: 'post', ...formData });
-    setShowModal(false);
-    // Show success state
+    if (!email) return;
+    
+    setIsSubmitting(true);
+    try {
+      // Store the lead data in the formsubmit-signup table
+      const { error } = await supabase
+        .from('formsubmit-signup')
+        .insert({
+          Email: email,
+          RoleReq: formData.role,
+          Scope: formData.scope,
+          'Start date': formData.timeframe,
+          'Budget Range': formData.budget
+        });
+
+      if (error) {
+        console.error('Error storing lead:', error);
+        alert('Failed to submit. Please try again.');
+        return;
+      }
+
+      console.log('Lead captured:', { email, ...formData });
+      setShowModal(false);
+      setEmail('');
+      alert('Thank you! We\'ll be in touch with your talent matches soon.');
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to submit. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -591,6 +621,8 @@ const ScrollPanel = ({ title, description, step, isActive }: {
 function App() {
   const [constellationActive, setConstellationActive] = useState(false);
   const [currentPanel, setCurrentPanel] = useState(0);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState<'signup' | 'login'>('signup');
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const panels = [
@@ -630,25 +662,41 @@ function App() {
   }, [panels.length]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-slate-50 text-slate-900">
-      {/* Grain overlay */}
-      <div className="fixed inset-0 opacity-[0.02] bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSBiYXNlRnJlcXVlbmN5PSIwLjkiIG51bU9jdGF2ZXM9IjQiIHJlc3VsdD0ibm9pc2UiLz48L2ZpbHRlcj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI25vaXNlKSIgb3BhY2l0eT0iMC4xIi8+PC9zdmc+')] pointer-events-none"></div>
-
-      {/* Navigation */}
-      <nav className="relative z-10 flex items-center justify-between px-8 py-6 bg-white/80 backdrop-blur-sm border-b border-slate-200/50">
-        <div className="text-2xl font-bold text-green-600">TalentMatch</div>
-        <div className="flex items-center gap-4">
-          <button 
-            data-cta="demo"
-            className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-green-600/20 hover:shadow-green-600/30"
-          >
-            Book demo
-          </button>
-          <button className="px-6 py-3 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-xl font-semibold transition-all duration-200">
-            Sign up
-          </button>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm border-b border-slate-200">
+        <nav className="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <div className="text-2xl font-bold text-slate-900">WorkSphere</div>
+            {/* <div className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+              <a href="#how-it-works" className="hover:text-slate-900 transition-colors">How it works</a>
+              <a href="#pricing" className="hover:text-slate-900 transition-colors">Pricing</a>
+              <a href="#faq" className="hover:text-slate-900 transition-colors">FAQ</a>
+            </div> */}
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <a 
+              href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0l5hcAP0GJsTrC3xx9WsSC2STrNJ55QtkMaYPgwLyGuD7tyiIv1mCLDk1TRWYSkQIcb-qEgVPM?gv=true"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cta="demo"
+              className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-green-600/20 hover:shadow-green-600/30"
+            >
+              Book demo
+            </a>
+            <button 
+              onClick={() => {
+                setAuthMode('signup');
+                setShowAuthModal(true);
+              }}
+              className="px-6 py-3 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-xl font-semibold transition-all duration-200"
+            >
+              Sign up
+            </button>
+          </div>
+        </nav>
+      </header>
 
       {/* Hero Section */}
       <section className="relative py-24 px-8 bg-white/60 backdrop-blur-sm">
@@ -671,20 +719,26 @@ function App() {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                <button 
+                <a 
+                  href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0l5hcAP0GJsTrC3xx9WsSC2STrNJ55QtkMaYPgwLyGuD7tyiIv1mCLDk1TRWYSkQIcb-qEgVPM?gv=true"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   data-cta="post"
                   className="px-8 py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-lg transition-all duration-200 shadow-xl shadow-green-600/25 hover:shadow-green-600/40 hover:scale-105 flex items-center justify-center gap-2"
                 >
                   Start with a one-click post
                   <ArrowRight className="w-5 h-5" />
-                </button>
-                <button 
+                </a>
+                <a 
+                  href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0l5hcAP0GJsTrC3xx9WsSC2STrNJ55QtkMaYPgwLyGuD7tyiIv1mCLDk1TRWYSkQIcb-qEgVPM?gv=true"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   data-cta="demo"
                   className="px-8 py-4 border-2 border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 rounded-xl font-bold text-lg transition-all duration-200 flex items-center justify-center gap-2"
                 >
                   <Play className="w-5 h-5" />
                   Book a live demo
-                </button>
+                </a>
               </div>
               
               <p className="text-slate-400 text-sm font-medium">
@@ -921,25 +975,28 @@ function App() {
         </div>
       </section>
 
-      {/* Pricing Teaser */}
+      {/* Pricing Teaser
       <section className="py-20 px-8 bg-white/80 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold text-slate-900 mb-6">Simple, Usage-Based Pricing</h2>
           <p className="text-xl text-slate-600 mb-8 font-medium">
             Pay for outcomes, not seats.
           </p>
-          <button 
+          <a 
+            href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0l5hcAP0GJsTrC3xx9WsSC2STrNJ55QtkMaYPgwLyGuD7tyiIv1mCLDk1TRWYSkQIcb-qEgVPM?gv=true"
+            target="_blank"
+            rel="noopener noreferrer"
             data-cta="demo"
             className="px-8 py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-lg transition-all duration-200 shadow-xl shadow-green-600/25 hover:shadow-green-600/40 hover:scale-105 inline-flex items-center gap-2"
           >
             Book a live demo
             <ArrowRight className="w-5 h-5" />
-          </button>
+          </a>
         </div>
-      </section>
+      </section> */}
 
       {/* FAQ */}
-      <section className="py-24 px-8 bg-gradient-to-b from-slate-50/80 to-white/60">
+      {/* <section className="py-24 px-8 bg-gradient-to-b from-slate-50/80 to-white/60">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-5xl font-bold text-slate-900 mb-16 text-center">Frequently Asked Questions</h2>
           
@@ -981,7 +1038,7 @@ function App() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Final CTA */}
       <section className="py-24 px-8 bg-white/80 backdrop-blur-sm">
@@ -991,26 +1048,39 @@ function App() {
           </h2>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <button 
+            <a 
+              href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0l5hcAP0GJsTrC3xx9WsSC2STrNJ55QtkMaYPgwLyGuD7tyiIv1mCLDk1TRWYSkQIcb-qEgVPM?gv=true"
+              target="_blank"
+              rel="noopener noreferrer"
               data-cta="post"
               className="px-12 py-6 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-xl transition-all duration-200 shadow-2xl shadow-green-600/30 hover:shadow-green-600/50 hover:scale-105 flex items-center justify-center gap-3"
             >
               One-Click Post
               <Zap className="w-6 h-6" />
-            </button>
-            <button 
+            </a>
+            <a 
+              href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0l5hcAP0GJsTrC3xx9WsSC2STrNJ55QtkMaYPgwLyGuD7tyiIv1mCLDk1TRWYSkQIcb-qEgVPM?gv=true"
+              target="_blank"
+              rel="noopener noreferrer"
               data-cta="demo"
               className="px-12 py-6 border-2 border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 rounded-xl font-bold text-xl transition-all duration-200 flex items-center justify-center gap-3"
             >
               <Play className="w-6 h-6" />
               Book Demo
-            </button>
+            </a>
           </div>
         </div>
       </section>
 
       {/* Footer Spacer */}
       <div className="h-16"></div>
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+        defaultTab={authMode}
+      />
     </div>
   );
 }
