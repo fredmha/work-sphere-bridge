@@ -523,12 +523,12 @@ const OneClickPostForm = ({ onConstellationActivate }: { onConstellationActivate
             data-cta="post"
             className="w-full bg-green-600 hover:bg-green-700 text-white py-4 px-8 rounded-xl font-bold text-lg transition-all duration-200 shadow-xl shadow-green-600/25 hover:shadow-green-600/40 hover:scale-[1.02]"
           >
-            Start Matching Process
+            Find your A-Player
           </button>
         </form>
         
         <p className="text-slate-500 text-sm text-center mt-6 font-medium">
-          First matches in 24–48h. AU-grade compliance built-in.
+          Empower your team with the best talent.
         </p>
       </div>
 
@@ -596,15 +596,15 @@ function App() {
   const panels = [
     {
       title: "Signal > Search",
-      description: "We parse your post and search private, domestic-first pools—plus adjacent talent you wouldn't think to check."
+      description: "We parse your post and search private, domestic-first pools plus adjacent talent you wouldn't think to check."
     },
     {
       title: "AI Evaluations",
-      description: "Skills testing, scenario assessments & scorecards using bias-aware rubrics to surface the best matches."
+      description: "We remove bias by using AI to evaluate candidates on skills and experience against your proejct brief"
     },
     {
       title: "Human Review",
-      description: "Specialist pass with detailed notes and context to ensure quality matches for your specific needs."
+      description: "We review all matches with a fine-tooth comb to ensure they're a great fit so you can focus on the work."
     },
     {
       title: "Compliant Start",
@@ -658,15 +658,16 @@ function App() {
             <div className="space-y-8">
               <div>
                 <h1 className="text-6xl lg:text-7xl font-bold leading-tight mb-6">
-                  <span className="text-slate-900">Domestic talent,</span><br />
+                  <span className="text-slate-900">Find A Players,</span><br />
                   <span className="text-green-600">matched in minutes.</span>
                 </h1>
                 <p className="text-xl text-slate-600 leading-relaxed mb-4 font-medium">
-                  Project-based contracting with AI screening and AU-grade compliance—ABN/TFN, Fair Work, right-to-work, super & STP through Payroo. Private matching. No marketplace browsing.
+                We connect Australian businesses with proven contractors who move from project to project, bringing fresh context and compounding experience. We believe A-Players are a scarce resource, and we're here to help you find them.
+                   
                 </p>
-                <p className="text-slate-500 text-sm font-medium">
+                {/* <p className="text-slate-500 text-sm font-medium">
                   No marketplace browsing. We do the matching.
-                </p>
+                </p> */}
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4">
@@ -817,7 +818,12 @@ function App() {
       <section className="py-24 px-8 bg-white/80 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-slate-900 mb-6">How you'll work</h2>
+            <h2 className="text-5xl font-bold text-slate-900 mb-4">How you'll work</h2>
+            <div className="max-w-2xl mx-auto">
+              <p className="text-xl text-slate-600 font-medium">
+                Dynamic work environments to suit your needs
+              </p>
+            </div>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
