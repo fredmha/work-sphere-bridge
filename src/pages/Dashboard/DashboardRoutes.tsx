@@ -13,6 +13,7 @@ import { ProjectDetailPage } from '@/pages/Dashboard/ProjectDetailPage';
 import { ContractorsPage } from '@/pages/Dashboard/ContractorsPage';
 import { CompliancePage } from '@/pages/Dashboard/CompliancePage';
 import { PaymentsPage } from '@/pages/Dashboard/PaymentsPage';
+import { ApplicationManagementPage } from '@/pages/Dashboard/ApplicationManagementPage';
 import NotFound from '@/pages/NotFound';
 
 // Main dashboard routes component - this is what gets mounted at /dashboard/*
@@ -38,6 +39,7 @@ export default function DashboardRoutes(): JSX.Element {
                 <Route path="contractors" element={<ContractorsPage />} />
                 <Route path="compliance" element={<CompliancePage />} />
                 <Route path="payments" element={<PaymentsPage />} />
+                <Route path="applicationmanagement" element={<ApplicationManagementPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>

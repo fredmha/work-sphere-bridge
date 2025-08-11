@@ -16,6 +16,7 @@ import TalentDirectory from '@/pages/TalentDirectory';
 import ProfileSettings from '@/pages/ProfileSettings';
 import ProjectWizard from '@/pages/ProjectWizard';
 import NotFound from '@/pages/NotFound';
+import { ApplicationManagementPage } from './pages/Dashboard/ApplicationManagementPage';
 
 const queryClient = new QueryClient();
 
