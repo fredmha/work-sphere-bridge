@@ -24,7 +24,7 @@ export default function DashboardRoutes(): JSX.Element {
       <Header />
       
       {/* Main content area with sidebar and layout */}
-      <SidebarProvider defaultOpen={true}>
+      <SidebarProvider defaultOpen={false}>
       <div className="flex-1 flex w-full bg-gradient-to-br from-background via-background/98 to-primary/3">
         <AppSidebar />
         

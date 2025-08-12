@@ -80,10 +80,10 @@ export function ApplicationTable({ applications, onApplicationSelect, selectedAp
   };
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col min-w-0 h-full">
       {/* Search and Filter Bar */}
-      <div className="p-4 border-b border-border/50 bg-card/30 backdrop-blur-sm">
-        <div className="flex items-center gap-4 mb-3">
+      <div className="p-3 sm:p-4 border-b border-border/50 bg-card/30 backdrop-blur-sm">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -94,7 +94,7 @@ export function ApplicationTable({ applications, onApplicationSelect, selectedAp
             />
           </div>
           <Select value={statusFilter} onValueChange={(value: ApplicationStatus | 'all') => setStatusFilter(value)}>
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-full sm:w-48">
               <Filter className="h-4 w-4 mr-2" />
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
@@ -111,14 +111,14 @@ export function ApplicationTable({ applications, onApplicationSelect, selectedAp
           </Select>
         </div>
         
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-sm text-muted-foreground">
           <span>Showing {filteredApplications.length} applicants</span>
           {selectedApplications.size > 0 && (
             <div className="flex items-center gap-2">
-              <span>Selected: {selectedApplications.size}</span>
+              <span className="text-xs sm:text-sm">Selected: {selectedApplications.size}</span>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="text-xs sm:text-sm">
                     Bulk Actions
                   </Button>
                 </DropdownMenuTrigger>
@@ -135,7 +135,7 @@ export function ApplicationTable({ applications, onApplicationSelect, selectedAp
       </div>
 
       {/* Applications Table */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 min-h-0 overflow-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -203,33 +203,33 @@ export function ApplicationTable({ applications, onApplicationSelect, selectedAp
                   <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
                     {new Date(application.submittedAt).toLocaleDateString()}
                   </TableCell>
-                  <TableCell onClick={(e) => e.stopPropagation()}>
-                    <div className="flex items-center gap-1">
-                      <Button variant="ghost" size="sm" title="View Details">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-<Button variant="ghost" size="sm" title="Message" onClick={() => onOpenMessaging?.(application.id, `${applicant.firstName} ${applicant.lastName}`)}>
-                        <MessageSquare className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm" title="View Resume">
-                        <FileText className="h-4 w-4" />
-                      </Button>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
+                   <TableCell onClick={(e) => e.stopPropagation()}>
+                     <div className="flex items-center gap-1">
+                       <Button variant="ghost" size="sm" title="View Details" className="hidden sm:flex">
+                         <Eye className="h-4 w-4" />
+                       </Button>
+<Button variant="ghost" size="sm" title="Message" onClick={() => onOpenMessaging?.(application.id, `${applicant.firstName} ${applicant.lastName}`)} className="hidden sm:flex">
+                         <MessageSquare className="h-4 w-4" />
+                       </Button>
+                       <Button variant="ghost" size="sm" title="View Resume" className="hidden md:flex">
+                         <FileText className="h-4 w-4" />
+                       </Button>
+                       <DropdownMenu>
+                         <DropdownMenuTrigger asChild>
+                           <Button variant="ghost" size="sm">
+                             <MoreHorizontal className="h-4 w-4" />
+                           </Button>
+                         </DropdownMenuTrigger>
 <DropdownMenuContent>
-                          <DropdownMenuItem onClick={() => onScheduleInterview?.(application.id, `${applicant.firstName} ${applicant.lastName}`)}>Schedule Interview</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => onOpenFeedback?.(application.id, `${applicant.firstName} ${applicant.lastName}`)}>Interview Feedback</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => onOfferInvite?.(application.id, `${applicant.firstName} ${applicant.lastName}`)}>Offer / Invite</DropdownMenuItem>
-                          <DropdownMenuItem>Override Score</DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive">Reject Application</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </TableCell>
+                           <DropdownMenuItem onClick={() => onScheduleInterview?.(application.id, `${applicant.firstName} ${applicant.lastName}`)}>Schedule Interview</DropdownMenuItem>
+                           <DropdownMenuItem onClick={() => onOpenFeedback?.(application.id, `${applicant.firstName} ${applicant.lastName}`)}>Interview Feedback</DropdownMenuItem>
+                           <DropdownMenuItem onClick={() => onOfferInvite?.(application.id, `${applicant.firstName} ${applicant.lastName}`)}>Offer / Invite</DropdownMenuItem>
+                           <DropdownMenuItem>Override Score</DropdownMenuItem>
+                           <DropdownMenuItem className="text-destructive">Reject Application</DropdownMenuItem>
+                         </DropdownMenuContent>
+                       </DropdownMenu>
+                     </div>
+                   </TableCell>
                 </TableRow>
               );
             })}

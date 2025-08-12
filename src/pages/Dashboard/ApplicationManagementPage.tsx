@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
-//import { ProjectRoleTree } from '@/components/ats/ProjectRoleTree';
+import { ProjectRoleTree } from '@/components/ats/ProjectRoleTree';
 import { ApplicationTable } from '@/components/ats/ApplicationTable';
 import { ApplicationDetails } from '@/components/ats/ApplicationDetails';
 import { getApplicationsByRoleId, getInterviewsByApplicationId } from '@/lib/ats-mock-data';
@@ -116,7 +116,7 @@ export function ApplicationManagementPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/98 to-primary/5">
+    <div className="flex min-h-screen flex-col bg-gradient-to-br from-background via-background/98 to-primary/5">
       {/* Header */}
       <div className="border-b border-border/50 bg-card/50 backdrop-blur-sm">
         <div className="p-6">
@@ -191,30 +191,30 @@ export function ApplicationManagementPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex h-[calc(100vh-200px)] min-w-0">
+      <div className="flex flex-1 min-h-0 min-w-0 max-w-full overflow-hidden">
         {/* Left Panel - Project/Role Tree */}
-        {/* <ProjectRoleTree
+        <ProjectRoleTree
           onRoleSelect={handleRoleSelect}
           selectedRoleId={selectedRoleId}
-        /> */}
+        />
 
         {/* Main Panel - Application Table */}
         {selectedRoleId ? (
-          <div className="flex-1 min-w-0 flex">
-            <div className="flex-1 flex flex-col">
-              <div className="p-4 border-b border-border/50 bg-card/30 backdrop-blur-sm">
-                <div className="flex items-center justify-between flex-wrap gap-3">
-                  <div>
-                    <h2 className="text-xl font-semibold">{selectedRole?.name}</h2>
-                    <p className="text-sm text-muted-foreground">{selectedProject?.title} • {selectedRoleApplications.length} applications</p>
+          <div className="flex-1 min-w-0 flex max-w-full overflow-hidden">
+            <div className="flex-1 flex flex-col min-w-0">
+              <div className="p-2 sm:p-3 md:p-4 border-b border-border/50 bg-card/30 backdrop-blur-sm">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-base sm:text-lg md:text-xl font-semibold truncate">{selectedRole?.name}</h2>
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate">{selectedProject?.title} • {selectedRoleApplications.length} applications</p>
                   </div>
-                  <Badge variant="secondary">{selectedRole?.status}</Badge>
+                  <Badge variant="secondary" className="text-xs">{selectedRole?.status}</Badge>
                 </div>
-                <div className="mt-4">
+                <div className="mt-2 sm:mt-3 md:mt-4">
                   <Tabs value={currentTab} onValueChange={setCurrentTab}>
-                    <TabsList className="w-full sm:w-auto overflow-x-auto">
-                      <TabsTrigger value="pipeline">Pipeline</TabsTrigger>
-                      <TabsTrigger value="table">Applications</TabsTrigger>
+                    <TabsList className="grid grid-cols-2 w-full sm:w-auto">
+                      <TabsTrigger value="pipeline" className="text-xs sm:text-sm">Pipeline</TabsTrigger>
+                      <TabsTrigger value="table" className="text-xs sm:text-sm">Applications</TabsTrigger>
                     </TabsList>
                   </Tabs>
                 </div>

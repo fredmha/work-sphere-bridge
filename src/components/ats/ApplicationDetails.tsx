@@ -205,12 +205,12 @@ export function ApplicationDetails({ applicationId, onScheduleInterview, onOffer
                   <div className="text-sm text-muted-foreground">Latest score ({selected.scoreType.replace('_', ' ')})</div>
                   <Badge variant="outline" className="text-xs">{selected.score.toFixed(1)}/10</Badge>
                 </div>
-                <ScoreBreakdownChart breakdown={breakdown} />
+                {/* <ScoreBreakdownChart breakdown={breakdown} />
                 {selected.justification && (
                   <div className="text-xs text-muted-foreground leading-relaxed">
                     {selected.justification}
                   </div>
-                )}
+                )} */}
               </div>
             );
           })()}
@@ -379,3 +379,5 @@ export function ApplicationDetails({ applicationId, onScheduleInterview, onOffer
     </div>
   );
 }
+
+export default ApplicationDetails;

@@ -68,41 +68,42 @@ export default function PipelineBoard({ applications, onApplicationSelect, onOpe
   return (
     <div className="h-full overflow-auto">
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex gap-4 min-w-[680px] md:min-w-[800px] px-4 py-4">
+        <div className="flex gap-2 sm:gap-3 min-w-[550px] px-2 sm:px-3 py-3">
           {(Object.keys(COLUMN_META) as PipelineColumnId[]).map((colId) => (
             <Droppable droppableId={colId} key={colId}>
               {(provided) => (
-                <div ref={provided.innerRef} {...provided.droppableProps} className="flex-1 min-w-[260px]">
+                <div ref={provided.innerRef} {...provided.droppableProps} className="flex-1 min-w-[100px] sm:min-w-[130px]">
                   <div className="sticky top-0 z-10 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b px-2 py-2">
-                    <div className="text-sm font-medium">{COLUMN_META[colId].title} ({columns[colId].length})</div>
+                    <div className="text-xs sm:text-sm font-medium truncate">{COLUMN_META[colId].title} ({columns[colId].length})</div>
                   </div>
-                  <div className="space-y-3 pt-3">
+                  <div className="space-y-2 sm:space-y-3 pt-2 sm:pt-3">
                     {columns[colId].map((app, idx) => {
                       const applicant = getApplicantById(app.applicantId);
                       if (!applicant) return null;
                       return (
                         <Draggable draggableId={app.id} index={idx} key={app.id}>
                           {(drag) => (
-                            <Card ref={drag.innerRef} {...drag.draggableProps} {...drag.dragHandleProps} className="p-3 bg-card/70 backdrop-blur border-border/60 hover-scale">
-                              <div className="flex items-center gap-3">
+                            <Card ref={drag.innerRef} {...drag.draggableProps} {...drag.dragHandleProps} className="p-2 sm:p-3 bg-card/70 backdrop-blur border-border/60 hover-scale cursor-pointer" onClick={() => onApplicationSelect(app.id)}>
+                              <div className="flex items-center gap-2 sm:gap-3">
                                 {applicant.profilePictureUrl && (
-                                  <img src={applicant.profilePictureUrl} className="w-8 h-8 rounded-full object-cover"/>
+                                  <img src={applicant.profilePictureUrl} className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover"/>
                                 )}
                                 <div className="flex-1 min-w-0">
-                                  <div className="font-medium truncate">{applicant.firstName} {applicant.lastName}</div>
+                                  <div className="font-medium text-xs sm:text-sm truncate">{applicant.firstName} {applicant.lastName}</div>
                                   <div className="text-xs text-muted-foreground truncate">{applicant.location.city}, {applicant.location.country}</div>
                                 </div>
                               </div>
                               <div className="mt-2">
                                 <ScoreChips ai={app.aiScore} task={applicant.averageTaskScore ?? null} interview={undefined} />
                               </div>
-                              <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
-                                <span>Applied {format(new Date(app.submittedAt), 'MMM d')}</span>
+                              <div className="flex items-center justify-between mt-2 sm:mt-3 text-xs text-muted-foreground">
+                                <span className="hidden sm:inline">Applied {format(new Date(app.submittedAt), 'MMM d')}</span>
+                                <span className="sm:hidden text-xs">{format(new Date(app.submittedAt), 'M/d')}</span>
                                 <div className="flex gap-1">
-                                  <Button variant="outline" size="sm" onClick={() => onOpenMessaging?.(app.id, `${applicant.firstName} ${applicant.lastName}`)}>
+                                  <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); onOpenMessaging?.(app.id, `${applicant.firstName} ${applicant.lastName}`); }} className="h-6 px-1 sm:h-7 sm:px-2">
                                     <MessageSquare className="h-3 w-3"/>
                                   </Button>
-                                  <Button variant="outline" size="sm" onClick={() => onScheduleInterview?.(app.id, `${applicant.firstName} ${applicant.lastName}`)}>
+                                  <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); onScheduleInterview?.(app.id, `${applicant.firstName} ${applicant.lastName}`); }} className="h-6 px-1 sm:h-7 sm:px-2">
                                     <CalendarClock className="h-3 w-3"/>
                                   </Button>
                                 </div>
