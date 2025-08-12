@@ -27,11 +27,11 @@ import { Badge } from '@/components/ui/badge';
 
 const mainNavItems = [
   { title: 'Dashboard', url: '/', icon: Home },
-  { title: 'Projects', url: '/projects', icon: FolderOpen },
-  { title: 'Contractors', url: '/contractors', icon: Users },
-  { title: 'Application Management', url: '/application-management', icon: UserCheck },
-  { title: 'Compliance', url: '/compliance', icon: CheckSquare },
-  { title: 'Payments', url: '/payments', icon: DollarSign },
+  { title: 'Projects', url: '/dashboard/projects', icon: FolderOpen },
+  { title: 'Contractors', url: '/dashboard/contractors', icon: Users },
+  { title: 'Application Management', url: '/dashboard/applicationmanagement', icon: UserCheck },
+  { title: 'Compliance', url: '/dashboard/compliance', icon: CheckSquare },
+  { title: 'Payments', url: '/dashboard/payments', icon: DollarSign },
 ];
 
 const toolsNavItems = [
@@ -78,16 +78,16 @@ export function AppSidebar() {
         <div className="p-4 border-b border-border/50">
           {sidebarState !== 'collapsed' ? (
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/60 rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">CF</span>
-              </div>
+              {/* <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/60 rounded-lg flex items-center justify-center">
+                <span className="text-primary-foreground font-bold text-sm center">CF</span>
+              </div> */}
               <span className="font-bold text-lg bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                 ContractorFlow
               </span>
             </div>
           ) : (
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/60 rounded-lg flex items-center justify-center mx-auto">
-              <span className="text-primary-foreground font-bold text-sm">CF</span>
+            <div className="flex items-center justify-center">
+             
             </div>
           )}
         </div>
