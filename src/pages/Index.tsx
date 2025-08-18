@@ -667,7 +667,7 @@ function App() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm border-b border-slate-200">
         <nav className="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-8">
-            <div className="text-2xl font-bold text-slate-900">WorkSphere</div>
+            <div className="text-2xl font-bold text-slate-900">Born</div>
             {/* <div className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
               <a href="#how-it-works" className="hover:text-slate-900 transition-colors">How it works</a>
               <a href="#pricing" className="hover:text-slate-900 transition-colors">Pricing</a>
@@ -685,7 +685,7 @@ function App() {
             >
               Book demo
             </a>
-            <button 
+            {/* <button 
               onClick={() => {
                 setAuthMode('signup');
                 setShowAuthModal(true);
@@ -693,7 +693,7 @@ function App() {
               className="px-6 py-3 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-xl font-semibold transition-all duration-200"
             >
               Sign up
-            </button>
+            </button> */}
           </div>
         </nav>
       </header>
