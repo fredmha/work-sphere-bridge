@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="15" fill="#22c55e" stroke="#000" stroke-width="1"/>
+  
+  <!-- Rocket body -->
+  <path d="M16 8 L20 20 L16 24 L12 20 Z" fill="#000"/>
+  
+  <!-- Rocket nose -->
+  <path d="M16 8 L18 6 L14 6 Z" fill="#000"/>
+  
+  <!-- Rocket window -->
+  <circle cx="16" cy="14" r="1.5" fill="#000"/>
+  
+  <!-- Exhaust flame -->
+  <path d="M14 24 Q16 26 18 24 Q16 25 14 24" fill="#000"/>
+  
+  <!-- Rocket fins -->
+  <path d="M12 20 L10 22 L12 24 Z" fill="#000"/>
+  <path d="M20 20 L22 22 L20 24 Z" fill="#000"/>
+</svg>
