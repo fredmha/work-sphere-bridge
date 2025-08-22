@@ -685,7 +685,7 @@ function App() {
             >
               Book demo
             </a>
-            {/* <button 
+            <button 
               onClick={() => {
                 setAuthMode('signup');
                 setShowAuthModal(true);
@@ -693,7 +693,7 @@ function App() {
               className="px-6 py-3 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-xl font-semibold transition-all duration-200"
             >
               Sign up
-            </button> */}
+            </button>
           </div>
         </nav>
       </header>
