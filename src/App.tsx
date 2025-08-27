@@ -15,6 +15,7 @@ import Applications from '@/pages/applications';
 import TalentDirectory from '@/pages/TalentDirectory';
 import ProfileSettings from '@/pages/ProfileSettings';
 import ProjectWizard from '@/pages/ProjectWizard';
+import Students from '@/pages/Students';
 import NotFound from '@/pages/NotFound';
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ export default function App() {
               <Routes>
                 {/* Global (non-dashboard) routes */}
                 <Route path="/" element={<Index />} />
+                <Route path="/students" element={<Students />} />
                 <Route path="/find-projects" element={<FindProjects />} />
                 <Route path="/projects/:id" element={<ProjectDetail />} />
 
