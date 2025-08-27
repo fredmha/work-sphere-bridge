@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ArrowRight, CheckCircle, Clock, FileCheck, Users } from 'lucide-react';
 import { track } from '@/lib/analytics';
-
-// Placeholder URL - replace with actual form URL
-const SIGNUP_FORM_URL = "https://forms.example.com/students-signup";
+import { AuthModal } from '@/components/auth/AuthModal';
 
 const Students = () => {
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState<'signup' | 'login'>('signup');
+
   const handleSignUpClick = () => {
     track('students_sign_up_click');
+    setAuthMode('signup');
+    setShowAuthModal(true);
   };
 
   return (
@@ -47,16 +50,13 @@ const Students = () => {
             <p className="text-xl text-slate-600 mb-12 max-w-3xl mx-auto font-medium leading-relaxed">
               We match Australian uni students and recent grads to short, practical projects with startups and SMEs. Sign up once. We'll match you based on skills, availability, and interests.
             </p>
-            <a 
-              href={SIGNUP_FORM_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button 
               onClick={handleSignUpClick}
               className="px-12 py-6 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-xl transition-all duration-200 shadow-2xl shadow-green-600/30 hover:shadow-green-600/50 hover:scale-105 inline-flex items-center gap-3"
             >
               Sign up
               <ArrowRight className="w-6 h-6" />
-            </a>
+            </button>
           </div>
         </section>
 
@@ -189,16 +189,13 @@ const Students = () => {
             </h2>
             
             <div className="flex flex-col sm:flex-row gap-6 justify-center mb-8">
-              <a 
-                href={SIGNUP_FORM_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button 
                 onClick={handleSignUpClick}
                 className="px-12 py-6 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-xl transition-all duration-200 shadow-2xl shadow-green-600/30 hover:shadow-green-600/50 hover:scale-105 flex items-center justify-center gap-3"
               >
                 Sign up
                 <ArrowRight className="w-6 h-6" />
-              </a>
+              </button>
             </div>
             
             <p className="text-slate-600 font-medium">
@@ -210,6 +207,17 @@ const Students = () => {
         {/* Footer Spacer */}
         <div className="h-16"></div>
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => {
+          setShowAuthModal(false);
+          // Show thanks message
+          alert('Thanks for signing up! We\'ll be in touch soon.');
+        }} 
+        defaultTab={authMode}
+      />
     </div>
   );
 };
