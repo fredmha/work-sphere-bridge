@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { ArrowRight, CheckCircle, Clock, FileCheck, Users } from 'lucide-react';
+import { ArrowRight, CheckCircle, Clock, FileCheck, Users, Menu, X } from 'lucide-react';
 import { track } from '@/lib/analytics';
 import { AuthModal } from '@/components/auth/AuthModal';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Students = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState<'signup' | 'login'>('signup');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleSignUpClick = () => {
     track('students_sign_up_click');
@@ -19,22 +22,73 @@ const Students = () => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm border-b border-slate-200">
         <nav className="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-8">
-            <div className="text-2xl font-bold text-slate-900"> Born</div>
+            <a href="/" className="text-2xl font-bold text-slate-900 hover:text-green-600 transition-colors"> Born</a>
+            <div className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+              <a href="/students" className="hover:text-slate-900 transition-colors">Students</a>
+            </div>
           </div>
           
           <div className="flex items-center gap-4">
-            <a 
-              href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0l5hcAP0GJsTrC3xx9WsSC2STrNJ55QtkMaYPgwLyGuD7tyiIv1mCLDk1TRWYSkQIcb-qEgVPM?gv=true"
-              target="_blank"
-              rel="noopener noreferrer"
-              data-cta="demo"
-              className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-green-600/20 hover:shadow-green-600/30"
-            >
-              Book demo
-            </a>
+            {isMobile ? (
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 text-slate-600 hover:text-slate-900 transition-colors"
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            ) : (
+              <a 
+                href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0l5hcAP0GJsTrC3xx9WsSC2STrNJ55QtkMaYPgwLyGuD7tyiIv1mCLDk1TRWYSkQIcb-qEgVPM?gv=true"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-cta="demo"
+                className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-green-600/20 hover:shadow-green-600/30"
+              >
+                Book demo
+              </a>
+            )}
           </div>
         </nav>
       </header>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm">
+          <div className="mobile-menu fixed top-0 right-0 w-64 h-full bg-white shadow-2xl transform transition-transform duration-300 ease-in-out">
+            <div className="flex flex-col h-full">
+              <div className="flex items-center justify-between p-6 border-b border-slate-200">
+                <span className="text-lg font-semibold text-slate-900">Menu</span>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 text-slate-600 hover:text-slate-900 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="flex-1 p-6">
+                <nav className="space-y-4">
+                  <a
+                    href="/students"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block py-3 px-4 text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors font-medium"
+                  >
+                    Students
+                  </a>
+                  <a
+                    href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0l5hcAP0GJsTrC3xx9WsSC2STrNJ55QtkMaYPgwLyGuD7tyiIv1mCLDk1TRWYSkQIcb-qEgVPM?gv=true"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block py-3 px-4 text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors font-medium"
+                  >
+                    Book Demo
+                  </a>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="pt-24">
