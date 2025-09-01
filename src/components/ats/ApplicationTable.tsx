@@ -11,49 +11,103 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn } from '@/lib/utils';
 import ScoreChips from '@/components/ats/ScoreChips';
 import { supabase } from '@/lib/supabaseClient';
+import { useAuth } from '@/context/AuthContext';
+import type { Database } from '@/types/supabase';
+
+type Tables = Database['public']['Tables'];
+type ApplicationRow = Tables['application']['Row'];
+type ContractorRow = Tables['contractor']['Row'];
+type UserRow = Tables['users']['Row'];
+type ProjectRow = Tables['projects']['Row'];
 
 interface ApplicationTableProps {
-  applications: Application[];
+  applications?: Application[];
   onApplicationSelect: (applicationId: string) => void;
   selectedApplicationId?: string;
   onScheduleInterview?: (applicationId: string, applicantName: string) => void;
   onOfferInvite?: (applicationId: string, applicantName: string) => void;
   onOpenMessaging?: (applicationId: string, applicantName: string) => void;
   onOpenFeedback?: (applicationId: string, applicantName: string) => void;
+  projectId?: string; // Add projectId prop to filter applications
 }
 
-export function ApplicationTable({ applications, onApplicationSelect, selectedApplicationId, onScheduleInterview, onOfferInvite, onOpenMessaging, onOpenFeedback }: ApplicationTableProps) {
+export function ApplicationTable({ 
+  applications: propApplications, 
+  onApplicationSelect, 
+  selectedApplicationId, 
+  onScheduleInterview, 
+  onOfferInvite, 
+  onOpenMessaging, 
+  onOpenFeedback,
+  projectId 
+}: ApplicationTableProps) {
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<ApplicationStatus | 'all'>('all');
   const [selectedApplications, setSelectedApplications] = useState<Set<string>>(new Set());
-  const [supabaseApplications, setSupabaseApplications] = useState<Array<{id: number; contractorid: number; status: string; aiscore: number; created_at: string}>>([]);
-  const [supabaseApplicants, setSupabaseApplicants] = useState<Array<{id: string; 'full name': string; email: string; location?: string; profilePictureUrl?: string}>>([]);
+  const [supabaseApplications, setSupabaseApplications] = useState<ApplicationRow[]>([]);
+  const [supabaseContractors, setSupabaseContractors] = useState<ContractorRow[]>([]);
+  const [supabaseUsers, setSupabaseUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch applications and applicants from Supabase
+  // Fetch applications and related data from Supabase
   useEffect(() => {
     const fetchData = async () => {
-      if (!supabase) return;
+      if (!supabase || !user) return;
       
       try {
         setLoading(true);
         
-        // Fetch applications
+        // First, get projects owned by the current user
+        const { data: userProjects, error: projectsError } = await supabase
+          .from('projects')
+          .select('*')
+          .eq('owner_id', user.id);
+        
+        if (projectsError) throw projectsError;
+        
+        // If projectId is provided, use it; otherwise, get all user's projects
+        const targetProjectIds = projectId ? [parseInt(projectId)] : userProjects?.map(p => p.id) || [];
+        
+        if (targetProjectIds.length === 0) {
+          setSupabaseApplications([]);
+          setLoading(false);
+          return;
+        }
+        
+        // Fetch applications for the target projects
         const { data: applicationsData, error: applicationsError } = await supabase
           .from('application')
-          .select('*');
+          .select('*')
+          .in('projectid', targetProjectIds);
         
         if (applicationsError) throw applicationsError;
         
-        // Fetch applicants (users table)
-        const { data: applicantsData, error: applicantsError } = await supabase
-          .from('users')
-          .select('*');
+        // Get unique contractor IDs from applications
+        const contractorIds = [...new Set(applicationsData?.map(app => app.contractorid).filter(Boolean) || [])];
         
-        if (applicantsError) throw applicantsError;
+        // Fetch contractors
+        const { data: contractorsData, error: contractorsError } = await supabase
+          .from('contractor')
+          .select('*')
+          .in('id', contractorIds);
+        
+        if (contractorsError) throw contractorsError;
+        
+        // Get unique user IDs from contractors
+        const userIds = [...new Set(contractorsData?.map(contractor => contractor.linkeduser).filter(Boolean) || [])];
+        
+        // Fetch users
+        const { data: usersData, error: usersError } = await supabase
+          .from('users')
+          .select('*')
+          .in('id', userIds);
+        
+        if (usersError) throw usersError;
         
         setSupabaseApplications(applicationsData || []);
-        setSupabaseApplicants(applicantsData || []);
+        setSupabaseContractors(contractorsData || []);
+        setSupabaseUsers(usersData || []);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -62,14 +116,57 @@ export function ApplicationTable({ applications, onApplicationSelect, selectedAp
     };
 
     fetchData();
-  }, []);
+  }, [user, projectId]);
 
-  // Helper function to get applicant by ID from Supabase data
-  const getApplicantById = (id: string) => {
-    return supabaseApplicants.find(applicant => applicant.id === id);
+  // Helper function to get contractor by ID
+  const getContractorById = (id: number) => {
+    return supabaseContractors.find(contractor => contractor.id === id);
   };
 
-  const getStatusBadge = (status: ApplicationStatus) => {
+  // Helper function to get user by ID
+  const getUserById = (id: string) => {
+    return supabaseUsers.find(user => user.id === id);
+  };
+
+  // Helper function to get applicant name from contractor and user data
+  const getApplicantName = (contractorId: number) => {
+    const contractor = getContractorById(contractorId);
+    if (!contractor) return 'Unknown Applicant';
+    
+    const user = getUserById(contractor.linkeduser || '');
+    if (user && user['full name']) return user['full name'];
+    
+    return contractor.name || 'Unknown Applicant';
+  };
+
+  // Helper function to get applicant email from contractor and user data
+  const getApplicantEmail = (contractorId: number) => {
+    const contractor = getContractorById(contractorId);
+    if (!contractor) return '';
+    
+    const user = getUserById(contractor.linkeduser || '');
+    return user?.email || '';
+  };
+
+  // Helper function to get applicant location from contractor data
+  const getApplicantLocation = (contractorId: number) => {
+    const contractor = getContractorById(contractorId);
+    return contractor?.location || 'Location not specified';
+  };
+
+  // Helper function to get applicant profile picture from contractor data
+  const getApplicantProfilePic = (contractorId: number) => {
+    const contractor = getContractorById(contractorId);
+    return contractor?.profilepic || '';
+  };
+
+  // Helper function to get applicant average task score from contractor data
+  const getApplicantTaskScore = (contractorId: number) => {
+    const contractor = getContractorById(contractorId);
+    return contractor?.avgtaskscore || null;
+  };
+
+  const getStatusBadge = (status: string) => {
     const statusConfig = {
       pending: { label: 'Pending', variant: 'secondary' as const, icon: '🔵' },
       interview_scheduled: { label: 'Interview Scheduled', variant: 'default' as const, icon: '📅' },
@@ -80,7 +177,7 @@ export function ApplicationTable({ applications, onApplicationSelect, selectedAp
       contracted: { label: 'Contracted', variant: 'default' as const, icon: '📝' }
     };
 
-    const config = statusConfig[status];
+    const config = statusConfig[status as ApplicationStatus] || { label: status, variant: 'secondary' as const, icon: '❓' };
     return (
       <Badge variant={config.variant} className="gap-1">
         <span>{config.icon}</span>
@@ -90,20 +187,31 @@ export function ApplicationTable({ applications, onApplicationSelect, selectedAp
   };
 
   // Use Supabase data if available, otherwise fall back to props
-  const applicationsToShow = supabaseApplications.length > 0 ? supabaseApplications : applications;
+  const applicationsToShow = supabaseApplications.length > 0 ? supabaseApplications : (propApplications || []);
   
   const filteredApplications = applicationsToShow.filter(app => {
-    const applicantId = 'contractorid' in app ? app.contractorid.toString() : app.applicantId;
-    const applicant = getApplicantById(applicantId);
-    if (!applicant) return false;
+    // Handle both Supabase and prop application types
+    if ('contractorid' in app) {
+      // Supabase application
+      const applicantName = getApplicantName(app.contractorid || 0);
+      const applicantEmail = getApplicantEmail(app.contractorid || 0);
 
-    const matchesSearch = 
-      (applicant['full name'] || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (applicant.email || '').toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = 
+        applicantName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        applicantEmail.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesStatus = statusFilter === 'all' || app.status === statusFilter;
+      const matchesStatus = statusFilter === 'all' || app.status === statusFilter;
 
-    return matchesSearch && matchesStatus;
+      return matchesSearch && matchesStatus;
+    } else {
+      // Prop application (legacy type)
+      const matchesSearch = 
+        (app.applicantId || '').toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesStatus = statusFilter === 'all' || app.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    }
   });
 
   const toggleApplicationSelection = (applicationId: string) => {
@@ -120,7 +228,13 @@ export function ApplicationTable({ applications, onApplicationSelect, selectedAp
     if (selectedApplications.size === filteredApplications.length) {
       setSelectedApplications(new Set());
     } else {
-      setSelectedApplications(new Set(filteredApplications.map(app => app.id)));
+      setSelectedApplications(new Set(filteredApplications.map(app => {
+        if ('contractorid' in app) {
+          return app.id.toString();
+        } else {
+          return app.id;
+        }
+      })));
     }
   };
 
@@ -207,83 +321,167 @@ export function ApplicationTable({ applications, onApplicationSelect, selectedAp
           </TableHeader>
           <TableBody>
             {filteredApplications.map((application) => {
-              const applicant = getApplicantById(application.contractorid || application.applicantId);
-              if (!applicant) return null;
+              // Handle both Supabase and prop application types
+              if ('contractorid' in application) {
+                // Supabase application
+                const applicantName = getApplicantName(application.contractorid || 0);
+                const applicantEmail = getApplicantEmail(application.contractorid || 0);
+                const applicantLocation = getApplicantLocation(application.contractorid || 0);
+                const applicantProfilePic = getApplicantProfilePic(application.contractorid || 0);
+                const applicantTaskScore = getApplicantTaskScore(application.contractorid || 0);
 
-              const isSelected = selectedApplicationId === application.id;
-              const isChecked = selectedApplications.has(application.id);
+                const isSelected = selectedApplicationId === application.id.toString();
+                const isChecked = selectedApplications.has(application.id.toString());
 
-              return (
-                <TableRow
-                  key={application.id}
-                  className={cn(
-                    "cursor-pointer hover:bg-muted/50",
-                    isSelected && "bg-primary/5 border-l-2 border-l-primary"
-                  )}
-                  onClick={() => onApplicationSelect(application.id)}
-                >
-                  <TableCell onClick={(e) => e.stopPropagation()}>
-                    <Checkbox
-                      checked={isChecked}
-                      onCheckedChange={() => toggleApplicationSelection(application.id)}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      {applicant.profilePictureUrl && (
-                        <img
-                          src={applicant.profilePictureUrl}
-                          alt={applicant['full name'] || 'Applicant'}
-                          className="w-8 h-8 rounded-full object-cover"
-                        />
-                      )}
-                      <div>
-                        <div className="font-medium">
-                          {applicant['full name'] || 'Unknown Name'}
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {applicant.location || 'Location not specified'}
+                return (
+                  <TableRow
+                    key={application.id}
+                    className={cn(
+                      "cursor-pointer hover:bg-muted/50",
+                      isSelected && "bg-primary/5 border-l-2 border-l-primary"
+                    )}
+                    onClick={() => onApplicationSelect(application.id.toString())}
+                  >
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <Checkbox
+                        checked={isChecked}
+                        onCheckedChange={() => toggleApplicationSelection(application.id.toString())}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        {applicantProfilePic && (
+                          <img
+                            src={applicantProfilePic}
+                            alt={applicantName}
+                            className="w-8 h-8 rounded-full object-cover"
+                          />
+                        )}
+                        <div>
+                          <div className="font-medium">
+                            {applicantName}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {applicantLocation}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell text-sm">{applicant.email || 'No email'}</TableCell>
-                  <TableCell>{getStatusBadge(application.status)}</TableCell>
-                  <TableCell>
-                    <ScoreChips ai={application.aiscore || application.aiScore} task={applicant.averageTaskScore ?? null} interview={undefined} />
-                  </TableCell>
-                  <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
-                    {new Date(application.created_at || application.submittedAt).toLocaleDateString()}
-                  </TableCell>
-                   <TableCell onClick={(e) => e.stopPropagation()}>
-                     <div className="flex items-center gap-1">
-                       <Button variant="ghost" size="sm" title="View Details" className="hidden sm:flex">
-                         <Eye className="h-4 w-4" />
-                       </Button>
-                       <Button variant="ghost" size="sm" title="Message" onClick={() => onOpenMessaging?.(application.id, applicant['full name'] || 'Unknown Name')} className="hidden sm:flex">
-                         <MessageSquare className="h-4 w-4" />
-                       </Button>
-                       <Button variant="ghost" size="sm" title="View Resume" className="hidden md:flex">
-                         <FileText className="h-4 w-4" />
-                       </Button>
-                       <DropdownMenu>
-                         <DropdownMenuTrigger asChild>
-                           <Button variant="ghost" size="sm">
-                             <MoreHorizontal className="h-4 w-4" />
-                           </Button>
-                         </DropdownMenuTrigger>
-                         <DropdownMenuContent>
-                           <DropdownMenuItem onClick={() => onScheduleInterview?.(application.id, applicant['full name'] || 'Unknown Name')}>Schedule Interview</DropdownMenuItem>
-                           <DropdownMenuItem onClick={() => onOpenFeedback?.(application.id, applicant['full name'] || 'Unknown Name')}>Interview Feedback</DropdownMenuItem>
-                           <DropdownMenuItem onClick={() => onOfferInvite?.(application.id, applicant['full name'] || 'Unknown Name')}>Offer / Invite</DropdownMenuItem>
-                           <DropdownMenuItem>Override Score</DropdownMenuItem>
-                           <DropdownMenuItem className="text-destructive">Reject Application</DropdownMenuItem>
-                         </DropdownMenuContent>
-                       </DropdownMenu>
-                     </div>
-                   </TableCell>
-                </TableRow>
-              );
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell text-sm">{applicantEmail || 'No email'}</TableCell>
+                    <TableCell>{getStatusBadge(application.status || 'pending')}</TableCell>
+                    <TableCell>
+                      <ScoreChips 
+                        ai={application.aiscore || 0} 
+                        task={applicantTaskScore} 
+                        interview={undefined} 
+                      />
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
+                      {new Date(application.created_at).toLocaleDateString()}
+                    </TableCell>
+                     <TableCell onClick={(e) => e.stopPropagation()}>
+                       <div className="flex items-center gap-1">
+                         <Button variant="ghost" size="sm" title="View Details" className="hidden sm:flex">
+                           <Eye className="h-4 w-4" />
+                         </Button>
+                         <Button variant="ghost" size="sm" title="Message" onClick={() => onOpenMessaging?.(application.id.toString(), applicantName)} className="hidden sm:flex">
+                           <MessageSquare className="h-4 w-4" />
+                         </Button>
+                         <Button variant="ghost" size="sm" title="View Resume" className="hidden md:flex">
+                           <FileText className="h-4 w-4" />
+                         </Button>
+                         <DropdownMenu>
+                           <DropdownMenuTrigger asChild>
+                             <Button variant="ghost" size="sm">
+                               <MoreHorizontal className="h-4 w-4" />
+                             </Button>
+                           </DropdownMenuTrigger>
+                           <DropdownMenuContent>
+                             <DropdownMenuItem onClick={() => onScheduleInterview?.(application.id.toString(), applicantName)}>Schedule Interview</DropdownMenuItem>
+                             <DropdownMenuItem onClick={() => onOpenFeedback?.(application.id.toString(), applicantName)}>Interview Feedback</DropdownMenuItem>
+                             <DropdownMenuItem onClick={() => onOfferInvite?.(application.id.toString(), applicantName)}>Offer / Invite</DropdownMenuItem>
+                             <DropdownMenuItem>Override Score</DropdownMenuItem>
+                             <DropdownMenuItem className="text-destructive">Reject Application</DropdownMenuItem>
+                           </DropdownMenuContent>
+                         </DropdownMenu>
+                       </div>
+                     </TableCell>
+                  </TableRow>
+                );
+              } else {
+                // Prop application (legacy type) - render minimal info
+                const isSelected = selectedApplicationId === application.id;
+                const isChecked = selectedApplications.has(application.id);
+
+                return (
+                  <TableRow
+                    key={application.id}
+                    className={cn(
+                      "cursor-pointer hover:bg-muted/50",
+                      isSelected && "bg-primary/5 border-l-2 border-l-primary"
+                    )}
+                    onClick={() => onApplicationSelect(application.id)}
+                  >
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <Checkbox
+                        checked={isChecked}
+                        onCheckedChange={() => toggleApplicationSelection(application.id)}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <div>
+                          <div className="font-medium">
+                            {application.applicantId || 'Unknown Applicant'}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            Legacy Application
+                          </div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell text-sm">N/A</TableCell>
+                    <TableCell>{getStatusBadge(application.status)}</TableCell>
+                    <TableCell>
+                      <ScoreChips 
+                        ai={application.aiScore || 0} 
+                        task={undefined} 
+                        interview={undefined} 
+                      />
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
+                      {new Date(application.submittedAt).toLocaleDateString()}
+                    </TableCell>
+                     <TableCell onClick={(e) => e.stopPropagation()}>
+                       <div className="flex items-center gap-1">
+                         <Button variant="ghost" size="sm" title="View Details" className="hidden sm:flex">
+                           <Eye className="h-4 w-4" />
+                         </Button>
+                         <Button variant="ghost" size="sm" title="Message" onClick={() => onOpenMessaging?.(application.id, application.applicantId || 'Unknown')} className="hidden sm:flex">
+                           <MessageSquare className="h-4 w-4" />
+                         </Button>
+                         <Button variant="ghost" size="sm" title="View Resume" className="hidden md:flex">
+                           <FileText className="h-4 w-4" />
+                         </Button>
+                         <DropdownMenu>
+                           <DropdownMenuTrigger asChild>
+                             <Button variant="ghost" size="sm">
+                               <MoreHorizontal className="h-4 w-4" />
+                             </Button>
+                           </DropdownMenuTrigger>
+                           <DropdownMenuContent>
+                             <DropdownMenuItem onClick={() => onScheduleInterview?.(application.id, application.applicantId || 'Unknown')}>Schedule Interview</DropdownMenuItem>
+                             <DropdownMenuItem onClick={() => onOpenFeedback?.(application.id, application.applicantId || 'Unknown')}>Interview Feedback</DropdownMenuItem>
+                             <DropdownMenuItem onClick={() => onOfferInvite?.(application.id, application.applicantId || 'Unknown')}>Offer / Invite</DropdownMenuItem>
+                             <DropdownMenuItem>Override Score</DropdownMenuItem>
+                             <DropdownMenuItem className="text-destructive">Reject Application</DropdownMenuItem>
+                           </DropdownMenuContent>
+                         </DropdownMenu>
+                       </div>
+                     </TableCell>
+                  </TableRow>
+                );
+              }
             })}
           </TableBody>
         </Table>

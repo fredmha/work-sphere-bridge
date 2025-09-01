@@ -16,9 +16,11 @@ interface Project extends ProjectRow {
 
 interface ProjectHeaderProps {
   project: Project;
+  onPublish?: () => void;
+  onUpdateProject?: () => void;
 }
 
-export function ProjectHeader({ project }: ProjectHeaderProps) {
+export function ProjectHeader({ project, onPublish, onUpdateProject }: ProjectHeaderProps) {
   const getStatusVariant = (status: string) => {
     switch (status) {
       case 'Draft': return 'secondary';
@@ -68,7 +70,7 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
 
         <div className="flex flex-col sm:flex-row gap-2">
           {project.status === 'Draft' && (
-            <Button variant="default" className="flex-1 sm:flex-none">
+            <Button variant="default" className="flex-1 sm:flex-none" onClick={onPublish}>
               Publish Project
             </Button>
           )}
