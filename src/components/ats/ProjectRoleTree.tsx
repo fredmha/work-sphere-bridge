@@ -30,16 +30,37 @@ export function ProjectRoleTree({ onRoleSelect, selectedRoleId }: ProjectRoleTre
         setLoading(true);
         
         // Get all projects where owner_id matches current user's UUID
-        const { data: projects, error } = await supabase
+        const { data: projects, error: projectsError } = await supabase
           .from('projects')
           .select('*')
           .eq('owner_id', user.id);
         
-        if (error) throw error;
+        if (projectsError) throw projectsError;
         
-        setUserProjects(projects || []);
+        // For each project, fetch the associated roles using project_id
+        if (projects && projects.length > 0) {
+          const projectIds = projects.map(p => p.id);
+          
+          const { data: roles, error: rolesError } = await supabase
+            .from('ContractorRole')
+            .select('*')
+            .in('project_id', projectIds);
+          
+          if (rolesError) throw rolesError;
+          
+          // Attach roles to their respective projects
+          const projectsWithRoles = projects.map(project => ({
+            ...project,
+            roles: roles?.filter(role => role.project_id === project.id) || []
+          }));
+          
+          setUserProjects(projectsWithRoles);
+        } else {
+          setUserProjects([]);
+        }
       } catch (error) {
         console.error('Error fetching user projects:', error);
+        setUserProjects([]);
       } finally {
         setLoading(false);
       }
@@ -104,7 +125,7 @@ export function ProjectRoleTree({ onRoleSelect, selectedRoleId }: ProjectRoleTre
           <>
             {filteredProjects.map((project) => {
               const isExpanded = expandedProjects.has(project.id);
-              const roles = project.contractor_roles || [];
+              const roles = project.roles || [];
               const totalRoles = roles.length;
 
               return (
@@ -154,10 +175,11 @@ export function ProjectRoleTree({ onRoleSelect, selectedRoleId }: ProjectRoleTre
                               <Users className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-muted-foreground" />
                               <div className="flex-1 text-left min-w-0">
                                 <div className="font-medium truncate">
-                                  {role.name || role.role || `Role ${index + 1}`}
+                                  {role.role || role.name || `Role ${index + 1}`}
                                 </div>
                                 <div className="text-xs text-muted-foreground truncate">
-                                  {role.type || role.roleType || 'Unknown'} • {role.status || 'open'}
+                                  {role.type || 'Unknown'} • {role.status || 'open'}
+                                  {role.pay && ` • $${role.pay}`}
                                 </div>
                               </div>
                             </div>
