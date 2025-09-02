@@ -138,21 +138,30 @@ export function ApplicationTable({
   };
 
   // Helper function to get applicant name from contractor and user data
+  // Prefer contractor.name, fallback to linked user full name
   const getApplicantName = (contractorId: number) => {
     const contractor = getContractorById(contractorId);
     if (!contractor) return 'Unknown Applicant';
-    
+
+    if (contractor.name && contractor.name.trim().length > 0) {
+      return contractor.name;
+    }
+
     const user = getUserById(contractor.linkeduser || '');
     if (user && user['full name']) return user['full name'];
-    
-    return contractor.name || 'Unknown Applicant';
+
+    return 'Unknown Applicant';
   };
 
-  // Helper function to get applicant email from contractor and user data
+  // Helper function to get applicant email
+  // Prefer contractor.email if present, otherwise fallback to linked user's email
   const getApplicantEmail = (contractorId: number) => {
     const contractor = getContractorById(contractorId);
     if (!contractor) return '';
-    
+
+    const contractorEmail = (contractor as unknown as { email?: string }).email;
+    if (contractorEmail) return contractorEmail;
+
     const user = getUserById(contractor.linkeduser || '');
     return user?.email || '';
   };
