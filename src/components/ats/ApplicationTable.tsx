@@ -18,7 +18,6 @@ type Tables = Database['public']['Tables'];
 type ApplicationRow = Tables['application']['Row'];
 type ContractorRow = Tables['contractor']['Row'];
 type UserRow = Tables['users']['Row'];
-type ProjectRow = Tables['projects']['Row'];
 
 interface ApplicationTableProps {
   applications?: Application[];
@@ -28,7 +27,8 @@ interface ApplicationTableProps {
   onOfferInvite?: (applicationId: string, applicantName: string) => void;
   onOpenMessaging?: (applicationId: string, applicantName: string) => void;
   onOpenFeedback?: (applicationId: string, applicantName: string) => void;
-  projectId?: string; // Add projectId prop to filter applications
+  roleId?: string; // filter applications by role only
+  projectId?: string; // optional: filter by project when role not set
 }
 
 export function ApplicationTable({ 
@@ -39,7 +39,8 @@ export function ApplicationTable({
   onOfferInvite, 
   onOpenMessaging, 
   onOpenFeedback,
-  projectId 
+  roleId,
+  projectId
 }: ApplicationTableProps) {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
@@ -50,73 +51,81 @@ export function ApplicationTable({
   const [supabaseUsers, setSupabaseUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch applications and related data from Supabase
+  // Fetch applications and related data from Supabase — filter by role only
   useEffect(() => {
     const fetchData = async () => {
-      if (!supabase || !user) return;
-      
+      if (!supabase) {
+        // Supabase is not configured; stop loading and rely on props fallback
+        setLoading(false);
+        return;
+      }
       try {
         setLoading(true);
-        
-        // First, get projects owned by the current user
-        const { data: userProjects, error: projectsError } = await supabase
-          .from('projects')
-          .select('*')
-          .eq('owner_id', user.id);
-        
-        if (projectsError) throw projectsError;
-        
-        // If projectId is provided, use it; otherwise, get all user's projects
-        const targetProjectIds = projectId ? [parseInt(projectId)] : userProjects?.map(p => p.id) || [];
-        
-        if (targetProjectIds.length === 0) {
+
+        let query = supabase.from('application').select('*');
+        if (roleId) {
+          const roleIdNum = parseInt(roleId as unknown as string);
+          if (!Number.isNaN(roleIdNum)) {
+            query = query.eq('roleid', roleIdNum);
+          }
+        } else if (projectId) {
+          const projectIdNum = parseInt(projectId as unknown as string);
+          if (!Number.isNaN(projectIdNum)) {
+            query = query.eq('projectid', projectIdNum);
+          }
+        } else {
+          // If no role or project selected, show nothing (avoid loading all applications)
           setSupabaseApplications([]);
+          setSupabaseContractors([]);
+          setSupabaseUsers([]);
           setLoading(false);
           return;
         }
-        
-        // Fetch applications for the target projects
-        const { data: applicationsData, error: applicationsError } = await supabase
-          .from('application')
-          .select('*')
-          .in('projectid', targetProjectIds);
-        
+
+        const { data: applicationsData, error: applicationsError } = await query;
         if (applicationsError) throw applicationsError;
-        
-        // Get unique contractor IDs from applications
+
         const contractorIds = [...new Set(applicationsData?.map(app => app.contractorid).filter(Boolean) || [])];
-        
-        // Fetch contractors
-        const { data: contractorsData, error: contractorsError } = await supabase
-          .from('contractor')
-          .select('*')
-          .in('id', contractorIds);
-        
-        if (contractorsError) throw contractorsError;
-        
-        // Get unique user IDs from contractors
-        const userIds = [...new Set(contractorsData?.map(contractor => contractor.linkeduser).filter(Boolean) || [])];
-        
-        // Fetch users
-        const { data: usersData, error: usersError } = await supabase
-          .from('users')
-          .select('*')
-          .in('id', userIds);
-        
-        if (usersError) throw usersError;
-        
+        let contractorsData: ContractorRow[] = [];
+        if (contractorIds.length > 0) {
+          const { data, error } = await supabase
+            .from('contractor')
+            .select('*')
+            .in('id', contractorIds);
+          if (error) throw error;
+          contractorsData = data || [];
+        } else {
+          contractorsData = [];
+        }
+
+        const userIds = [...new Set(contractorsData?.map(c => c.linkeduser).filter(Boolean) || [])];
+        let usersData: UserRow[] = [];
+        if (userIds.length > 0) {
+          const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .in('id', userIds);
+          if (error) throw error;
+          usersData = data || [];
+        } else {
+          usersData = [];
+        }
+
         setSupabaseApplications(applicationsData || []);
         setSupabaseContractors(contractorsData || []);
         setSupabaseUsers(usersData || []);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching applications:', error);
+        setSupabaseApplications([]);
+        setSupabaseContractors([]);
+        setSupabaseUsers([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [user, projectId]);
+  }, [roleId, projectId]);
 
   // Helper function to get contractor by ID
   const getContractorById = (id: number) => {

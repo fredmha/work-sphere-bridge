@@ -237,7 +237,7 @@ export function ApplicationManagementPage() {
                     onOfferInvite={openOfferFor}
                     onOpenFeedback={openFeedbackFor}
                     onOpenMessaging={openMessagingFor}
-                    projectId={selectedProjectId}
+                   roleId={selectedRoleId}
                   />
                 )}
               </div>

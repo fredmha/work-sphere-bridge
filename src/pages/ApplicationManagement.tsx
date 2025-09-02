@@ -10,6 +10,7 @@ import { useState } from "react";
 const ApplicationManagement = () => {
   const [selectedProjectId, setSelectedProjectId] = useState<string>('2'); // Default to project 2
   const [selectedApplicationId, setSelectedApplicationId] = useState<string>('1');
+  const [selectedRoleId, setSelectedRoleId] = useState<string>('1');
 
   const projects = [
     {
@@ -138,7 +139,7 @@ const ApplicationManagement = () => {
                   onOfferInvite={handleOfferInvite}
                   onOpenMessaging={handleOpenMessaging}
                   onOpenFeedback={handleOpenFeedback}
-                  projectId={selectedProjectId}
+                  roleId={selectedRoleId}
                 />
               </CardContent>
             </Card>
