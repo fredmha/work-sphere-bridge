@@ -24,7 +24,8 @@ const Students = () => {
           <div className="flex items-center gap-8">
             <a href="/" className="text-2xl font-bold text-slate-900 hover:text-green-600 transition-colors"> Born</a>
             <div className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
-              <a href="/students" className="hover:text-slate-900 transition-colors">Students</a>
+              <a href="/students" className="hover:text-slate-900 transition-colors">Talent Placement</a>
+              <a href="/" className="hover:text-slate-900 transition-colors">Outbound Engine</a>
             </div>
           </div>
           
@@ -37,15 +38,12 @@ const Students = () => {
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             ) : (
-              <a 
-                href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0l5hcAP0GJsTrC3xx9WsSC2STrNJ55QtkMaYPgwLyGuD7tyiIv1mCLDk1TRWYSkQIcb-qEgVPM?gv=true"
-                target="_blank"
-                rel="noopener noreferrer"
-                data-cta="demo"
+              <button 
+                onClick={handleSignUpClick}
                 className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-green-600/20 hover:shadow-green-600/30"
               >
-                Book demo
-              </a>
+                Sign Up
+              </button>
             )}
           </div>
         </nav>
@@ -72,17 +70,24 @@ const Students = () => {
                     onClick={() => setMobileMenuOpen(false)}
                     className="block py-3 px-4 text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors font-medium"
                   >
-                    Students
+                    Talent Placement
                   </a>
                   <a
-                    href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0l5hcAP0GJsTrC3xx9WsSC2STrNJ55QtkMaYPgwLyGuD7tyiIv1mCLDk1TRWYSkQIcb-qEgVPM?gv=true"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href="/"
                     onClick={() => setMobileMenuOpen(false)}
                     className="block py-3 px-4 text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors font-medium"
                   >
-                    Book Demo
+                    Outbound Engine
                   </a>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleSignUpClick();
+                    }}
+                    className="block w-full text-left py-3 px-4 text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors font-medium"
+                  >
+                    Sign Up
+                  </button>
                 </nav>
               </div>
             </div>
@@ -96,13 +101,13 @@ const Students = () => {
         <section className="py-24 px-8 bg-gradient-to-br from-slate-50 via-white to-slate-100">
           <div className="max-w-4xl mx-auto text-center">
             <div className="text-green-600 text-sm font-bold mb-4 uppercase tracking-wide">
-              Born for Students
+              Born Talent Placement
             </div>
             <h1 className="text-6xl font-bold text-slate-900 mb-8">
-              Simple projects. Real experience. Get paid.
+              The talent you need, on demand.
             </h1>
             <p className="text-xl text-slate-600 mb-12 max-w-3xl mx-auto font-medium leading-relaxed">
-              We match Australian uni students and recent grads to short, practical projects with startups and SMEs. Sign up once. We'll match you based on skills, availability, and interests.
+              Hire vetted student contractors and early-career talent on flexible terms. Pay-for-performance model ensures quality delivery. Get matched with pre-screened talent ready to execute your projects.
             </p>
             <button 
               onClick={handleSignUpClick}
