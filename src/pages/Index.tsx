@@ -27,9 +27,7 @@ const InterestForm = () => {
           RoleReq: formData.role,
           Scope: 'outbound-engine',
           'Start date': 'immediate',
-          'Budget Range': formData.teamSize,
-          Company: formData.company,
-          Name: formData.name
+          'Budget Range': formData.teamSize
         });
 
       if (error) {
