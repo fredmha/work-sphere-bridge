@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, CheckCircle, Users, Zap, Menu, X, Phone, MessageSquare, Calendar, BarChart3, Bot, Workflow, Play, TrendingUp, Target, Clock, Mail, User, Building2 } from 'lucide-react';
+import { ArrowRight, CheckCircle, Users, Zap, Menu, X, Phone, MessageSquare, Calendar, BarChart3, Bot, Workflow, Play, TrendingUp, Target, Clock, Mail, User, Building2, Database, Search, Flame, Repeat } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/lib/supabaseClient';
 
@@ -183,12 +184,12 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm border-b border-slate-200">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm">
         <nav className="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-8">
             <div className="text-2xl font-bold text-slate-900">Born</div>
             <div className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
-              <a href="#features" className="hover:text-slate-900 transition-colors">Features</a>
+              <a href="#pipeline" className="hover:text-slate-900 transition-colors">Pipeline</a>
               <a href="#signup" className="hover:text-slate-900 transition-colors">Get Started</a>
               <a href="/students" className="hover:text-slate-900 transition-colors">Talent Placement</a>
             </div>
@@ -231,11 +232,11 @@ function App() {
               <div className="flex-1 p-6">
                 <nav className="space-y-4">
                   <a
-                    href="#features"
+                    href="#pipeline"
                     onClick={() => setMobileMenuOpen(false)}
                     className="block py-3 px-4 text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors font-medium"
                   >
-                    Features
+                    Pipeline
                   </a>
                   <a
                     href="#signup"
@@ -259,51 +260,122 @@ function App() {
       )}
 
       {/* Hero Section */}
-      <section className="relative py-24 px-8 bg-white/60 backdrop-blur-sm pt-32">
-        <div className="max-w-7xl mx-auto">
+      <section className="relative py-24 px-8 pt-32 overflow-hidden">
+        {/* Enhanced hero background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white via-green-50/30 to-blue-50/20"></div>
+        <div className="absolute top-20 right-10 w-72 h-72 bg-green-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 left-10 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl"></div>
+        
+        <div className="relative max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             {/* Left: Content */}
-            <div className="space-y-8">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="space-y-8"
+            >
               <div>
+                <motion.span
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="inline-block px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-bold mb-6"
+                >
+                  🚀 THE FUTURE OF OUTBOUND SALES
+                </motion.span>
                 <h1 className="text-6xl lg:text-7xl font-bold leading-tight mb-6">
-                  <span className="text-slate-900">From manual dials to a</span><br />
-                  <span className="text-green-600">predictable conversion engine.</span>
+                  <motion.span
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                    className="text-slate-900 block mb-2"
+                  >
+                    From manual dials to a
+                  </motion.span>
+                  <motion.span
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.4 }}
+                    className="bg-gradient-to-r from-green-600 via-green-500 to-green-600 bg-clip-text text-transparent block"
+                  >
+                    predictable conversion engine.
+                  </motion.span>
                 </h1>
-                <p className="text-xl text-slate-600 leading-relaxed mb-4 font-medium">
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
+                  className="text-xl text-slate-600 leading-relaxed mb-4 font-medium"
+                >
                   Turn your sales team into a systematic revenue machine. More calls, more touches, more conversations, less admin. Built for agencies, brokers, consultants, and sales teams who are tired of manual dialing chaos.
-                </p>
+                </motion.p>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-4">
-                <a 
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+                className="flex flex-col sm:flex-row gap-4"
+              >
+                <motion.a
                   href="#signup"
-                  className="px-8 py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-lg transition-all duration-200 shadow-xl shadow-green-600/25 hover:shadow-green-600/40 hover:scale-105 flex items-center justify-center gap-2"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-8 py-4 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-600 text-white rounded-xl font-bold text-lg transition-all duration-200 shadow-2xl shadow-green-600/40 hover:shadow-green-600/60 flex items-center justify-center gap-2"
                 >
                   Get Started
                   <ArrowRight className="w-5 h-5" />
-                </a>
-                <a 
+                </motion.a>
+                <motion.a
                   href="/students"
-                  className="px-8 py-4 border-2 border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 rounded-xl font-bold text-lg transition-all duration-200 flex items-center justify-center gap-2"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-8 py-4 border-2 border-slate-300 text-slate-700 hover:bg-gradient-to-r hover:from-slate-50 hover:to-white hover:border-slate-400 rounded-xl font-bold text-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg"
                 >
                   <Users className="w-5 h-5" />
                   Talent Placement
-                </a>
-              </div>
+                </motion.a>
+              </motion.div>
               
-              <p className="text-slate-400 text-sm font-medium">
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
+                className="text-slate-500 text-sm font-semibold flex items-center gap-2"
+              >
+                <CheckCircle className="w-4 h-4 text-green-600" />
                 Built for agencies, brokers, consultants, and sales teams.
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
 
             {/* Right: Cool SaaS Dashboard */}
-            <div className="flex justify-center lg:justify-end">
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="flex justify-center lg:justify-end"
+            >
               <div className="relative w-full h-96">
-                {/* Animated background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-blue-500/10 to-purple-500/10 rounded-3xl blur-2xl"></div>
+                {/* Enhanced animated background */}
+                <motion.div
+                  animate={{
+                    scale: [1, 1.1, 1],
+                    opacity: [0.3, 0.5, 0.3]
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="absolute inset-0 bg-gradient-to-br from-green-500/20 via-blue-500/20 to-purple-500/20 rounded-3xl blur-3xl"
+                ></motion.div>
                 
                 {/* Main dashboard mockup */}
-                <div className="relative bg-white/90 backdrop-blur-sm border border-slate-200 rounded-3xl p-6 shadow-2xl h-full">
+                <motion.div
+                  whileHover={{ scale: 1.02, y: -5 }}
+                  className="relative bg-white/95 backdrop-blur-md border-2 border-slate-200 rounded-3xl p-6 shadow-2xl h-full"
+                >
                   {/* Header */}
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
@@ -354,147 +426,446 @@ function App() {
                       <div className="mt-2 text-xs text-slate-600">Next: Sarah Johnson - Real Estate</div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-
-      {/* Features Section */}
-      <section id="features" className="py-24 px-8 bg-gradient-to-b from-white/60 to-slate-50/80">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-slate-900 mb-6">The Engine That Powers Your Pipeline</h2>
-            <p className="text-xl text-slate-600 font-medium max-w-3xl mx-auto">
-              From manual dials to a predictable conversion engine. More calls, more touches, more conversations, less admin.
-            </p>
-          </div>
-          
-          {/* Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-            <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-2xl p-8 shadow-xl">
-              <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mb-6">
-                <Phone className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-4">Power Dialler</h3>
-              <p className="text-slate-600 font-medium">Queue calls automatically → 3–4x more activity per rep.</p>
-            </div>
-            
-            <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-2xl p-8 shadow-xl">
-              <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mb-6">
-                <MessageSquare className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-4">Multi-channel Automation</h3>
-              <p className="text-slate-600 font-medium">SMS, voicemail drops, email follow-ups after no answer.</p>
-            </div>
-            
-            <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-2xl p-8 shadow-xl">
-              <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mb-6">
-                <Bot className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-4">AI Assistants</h3>
-              <p className="text-slate-600 font-medium">Instantly respond to basic texts ("Who's this?" / "Send info").</p>
-            </div>
-            
-            <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-2xl p-8 shadow-xl">
-              <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mb-6">
-                <Calendar className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-4">Calendar Sync</h3>
-              <p className="text-slate-600 font-medium">One-click appointment booking.</p>
-            </div>
-            
-            <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-2xl p-8 shadow-xl">
-              <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mb-6">
-                <BarChart3 className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-4">Central Dashboard</h3>
-              <p className="text-slate-600 font-medium">Track calls, outcomes, ROI in real time.</p>
-            </div>
-            
-            <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-2xl p-8 shadow-xl">
-              <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mb-6">
-                <Workflow className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-4">Custom Workflows</h3>
-              <p className="text-slate-600 font-medium">Every touchpoint adapted to the client's sales style.</p>
-            </div>
-          </div>
-          
-          {/* Benefits */}
-          <div className="bg-white/60 backdrop-blur-sm border border-slate-200 rounded-2xl p-8 shadow-xl mb-12">
-            <h3 className="text-2xl font-bold text-slate-900 mb-6">Outcomes You'll See</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="flex items-start gap-3">
-                <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-                <div>
-                  <h4 className="font-bold text-slate-900 mb-1">More Conversations</h4>
-                  <p className="text-slate-600 text-sm font-medium">Predictable pipeline from systematic outreach</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-                <div>
-                  <h4 className="font-bold text-slate-900 mb-1">No More Manual Chasing</h4>
-                  <p className="text-slate-600 text-sm font-medium">System handles follow-ups automatically</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-                <div>
-                  <h4 className="font-bold text-slate-900 mb-1">Seamless Booking</h4>
-                  <p className="text-slate-600 text-sm font-medium">Booked appointments flow directly into calendars</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* CTA Block */}
-          <div className="text-center">
-            <a 
-              href="#signup"
-              className="px-12 py-6 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-xl transition-all duration-200 shadow-2xl shadow-green-600/30 hover:shadow-green-600/50 hover:scale-105 inline-flex items-center gap-3"
+      {/* Pipeline Flow Section */}
+      <section id="pipeline" className="relative py-32 px-8 overflow-hidden">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 via-white to-blue-50/30"></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-green-400/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        
+        <div className="relative max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-20">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
             >
-              Get Started
-              <ArrowRight className="w-6 h-6" />
-            </a>
+              <motion.span
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="inline-block px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-bold mb-6"
+              >
+                THE COMPLETE PIPELINE
+              </motion.span>
+              <h2 className="text-6xl lg:text-7xl font-bold text-slate-900 mb-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 bg-clip-text text-transparent">
+                The End-to-End Outbound System
+              </h2>
+              <p className="text-2xl text-slate-600 font-medium max-w-3xl mx-auto mb-4">
+                Every touchpoint — automated, personalised, and measurable.
+              </p>
+              <motion.p
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="text-xl text-green-600 font-bold mt-4 flex items-center justify-center gap-2"
+              >
+                <Zap className="w-5 h-5" />
+                From Data to Dial — The Full Outbound Engine
+                <Zap className="w-5 h-5" />
+              </motion.p>
+            </motion.div>
           </div>
+
+          {/* Pipeline Flow - Desktop: Horizontal, Mobile: Vertical */}
+          <div className="relative">
+            {/* Desktop Flow (Horizontal with wrapping) */}
+            <div className="hidden lg:block">
+              <div className="relative">
+                {/* First Row - 3 stages */}
+                <div className="flex items-center justify-between gap-4 mb-6">
+                  {[
+                    {
+                      icon: Database,
+                      title: "Automated Lead Flow",
+                      tagline: "Targeted data on autopilot.",
+                      description: "Fresh, qualified leads pulled and synced daily from verified sources."
+                    },
+                    {
+                      icon: Search,
+                      title: "Smart Research Layer",
+                      tagline: "Context before contact.",
+                      description: "AI enriches each lead with LinkedIn, role, and company intel before outreach."
+                    },
+                    {
+                      icon: Flame,
+                      title: "Warm-Up Touchpoints",
+                      tagline: "Familiarity before the call.",
+                      description: "Automated value based emails, and SMS sequences to build recognition pre-dial."
+                    }
+                  ].map((stage, index) => (
+                    <React.Fragment key={index}>
+                      <motion.div
+                        initial={{ opacity: 0, x: -50, y: 20 }}
+                        whileInView={{ opacity: 1, x: 0, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: index * 0.1 }}
+                        whileHover={{ scale: 1.08, y: -8, rotate: 1 }}
+                        className="flex-1 relative group"
+                      >
+                        <div className="relative bg-gradient-to-br from-white via-white to-green-50/30 backdrop-blur-sm border-2 border-slate-200 rounded-3xl p-8 shadow-2xl hover:shadow-green-500/30 hover:border-green-400 transition-all duration-500 h-full overflow-hidden">
+                          {/* Animated background glow */}
+                          <div className="absolute inset-0 bg-gradient-to-br from-green-500/0 to-green-500/0 group-hover:from-green-500/10 group-hover:to-transparent transition-all duration-500 rounded-3xl"></div>
+                          
+                          <div className="relative z-10">
+                            <motion.div
+                              whileHover={{ scale: 1.1, rotate: 5 }}
+                              className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 group-hover:shadow-lg group-hover:shadow-green-500/50 transition-all duration-300"
+                            >
+                              <stage.icon className="w-8 h-8 text-white" />
+                            </motion.div>
+                            <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-green-700 transition-colors">{stage.title}</h3>
+                            <p className="text-sm text-green-600 font-bold mb-4 uppercase tracking-wide">{stage.tagline}</p>
+                            <p className="text-base text-slate-600 font-medium leading-relaxed">{stage.description}</p>
+                          </div>
+                          
+                          {/* Decorative corner accent */}
+                          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-green-400/20 to-transparent rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        </div>
+                      </motion.div>
+                      
+                      {/* Connector Arrow (not after last item in row) */}
+                      {index < 2 && (
+                        <motion.div
+                          initial={{ opacity: 0, scaleX: 0 }}
+                          whileInView={{ opacity: 1, scaleX: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.5, delay: index * 0.1 + 0.4 }}
+                          className="flex-shrink-0 flex items-center justify-center"
+                          style={{ width: '48px' }}
+                        >
+                          <div className="relative flex items-center w-full h-2">
+                            <div className="flex-1 h-1 bg-gradient-to-r from-green-500 to-green-600 rounded-full"></div>
+                            <ArrowRight className="w-5 h-5 text-green-600 ml-0.5" style={{ marginLeft: '2px' }} />
+                          </div>
+                        </motion.div>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
+
+                {/* Flow Connector (between rows) - Vertical connector */}
+                <div className="flex justify-center mb-6 -mt-2">
+                  <motion.div
+                    initial={{ opacity: 0, scaleY: 0 }}
+                    whileInView={{ opacity: 1, scaleY: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.5 }}
+                    className="relative flex flex-col items-center"
+                    style={{ transformOrigin: 'top' }}
+                  >
+                    <div className="relative flex flex-col items-center w-2">
+                      <div className="flex-1 w-1 bg-gradient-to-b from-green-500 to-green-600 rounded-full"></div>
+                      <ArrowRight className="w-5 h-5 text-green-600 rotate-90 mt-0.5" style={{ marginTop: '2px' }} />
+                    </div>
+                  </motion.div>
+                </div>
+
+                {/* Second Row - 3 stages */}
+                <div className="flex items-center justify-between gap-4">
+                  {[
+                    {
+                      icon: Phone,
+                      title: "Power Dialling Engine",
+                      tagline: "3–4x more activity.",
+                      description: "Auto-queue calls, skip manual dialling, and log every action automatically."
+                    },
+                    {
+                      icon: Repeat,
+                      title: "Post-Call Automation",
+                      tagline: "Never drop the ball.",
+                      description: "No-answer triggers SMS + re-dial; \"send info\" auto-emails and re-queues in 3 days."
+                    },
+                    {
+                      icon: BarChart3,
+                      title: "Unified Tracking",
+                      tagline: "Everything in one view.",
+                      description: "Calls, SMS, and follow-ups tracked in a single live dashboard."
+                    }
+                  ].map((stage, index) => (
+                    <React.Fragment key={index + 3}>
+                      <motion.div
+                        initial={{ opacity: 0, x: -50, y: 20 }}
+                        whileInView={{ opacity: 1, x: 0, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: (index + 3) * 0.1 }}
+                        whileHover={{ scale: 1.08, y: -8, rotate: 1 }}
+                        className="flex-1 relative group"
+                      >
+                        <div className="relative bg-gradient-to-br from-white via-white to-green-50/30 backdrop-blur-sm border-2 border-slate-200 rounded-3xl p-8 shadow-2xl hover:shadow-green-500/30 hover:border-green-400 transition-all duration-500 h-full overflow-hidden">
+                          {/* Animated background glow */}
+                          <div className="absolute inset-0 bg-gradient-to-br from-green-500/0 to-green-500/0 group-hover:from-green-500/10 group-hover:to-transparent transition-all duration-500 rounded-3xl"></div>
+                          
+                          <div className="relative z-10">
+                            <motion.div
+                              whileHover={{ scale: 1.1, rotate: 5 }}
+                              className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 group-hover:shadow-lg group-hover:shadow-green-500/50 transition-all duration-300"
+                            >
+                              <stage.icon className="w-8 h-8 text-white" />
+                            </motion.div>
+                            <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-green-700 transition-colors">{stage.title}</h3>
+                            <p className="text-sm text-green-600 font-bold mb-4 uppercase tracking-wide">{stage.tagline}</p>
+                            <p className="text-base text-slate-600 font-medium leading-relaxed">{stage.description}</p>
+                          </div>
+                          
+                          {/* Decorative corner accent */}
+                          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-green-400/20 to-transparent rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        </div>
+                      </motion.div>
+                      
+                      {/* Connector Arrow (not after last item in row) */}
+                      {index < 2 && (
+                        <motion.div
+                          initial={{ opacity: 0, scaleX: 0 }}
+                          whileInView={{ opacity: 1, scaleX: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.5, delay: (index + 3) * 0.1 + 0.4 }}
+                          className="flex-shrink-0 flex items-center justify-center"
+                          style={{ width: '48px' }}
+                        >
+                          <div className="relative flex items-center w-full h-2">
+                            <div className="flex-1 h-1 bg-gradient-to-r from-green-500 to-green-600 rounded-full"></div>
+                            <ArrowRight className="w-5 h-5 text-green-600 ml-0.5" style={{ marginLeft: '2px' }} />
+                          </div>
+                        </motion.div>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile Flow (Vertical) */}
+            <div className="lg:hidden space-y-6">
+              {[
+                {
+                  icon: Database,
+                  title: "Automated Lead Flow",
+                  tagline: "Targeted data on autopilot.",
+                  description: "Fresh, qualified leads pulled and synced daily from verified sources."
+                },
+                {
+                  icon: Search,
+                  title: "Smart Research Layer",
+                  tagline: "Context before contact.",
+                  description: "AI enriches each lead with LinkedIn, role, and company intel before outreach."
+                },
+                {
+                  icon: Flame,
+                  title: "Warm-Up Touchpoints",
+                  tagline: "Familiarity before the call.",
+                  description: "Automated LinkedIn views, emails, and SMS sequences to build recognition pre-dial."
+                },
+                {
+                  icon: Phone,
+                  title: "Power Dialling Engine",
+                  tagline: "3–4x more activity.",
+                  description: "Auto-queue calls, skip manual dialling, and log every action automatically."
+                },
+                {
+                  icon: Repeat,
+                  title: "Post-Call Automation",
+                  tagline: "Never drop the ball.",
+                  description: "No-answer triggers SMS + re-dial; \"send info\" auto-emails and re-queues in 3 days."
+                },
+                {
+                  icon: BarChart3,
+                  title: "Unified Tracking",
+                  tagline: "Everything in one view.",
+                  description: "Calls, SMS, and follow-ups tracked in a single live dashboard."
+                }
+              ].map((stage, index) => (
+                <React.Fragment key={index}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    whileHover={{ scale: 1.03, x: 5 }}
+                    className="relative group"
+                  >
+                    <div className="relative bg-gradient-to-br from-white via-white to-green-50/40 backdrop-blur-sm border-2 border-slate-200 rounded-3xl p-6 shadow-2xl hover:shadow-green-500/30 hover:border-green-400 transition-all duration-500 overflow-hidden">
+                      {/* Animated background glow */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-green-500/0 to-green-500/0 group-hover:from-green-500/10 group-hover:to-transparent transition-all duration-500 rounded-3xl"></div>
+                      
+                      <div className="relative z-10 flex items-start gap-4">
+                        <motion.div
+                          whileHover={{ scale: 1.15, rotate: 5 }}
+                          className="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:shadow-lg group-hover:shadow-green-500/50 transition-all duration-300"
+                        >
+                          <stage.icon className="w-7 h-7 text-white" />
+                        </motion.div>
+                        <div className="flex-1">
+                          <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-green-700 transition-colors">{stage.title}</h3>
+                          <p className="text-sm text-green-600 font-bold mb-3 uppercase tracking-wide">{stage.tagline}</p>
+                          <p className="text-sm text-slate-600 font-medium leading-relaxed">{stage.description}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                  
+                  {/* Connector Arrow (not after last item) */}
+                  {index < 5 && (
+                    <motion.div
+                      initial={{ opacity: 0, scaleY: 0 }}
+                      whileInView={{ opacity: 1, scaleY: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: index * 0.1 + 0.4 }}
+                      className="flex justify-center py-3"
+                    >
+                      <div className="relative">
+                        <div className="w-1 h-10 bg-gradient-to-b from-green-400 via-green-500 to-green-600 rounded-full shadow-lg shadow-green-500/50"></div>
+                        <motion.div
+                          animate={{ y: [0, 4, 0] }}
+                          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                        >
+                          <ArrowRight className="w-5 h-5 text-green-600 absolute -bottom-2 left-1/2 -translate-x-1/2 rotate-90 drop-shadow-lg" />
+                        </motion.div>
+                      </div>
+                    </motion.div>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+
+          {/* CTA Banner */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+            className="mt-20 text-center"
+          >
+            <div className="relative bg-gradient-to-r from-green-600 via-green-500 to-green-600 rounded-3xl p-12 shadow-2xl shadow-green-600/40 overflow-hidden">
+              {/* Animated background pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute inset-0" style={{
+                  backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
+                  backgroundSize: '40px 40px'
+                }}></div>
+              </div>
+              
+              <div className="relative z-10">
+                <motion.div
+                  animate={{ scale: [1, 1.05, 1] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  className="inline-block mb-6"
+                >
+                  <Zap className="w-12 h-12 text-white/90" />
+                </motion.div>
+                <h3 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+                  Ready to build a predictable pipeline?
+                </h3>
+                <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+                  Join thousands of sales teams transforming their outbound process
+                </p>
+                <motion.a
+                  href="#signup"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="inline-flex items-center gap-3 px-10 py-5 bg-white hover:bg-green-50 text-green-600 rounded-xl font-bold text-xl transition-all duration-200 shadow-2xl hover:shadow-white/50"
+                >
+                  Book a Demo
+                  <ArrowRight className="w-6 h-6" />
+                </motion.a>
+              </div>
+              
+              {/* Decorative elements */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Signup Section */}
-      <section id="signup" className="py-24 px-8 bg-white/80 backdrop-blur-sm">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-slate-900 mb-6">Get Started Today</h2>
-            <p className="text-xl text-slate-600 font-medium">
+      <section id="signup" className="relative py-32 px-8 overflow-hidden">
+        {/* Enhanced background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-green-50/30"></div>
+        <div className="absolute top-0 left-1/3 w-96 h-96 bg-green-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/3 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl"></div>
+        
+        <div className="relative max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-5xl lg:text-6xl font-bold text-slate-900 mb-6 bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+              Get Started Today
+            </h2>
+            <p className="text-2xl text-slate-600 font-medium">
               Experience the future of outbound sales automation
             </p>
-          </div>
+          </motion.div>
           
-          <InterestForm />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <InterestForm />
+          </motion.div>
         </div>
       </section>
 
       {/* Final CTA */}
-      <section className="py-24 px-8 bg-gradient-to-b from-slate-50/80 to-white/60">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-6xl font-bold text-slate-900 mb-8">
-            Ready to transform your outbound?
-          </h2>
-          <p className="text-xl text-slate-600 mb-12 font-medium max-w-2xl mx-auto">
-            Experience the future of sales automation.
-          </p>
-          
-          <a 
-            href="#signup"
-            className="px-12 py-6 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-xl transition-all duration-200 shadow-2xl shadow-green-600/30 hover:shadow-green-600/50 hover:scale-105 inline-flex items-center gap-3"
+      <section className="relative py-32 px-8 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-green-600 via-green-500 to-green-600"></div>
+        <div 
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundSize: '60px 60px'
+          }}
+        ></div>
+        
+        <div className="relative max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
           >
-            Get Started
-            <ArrowRight className="w-6 h-6" />
-          </a>
+            <motion.div
+              animate={{ rotate: [0, 10, -10, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="inline-block mb-6"
+            >
+              <Zap className="w-16 h-16 text-white/90" />
+            </motion.div>
+            <h2 className="text-5xl lg:text-7xl font-bold text-white mb-8">
+              Ready to transform your outbound?
+            </h2>
+            <p className="text-2xl text-white/90 mb-12 font-medium max-w-2xl mx-auto">
+              Experience the future of sales automation.
+            </p>
+            
+            <motion.a
+              href="#signup"
+              whileHover={{ scale: 1.05, y: -3 }}
+              whileTap={{ scale: 0.95 }}
+              className="inline-flex items-center gap-3 px-12 py-6 bg-white hover:bg-green-50 text-green-600 rounded-xl font-bold text-xl transition-all duration-200 shadow-2xl shadow-white/30"
+            >
+              Get Started
+              <ArrowRight className="w-6 h-6" />
+            </motion.a>
+          </motion.div>
         </div>
       </section>
 
@@ -524,7 +895,7 @@ function App() {
             <div>
               <h3 className="font-bold mb-4">Product</h3>
               <ul className="space-y-2">
-                <li><a href="#features" className="text-slate-400 hover:text-white transition-colors font-medium">Features</a></li>
+                <li><a href="#pipeline" className="text-slate-400 hover:text-white transition-colors font-medium">Pipeline</a></li>
                 <li><a href="#signup" className="text-slate-400 hover:text-white transition-colors font-medium">Get Started</a></li>
                 <li><a href="/students" className="text-slate-400 hover:text-white transition-colors font-medium">Talent Placement</a></li>
               </ul>
