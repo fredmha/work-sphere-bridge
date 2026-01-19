@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, CheckCircle, Menu, X, Phone, MessageSquare, Calendar, BarChart3, Sparkles, TrendingUp, Target, Clock, Mail, User, Building2, Search, Zap, BrainCircuit, Users, ChevronDown, Play, Shield, Globe, Rocket } from 'lucide-react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { supabase } from '@/lib/supabaseClient';
 
 // Demo Request Form Component
 const DemoRequestForm = ({ variant = 'default' }: { variant?: 'default' | 'compact' }) => {
@@ -13,62 +12,11 @@ const DemoRequestForm = ({ variant = 'default' }: { variant?: 'default' | 'compa
     role: '',
     teamSize: ''
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    
-    try {
-      const { error } = await supabase
-        .from('formsubmit-signup')
-        .insert({
-          Email: formData.email,
-          RoleReq: formData.role,
-          Scope: 'recruiter-outreach-platform',
-          'Start date': 'immediate',
-          'Budget Range': formData.teamSize
-        });
-
-      if (error) {
-        console.error('Error storing interest:', error);
-        alert('Failed to submit. Please try again.');
-        return;
-      }
-
-      setIsSubmitted(true);
-      setFormData({ name: '', email: '', company: '', role: '', teamSize: '' });
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Failed to submit. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Marketing landing page - redirect to sign in for actual access
+    window.location.href = '/dashboard';
   };
-
-  if (isSubmitted) {
-    return (
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-8 text-center"
-      >
-        <motion.div 
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-          className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-6"
-        >
-          <CheckCircle className="w-8 h-8 text-white" />
-        </motion.div>
-        <h3 className="text-2xl font-bold text-slate-900 mb-3 font-display">We'll be in touch shortly</h3>
-        <p className="text-slate-600">
-          Our team will reach out within 24 hours to schedule your personalized demo.
-        </p>
-      </motion.div>
-    );
-  }
 
   return (
     <div className={`bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-2xl shadow-slate-900/5 ${variant === 'compact' ? 'p-6' : 'p-8'}`}>
@@ -159,20 +107,10 @@ const DemoRequestForm = ({ variant = 'default' }: { variant?: 'default' | 'compa
         
         <button
           type="submit"
-          disabled={isSubmitting}
-          className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 disabled:from-emerald-400 disabled:to-teal-400 text-white py-4 px-8 rounded-xl font-semibold text-lg transition-all duration-300 shadow-lg shadow-emerald-600/25 hover:shadow-emerald-600/40 hover:translate-y-[-2px] flex items-center justify-center gap-2"
+          className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white py-4 px-8 rounded-xl font-semibold text-lg transition-all duration-300 shadow-lg shadow-emerald-600/25 hover:shadow-emerald-600/40 hover:translate-y-[-2px] flex items-center justify-center gap-2"
         >
-          {isSubmitting ? (
-            <>
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              Requesting...
-            </>
-          ) : (
-            <>
-              Request Demo
-              <ArrowRight className="w-5 h-5" />
-            </>
-          )}
+          Request Demo
+          <ArrowRight className="w-5 h-5" />
         </button>
       </form>
     </div>
@@ -411,17 +349,12 @@ function App() {
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             ) : (
-              <>
-                <a href="/dashboard" className="text-slate-600 hover:text-slate-900 font-medium transition-colors">
-                  Sign In
-                </a>
-                <a 
-                  href="#demo"
-                  className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/30 hover:translate-y-[-1px]"
-                >
-                  Get Demo
-                </a>
-              </>
+              <a 
+                href="#demo"
+                className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/30 hover:translate-y-[-1px]"
+              >
+                Get Demo
+              </a>
             )}
           </div>
         </nav>
@@ -458,8 +391,7 @@ function App() {
                     {[
                       { label: 'Platform', href: '#platform' },
                       { label: 'How It Works', href: '#how-it-works' },
-                      { label: 'Pricing', href: '#demo' },
-                      { label: 'Sign In', href: '/dashboard' }
+                      { label: 'Pricing', href: '#demo' }
                     ].map((item) => (
                       <a
                         key={item.href}
