@@ -32,12 +32,12 @@ export default function Privacy() {
         <section className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">Privacy policy</h1>
           <p className="mt-3 text-slate-700">
-            This summary explains what data we collect, why we collect it, and how customers can request updates or deletion.
+            This summary explains what data Born.directory collects, why it is collected, and how users can request updates or deletion.
           </p>
           <div className="mt-8 space-y-5">
             <article>
               <h2 className="text-lg font-semibold text-slate-900">Data we collect</h2>
-              <p className="mt-1 text-sm text-slate-700">Account details, usage analytics, and outreach workflow metadata required to operate the service.</p>
+              <p className="mt-1 text-sm text-slate-700">Submission details, account information, and usage analytics needed to operate and improve the directory.</p>
             </article>
             <article>
               <h2 className="text-lg font-semibold text-slate-900">How data is used</h2>

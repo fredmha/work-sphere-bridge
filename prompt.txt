@@ -1,0 +1,48 @@
+Audit and rebuild the born.directory homepage for SEO and usability.
+
+The current homepage is failing because the rendered structure is too weak:
+- no detectable nav
+- no h1/h2 hierarchy
+- no footer
+- no form/search interaction
+- weak internal linking
+- poor semantic HTML for crawlers and UX tools
+
+Your job is to fix this directly in code.
+
+Requirements:
+- add semantic structure: header, nav, main, section, footer
+- add one clear H1 and proper H2 sections
+- create a real hero section explaining what Born is
+- add crawlable internal links to key pages
+- add footer with contact/help/privacy/terms
+- add a search form or submit form with labels and validation
+- improve whitespace, hierarchy, CTAs, and consistency
+- ensure important content is visible to crawlers in rendered HTML
+- preserve minimal aesthetic, but remove placeholder feel
+
+Suggested homepage sections:
+- Hero
+- Featured Startups
+- Browse Categories
+- Featured Builders
+- Recently Added
+- Submit Your Startup
+- Footer
+
+Also add:
+- title tag
+- meta description
+- OG tags
+- better anchor text
+- keyboard/focus accessibility
+- reusable button/input/card styling
+
+Output:
+1. current issues
+2. changes implemented
+3. heuristic-by-heuristic improvements
+4. SEO improvements
+5. estimated new score
+
+Do the implementation, not just recommendations.

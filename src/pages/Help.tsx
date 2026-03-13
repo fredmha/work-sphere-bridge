@@ -32,7 +32,7 @@ export default function Help() {
         <section className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">Help center</h1>
           <p className="mt-3 text-slate-700">
-            Find answers, request onboarding support, or contact our team if you need urgent assistance.
+            Find answers about listings, submissions, category pages, and account support for Born.directory.
           </p>
           <div className="mt-8 grid gap-4 md:grid-cols-2">
             <article className="rounded-xl border border-slate-200 bg-slate-50 p-5">
@@ -46,9 +46,9 @@ export default function Help() {
             <article className="rounded-xl border border-slate-200 bg-slate-50 p-5">
               <h2 className="text-lg font-semibold text-slate-900">Common requests</h2>
               <ul className="mt-3 space-y-2 text-sm text-slate-700">
-                <li>Connect ATS/CRM integrations</li>
-                <li>Update user roles and permissions</li>
-                <li>Export weekly performance reports</li>
+                <li>Update an existing startup listing</li>
+                <li>Fix a broken directory link or profile detail</li>
+                <li>Ask about submission review status</li>
               </ul>
             </article>
           </div>

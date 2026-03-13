@@ -32,7 +32,7 @@ export default function Terms() {
         <section className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">Terms of service</h1>
           <p className="mt-3 text-slate-700">
-            These terms outline account responsibilities, acceptable use, service availability, and billing expectations.
+            These terms outline listing responsibilities, acceptable use, service availability, and account expectations for Born.directory.
           </p>
           <div className="mt-8 space-y-5">
             <article>
@@ -41,7 +41,7 @@ export default function Terms() {
             </article>
             <article>
               <h2 className="text-lg font-semibold text-slate-900">Acceptable use</h2>
-              <p className="mt-1 text-sm text-slate-700">The platform must not be used for unlawful outreach, abuse, or data misuse.</p>
+              <p className="mt-1 text-sm text-slate-700">The directory must not be used for unlawful submissions, impersonation, abuse, or data misuse.</p>
             </article>
             <article>
               <h2 className="text-lg font-semibold text-slate-900">Support and uptime</h2>
