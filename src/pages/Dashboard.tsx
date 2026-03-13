@@ -52,6 +52,9 @@ export default function Dashboard() {
               <a href="mailto:support@born.example" className="mt-4 inline-flex text-sm font-semibold text-emerald-700 hover:text-emerald-800">
                 support@born.example
               </a>
+              <Link to="/help" className="mt-2 block text-sm font-semibold text-slate-800 hover:text-slate-900">
+                Open help center
+              </Link>
             </article>
           </div>
 

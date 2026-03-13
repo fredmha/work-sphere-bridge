@@ -522,9 +522,9 @@ export default function Index() {
             <p className="text-sm font-semibold text-white">Help</p>
             <ul className="mt-3 space-y-2 text-sm">
               <li>
-                <a href="#faq" className="text-slate-300 hover:text-white">
+                <Link to="/help" className="text-slate-300 hover:text-white">
                   FAQ
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="mailto:support@born.example" className="text-slate-300 hover:text-white">
@@ -542,12 +542,12 @@ export default function Index() {
             <p className="text-sm font-semibold text-white">Legal</p>
             <ul className="mt-3 space-y-2 text-sm">
               <li>
-                <Link to="/dashboard" className="text-slate-300 hover:text-white">
+                <Link to="/privacy" className="text-slate-300 hover:text-white">
                   Privacy policy
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard" className="text-slate-300 hover:text-white">
+                <Link to="/terms" className="text-slate-300 hover:text-white">
                   Terms of service
                 </Link>
               </li>
