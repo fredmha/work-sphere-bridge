@@ -1,0 +1,183 @@
+You are a senior product designer, UX auditor, frontend engineer, and conversion-focused website optimizer.
+
+Your task is to audit and upgrade my website so it would pass a Nielsen-style heuristic evaluation based on the issues below. Do not give vague advice. Inspect the current site structure, identify what is missing, then implement concrete UI/UX improvements directly in the codebase.
+
+Primary goal:
+Raise the site from an extremely poor heuristic score to a clean, credible, intuitive, production-ready experience that would score well across all 10 heuristics below.
+
+Current audit findings to fix:
+1. Visibility of System Status — 0/100
+   - No navigation or orientation cues are present
+   - Users cannot determine their location or navigate effectively
+   - No nav or breadcrumb elements found
+
+2. Match Between System & Real World — 20/100
+   - No headings or descriptive labels are present
+   - Users may struggle to understand the page’s purpose
+   - No h1 or h2 headings found
+
+3. User Control & Freedom — 0/100
+   - No navigation or control elements are available
+   - Users feel trapped without options to navigate or return
+
+4. Consistency & Standards — 0/100
+   - No consistent design elements are present
+   - No consistent heading structure or button system found
+
+5. Error Prevention — 0/100
+   - No forms or input fields are present to validate
+   - Users cannot input data safely or clearly
+
+6. Recognition Rather Than Recall — 0/100
+   - No visible navigation or labels are present
+   - Users must remember information instead of recognizing it
+
+7. Flexibility & Efficiency of Use — 0/100
+   - No support for navigation or user efficiency
+   - No keyboard support or responsive efficiency cues found
+
+8. Aesthetic & Minimalist Design — 20/100
+   - Design lacks visual hierarchy and clarity
+   - No meaningful heading/image/content hierarchy found
+
+9. Help Users Recognize, Diagnose & Recover from Errors — 0/100
+   - No error handling or validation feedback is present
+
+10. Help & Documentation — 0/100
+   - No footer, contact information, help, FAQ, or support links found
+
+Your job:
+1. Crawl the existing codebase and inspect the current website structure
+2. Determine why these failures are happening
+3. Implement a full UI/UX remediation plan in code
+4. Prioritize changes that materially improve usability, clarity, trust, and conversion
+5. Preserve the brand where possible, but do not preserve bad UX patterns
+
+Non-negotiable implementation requirements:
+
+A. Global navigation and orientation
+- Add a clear top navigation bar
+- Include logo linking to homepage
+- Include primary nav links relevant to the site
+- Add a visible CTA in the header
+- Add mobile navigation with accessible toggle
+- Add breadcrumbs where relevant on internal pages
+- Ensure users always know where they are and where they can go next
+
+B. Page purpose clarity
+- Every page must have exactly one clear, descriptive H1
+- Add meaningful H2/H3 hierarchy
+- Rewrite vague labels like “Learn More” or “Click Here” into descriptive actions
+- Ensure hero section instantly communicates:
+  - what the product/service is
+  - who it is for
+  - what action the user should take next
+
+C. User control and freedom
+- Add clear back/home pathways where relevant
+- Ensure navigation is always reachable
+- Add cancel/close/back actions for modals, forms, drawers, and flows
+- Prevent dead ends in user journeys
+- Make all clickable elements clearly identifiable
+
+D. Consistency and standards
+- Standardize:
+  - heading hierarchy
+  - button styles
+  - link styles
+  - spacing system
+  - card/layout system
+  - form components
+- Use a consistent visual language across the site
+- Remove ad hoc styling that creates confusion
+
+E. Forms and error prevention
+- If the site has signup, lead capture, waitlist, contact, login, booking, or enquiry intent, implement an appropriate form
+- Every form must include:
+  - explicit labels
+  - placeholder text only as secondary helper text
+  - inline validation
+  - clear required/optional states
+  - useful error prevention
+  - appropriate input types
+  - disabled/loading/submitting states
+- Prevent bad submissions before they happen
+
+F. Recognition rather than recall
+- Keep primary navigation visible
+- Label all fields, actions, sections, and major UI blocks clearly
+- Add helper text where needed
+- Surface options rather than forcing users to remember steps
+- Make the next action obvious throughout the funnel
+
+G. Flexibility and efficiency of use
+- Ensure strong responsive behavior across desktop/tablet/mobile
+- Support keyboard navigation
+- Add visible focus states
+- Ensure sensible tab order
+- Improve scanability and reduce unnecessary steps
+- Optimize for both first-time visitors and repeat visitors
+
+H. Aesthetic and minimalist design
+- Introduce strong visual hierarchy using:
+  - headings
+  - spacing
+  - typography scale
+  - layout grouping
+  - contrast
+  - section ordering
+- Remove clutter, redundancy, and weak filler copy
+- Make the interface feel modern, simple, and intentional
+- Use whitespace aggressively where it improves comprehension
+
+I. Error recognition and recovery
+- Add clear inline and form-level error states
+- Provide actionable error messages
+- Avoid generic messages like “Something went wrong”
+- Tell users how to fix the issue
+- Include success states and feedback after actions complete
+
+J. Help, trust, and documentation
+- Add a footer with:
+  - contact link
+  - help/support link
+  - FAQ or documentation link if relevant
+  - privacy policy / terms if relevant
+  - social or trust signals if relevant
+- Add trust-building elements where appropriate:
+  - testimonials
+  - logos
+  - case studies
+  - security/privacy reassurance
+  - support availability
+
+Execution instructions:
+- First, inspect and summarize the current UX problems in the codebase
+- Then create a prioritized remediation plan
+- Then implement the fixes directly
+- After implementation, provide:
+  1. a before/after summary
+  2. which heuristic each change improves
+  3. any remaining gaps
+  4. recommended next-step improvements
+
+Output format:
+1. Audit summary
+2. Prioritized action plan
+3. Code changes made
+4. Heuristic-by-heuristic mapping
+5. Remaining risks
+6. Final UX score estimate out of 100 with justification
+
+Important standards:
+- Do not stay high-level
+- Do not just give suggestions
+- Make the changes
+- Prefer robust, production-quality UX over flashy design
+- Optimize for clarity, trust, conversion, and usability
+- If a section of the site is missing entirely, create it if needed
+- If the current copy is vague, rewrite it to be clearer and more user-oriented
+- If the layout is weak, restructure it
+
+Success condition:
+A user landing on the site should immediately understand what the site is, where to go, what to do next, and how to recover from mistakes, with a clear, consistent, modern interface.
