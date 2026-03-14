@@ -13,7 +13,7 @@ export default function InsightsPage() {
       <PageHero
         eyebrow="Insights"
         title="Practical recruiter thinking without blog-farm filler."
-        description="The insight layer supports SEO and credibility, but each page still has a commercial point of view. Useful, skimmable, and relevant to recruiter systems."
+        description="The insight layer supports credibility and search, but every page should still feel useful, skimmable, and grounded in real recruiter systems work."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'See Case Studies', to: '/case-studies' }}
       />
@@ -42,7 +42,7 @@ export default function InsightsPage() {
 
       <CtaBand
         title="Need the practical version applied to your recruiter team?"
-        description="Insights help you self-educate. The audit helps you work out what should actually be built in your environment."
+        description="Insights help you get oriented. The audit helps you work out what should actually be built in your environment."
         primaryAction={primaryCta}
       />
     </>

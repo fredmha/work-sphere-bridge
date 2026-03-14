@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 
 import { PageHero } from '@/components/MarketingPrimitives';
-import { contactChecklist } from '@/content/bornSiteContent';
+import { contactChecklist, contactExpectations, contactProcess } from '@/content/bornSiteContent';
 import usePageMeta from '@/hooks/usePageMeta';
 
 type ContactFormState = {
@@ -9,6 +9,7 @@ type ContactFormState = {
   email: string;
   company: string;
   message: string;
+  website: string;
 };
 
 const initialState: ContactFormState = {
@@ -16,21 +17,54 @@ const initialState: ContactFormState = {
   email: '',
   company: '',
   message: '',
+  website: '',
 };
 
 export default function ContactPage() {
   const [form, setForm] = useState(initialState);
-  const [status, setStatus] = useState<string | null>(null);
+  const [status, setStatus] = useState<{ tone: 'success' | 'error'; message: string } | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  usePageMeta(
-    'Contact | Born',
-    'Book a recruiter systems audit with Born to discuss bespoke recruiter software, sourcing workflow, and follow-up infrastructure.',
-  );
+  usePageMeta({
+    title: 'Contact | Born',
+    description:
+      'Book a recruiter systems audit with Born to discuss bespoke recruiter software, sourcing workflow, and follow-up infrastructure.',
+    path: '/contact',
+  });
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setStatus('Thanks. Born will use this brief to prepare a more relevant recruiter systems audit.');
-    setForm(initialState);
+    setSubmitting(true);
+    setStatus(null);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form),
+      });
+
+      const payload = (await response.json()) as { error?: string; message?: string };
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? 'There was a problem submitting the brief.');
+      }
+
+      setStatus({
+        tone: 'success',
+        message: payload.message ?? 'Thanks. Born will review the brief and reply with the next step.',
+      });
+      setForm(initialState);
+    } catch (error) {
+      setStatus({
+        tone: 'error',
+        message: error instanceof Error ? error.message : 'There was a problem submitting the brief.',
+      });
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -38,27 +72,45 @@ export default function ContactPage() {
       <PageHero
         eyebrow="Contact"
         title="Book a recruiter systems audit if the desk feels too manual."
-        description="Keep the contact path friction-light. The goal is to make it obvious what happens next while giving Born enough context to prepare a useful recruiter conversation."
+        description="Share a short brief about the desk, the workflow, and where control is breaking down. Born uses that to assess fit and make the first conversation more useful."
       />
 
       <section className="site-section">
-        <div className="grid gap-6 lg:grid-cols-[0.4fr_0.6fr]">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,0.38fr)_minmax(0,0.62fr)]">
           <aside className="surface-panel p-7">
             <p className="meta-kicker">Best fit</p>
             <ul className="mt-5 grid gap-4 text-sm leading-7 text-slate-700">
               {contactChecklist.map((item) => (
-                <li key={item}>{item}</li>
+                <li key={item} className="list-card">
+                  {item}
+                </li>
               ))}
             </ul>
 
-            <div className="mt-8 rounded-[1.5rem] border border-primary/10 bg-primary/5 p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Direct contact</p>
-              <a href="mailto:hello@born.systems" className="mt-3 inline-flex text-base font-semibold text-primary hover:text-primary/80">
+            <div className="mt-8 info-card">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">What happens next</p>
+              <ol className="mt-4 grid gap-3 text-sm leading-7 text-slate-700">
+                {contactProcess.map((item, index) => (
+                  <li key={item} className="flex gap-3">
+                    <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
+                      {index + 1}
+                    </span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            <div className="mt-6 accent-panel">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Expectations</p>
+              <div className="mt-4 grid gap-3 text-sm leading-7 text-slate-700">
+                <p>{contactExpectations.responseWindow}</p>
+                <p>{contactExpectations.primaryChannel}</p>
+                <p>{contactExpectations.qualifier}</p>
+              </div>
+              <a href="mailto:hello@born.systems" className="mt-4 inline-flex text-base font-semibold text-primary hover:text-primary/80">
                 hello@born.systems
               </a>
-              <p className="mt-3 text-sm leading-7 text-slate-700">
-                Sydney-based, working with recruitment firms that want bespoke recruiter systems rather than generic outbound retainers.
-              </p>
             </div>
           </aside>
 
@@ -97,13 +149,23 @@ export default function ContactPage() {
                 />
               </label>
 
+              <label className="hidden" aria-hidden="true">
+                Website
+                <input
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={form.website}
+                  onChange={(event) => setForm((current) => ({ ...current, website: event.target.value }))}
+                />
+              </label>
+
               <label className="grid gap-2 text-sm font-medium text-slate-900 md:col-span-2">
-                What do you need help with?
+                What needs fixing?
                 <textarea
                   className="textarea-shell"
                   value={form.message}
                   onChange={(event) => setForm((current) => ({ ...current, message: event.target.value }))}
-                  placeholder="Tell Born about your recruiter workflow, what kind of desk you run, and where sourcing, calls, or follow-up feel weak."
+                  placeholder="Describe the desk, your current stack, and where sourcing, reply handling, calls, or follow-up feel weak."
                   rows={7}
                   required
                 />
@@ -111,16 +173,23 @@ export default function ContactPage() {
             </div>
 
             {status && (
-              <p className="mt-5 rounded-[1.5rem] border border-primary/10 bg-primary/5 px-4 py-4 text-sm text-slate-700" role="status">
-                {status}
+              <p
+                className={`mt-5 rounded-[1.5rem] px-4 py-4 text-sm ${
+                  status.tone === 'success'
+                    ? 'border border-primary/10 bg-primary/5 text-slate-700'
+                    : 'border border-red-200 bg-red-50 text-red-700'
+                }`}
+                role="status"
+              >
+                {status.message}
               </p>
             )}
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              <button type="submit" className="cta-primary">
-                Request audit
+              <button type="submit" className="cta-primary" disabled={submitting}>
+                {submitting ? 'Submitting...' : 'Request audit'}
               </button>
-              <p className="text-sm leading-6 text-slate-600">No bloated form. Just enough context to make the audit useful.</p>
+              <p className="text-sm leading-6 text-slate-600">A short brief is enough. Just give enough context to make the next conversation useful.</p>
             </div>
           </form>
         </div>

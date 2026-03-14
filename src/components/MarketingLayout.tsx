@@ -12,9 +12,9 @@ export default function MarketingLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const footerHighlights = [
-    'Signal-driven prospecting',
-    'Reply routing and call prep',
-    'Pipeline control and follow-up',
+    'Signal-led prospecting',
+    'Reply routing',
+    'Follow-up control',
   ];
 
   useEffect(() => {
@@ -39,8 +39,8 @@ export default function MarketingLayout() {
         Skip to main content
       </a>
 
-      <header className="sticky top-0 z-50 border-b border-border/70 bg-[rgba(247,243,234,0.82)] backdrop-blur-xl">
-        <nav className="container-shell flex items-center justify-between py-5" aria-label="Primary">
+      <header className="sticky top-0 z-50 border-b border-border/70 bg-[rgba(247,243,234,0.86)] backdrop-blur-xl">
+        <nav className="container-shell flex items-center justify-between gap-4 py-4 sm:py-5" aria-label="Primary">
           <Link to="/" className="flex items-center gap-3 text-slate-950" aria-label="Born home">
             <span className="inline-flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl border border-white/70 bg-[radial-gradient(circle_at_30%_30%,#b4d5bb,#487a61_68%,#183126)] shadow-[0_16px_30px_rgba(20,40,32,0.18)]">
               <img src="/favicon-Photoroom.png" alt="" className="h-9 w-9 object-contain" />
@@ -64,7 +64,7 @@ export default function MarketingLayout() {
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-3">
             <Link to={primaryCta.to} className="cta-primary hidden sm:inline-flex">
               {primaryCta.label}
             </Link>
@@ -82,7 +82,7 @@ export default function MarketingLayout() {
         </nav>
 
         {mobileOpen && (
-          <div id="mobile-navigation" className="border-t border-border bg-white/95 lg:hidden">
+          <div id="mobile-navigation" className="border-t border-border bg-white/95 shadow-[0_18px_34px_rgba(24,40,34,0.08)] lg:hidden">
             <div className="container-shell grid gap-2 py-4">
               {siteNav.map((item) => (
                 <NavLink
@@ -109,11 +109,11 @@ export default function MarketingLayout() {
       </main>
 
       <footer className="border-t border-border bg-[#102019] py-16 text-stone-100">
-        <div className="container-shell grid gap-10 lg:grid-cols-[1.15fr_0.95fr_0.75fr_0.75fr]">
+        <div className="container-shell grid gap-8 lg:grid-cols-2 xl:grid-cols-[1.2fr_0.9fr_0.68fr_0.68fr_0.82fr]">
           <div>
             <p className="text-lg font-semibold text-white">Born</p>
             <p className="mt-4 max-w-md text-sm leading-6 text-stone-100/76">
-              Born designs bespoke recruiter software, outbound workflows, and follow-up systems for recruitment agencies that want more control over pipeline creation.
+              Custom recruiter systems for teams that want a calmer, clearer way to run prospecting, replies, and follow-up.
             </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
               {footerHighlights.map((item) => (
@@ -133,10 +133,10 @@ export default function MarketingLayout() {
           </div>
 
           <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">Operating model</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">What to expect</p>
             <div className="mt-5 grid gap-4 text-sm text-stone-100/76">
-              <p>Recruiter-only systems work with live signal intake, sequencing, call preparation, and post-call control.</p>
-              <p>Built to feel closer to a productized operating layer than a generic outbound retainer.</p>
+              <p>Best suited to recruiter teams that want workflow clarity rather than outsourced activity.</p>
+              <p>Most conversations start with a short systems audit and a practical brief on where the desk feels messy.</p>
             </div>
           </div>
 
@@ -177,10 +177,10 @@ export default function MarketingLayout() {
               </li>
               <li>
                 <Link to="/contact" className="transition hover:text-white">
-                  Systems audit enquiries
+                  Book a systems audit
                 </Link>
               </li>
-              <li className="pt-3 text-xs uppercase tracking-[0.16em] text-white/45">Built for recruiter teams that need clearer pipeline control.</li>
+              <li className="pt-3 text-xs uppercase tracking-[0.16em] text-white/45">Built for recruiter teams that need steadier pipeline control.</li>
             </ul>
           </div>
         </div>

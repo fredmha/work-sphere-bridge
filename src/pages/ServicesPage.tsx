@@ -3,51 +3,45 @@ import { primaryCta, services } from '@/content/bornSiteContent';
 import usePageMeta from '@/hooks/usePageMeta';
 
 export default function ServicesPage() {
-  usePageMeta(
-    'Services | Born',
-    'Explore Born services for recruiter system architecture, hiring-signal sourcing, workflow software, and follow-up control.',
-  );
+  usePageMeta({
+    title: 'Services | Born',
+    description:
+      'Explore Born services for recruiter system architecture, signal-led sourcing, reply routing, and follow-up control.',
+    path: '/services',
+  });
 
   return (
     <>
       <PageHero
         eyebrow="Services"
-        title="Services built around recruiter workflow bottlenecks."
-        description="Each service line maps to a concrete recruiter problem: weak sourcing, shallow account context, messy call execution, soft follow-up discipline, or unclear automation decisions."
+        title="Services shaped around the recruiter workflow that needs the most attention."
+        description="Each service is built to steady one part of the desk. Start with the workflow that feels the most manual, scattered, or hard to trust."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'See Use Cases', to: '/industries' }}
       />
 
       <section className="site-section">
-        <div className="grid gap-6">
+        <div className="page-stack">
           {services.map((service) => (
-            <article key={service.slug} className="surface-panel grid gap-6 p-7 lg:grid-cols-[0.72fr_0.28fr] lg:items-start">
+            <article key={service.slug} className="surface-panel grid gap-6 p-7 lg:p-8 xl:grid-cols-[minmax(0,1.15fr)_minmax(19rem,0.85fr)] xl:items-start">
               <div>
                 <p className="meta-kicker">Service line</p>
                 <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">{service.title}</h2>
-                <p className="mt-4 text-base leading-7 text-slate-700">{service.problem}</p>
-                <p className="mt-4 text-sm leading-7 text-slate-600">{service.audience}</p>
-                <div className="mt-6">
-                  <LinkArrow to={`/services/${service.slug}`}>Open service page</LinkArrow>
+                <p className="mt-4 text-base leading-7 text-slate-700">{service.buyerFit}</p>
+                <div className="mt-5">
+                  <LinkArrow to={`/services/${service.slug}`}>{service.ctaLabel ?? 'Open service page'}</LinkArrow>
                 </div>
               </div>
 
-              <div className="grid gap-4">
-                <div className="rounded-[1.5rem] border border-border/80 bg-white/90 p-5">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Includes</p>
-                  <ul className="mt-3 grid gap-3 text-sm leading-6 text-slate-700">
-                    {service.includes.slice(0, 3).map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
+                <div className="info-card">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">System build</p>
+                  <p className="mt-3 text-sm leading-7 text-slate-700">{service.systemBuild}</p>
                 </div>
-                <div className="rounded-[1.5rem] border border-primary/10 bg-secondary/70 p-5">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Outcomes</p>
-                  <ul className="mt-3 grid gap-3 text-sm leading-6 text-slate-700">
-                    {service.outcomes.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
+
+                <div className="accent-panel">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Business effect</p>
+                  <p className="mt-3 text-sm leading-7 text-slate-700">{service.businessEffect}</p>
                 </div>
               </div>
             </article>
@@ -58,29 +52,29 @@ export default function ServicesPage() {
       <section className="site-section border-t border-border/80">
         <div className="grid gap-5 lg:grid-cols-2">
           <div className="outline-panel p-7">
-            <p className="meta-kicker">Why this structure works</p>
+            <p className="meta-kicker">How to read the offer</p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">
-              The offer reads like bespoke recruiter software, not general support.
+              Start with the workflow improvement you need now, not more complexity than the desk can absorb.
             </h2>
             <p className="mt-4 text-base leading-7 text-slate-700">
-              Buyers can see exactly where Born fits: sourcing logic, research systems, call workflow, automation, and
-              follow-up control. That keeps the offer premium without becoming vague.
+              Some firms need the full operating model. Others just need one stressed part of the desk cleaned up first.
+              The service pages are there to make that choice easier.
             </p>
           </div>
           <div className="surface-panel p-7">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Avoiding the agency trap</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">What stays consistent</p>
             <ul className="mt-4 grid gap-4 text-sm leading-7 text-slate-700">
-              <li>Born does not sell generic recruiter activity with unclear ownership.</li>
-              <li>Born does not hide delivery behind broad automation language.</li>
-              <li>Born does not force one cookie-cutter workflow onto every desk.</li>
+              <li>Born scopes around real recruiter workflow, not generic outbound templates.</li>
+              <li>Each service is designed to work with your current stack where it makes sense.</li>
+              <li>The goal is steadier execution, clearer follow-up, and less admin drag.</li>
             </ul>
           </div>
         </div>
       </section>
 
       <CtaBand
-        title="Need help deciding which service line fits your desk?"
-        description="A recruiter systems audit is the fastest route. Born can assess whether you need a full build, a workflow upgrade, or tighter automation around an existing stack."
+        title="Need help working out which service fits your desk?"
+        description="A recruiter systems audit is the quickest way to sort that out. Born can tell whether you need a full build, a focused workflow upgrade, or a lighter improvement around your current stack."
         primaryAction={primaryCta}
       />
     </>

@@ -1,16 +1,23 @@
 import { useParams } from 'react-router-dom';
 
 import { CtaBand, PageHero } from '@/components/MarketingPrimitives';
-import type { ServiceItem } from '@/content/bornSiteContent';
-import { primaryCta } from '@/content/bornSiteContent';
+import { primaryCta, services } from '@/content/bornSiteContent';
 import usePageMeta from '@/hooks/usePageMeta';
 import NotFound from '@/pages/NotFound';
 
-export default function ServiceDetailPage({ items }: { items: readonly ServiceItem[] }) {
+export default function ServiceDetailPage() {
   const { slug } = useParams();
-  const item = items.find((entry) => entry.slug === slug);
+  const item = services.find((entry) => entry.slug === slug);
 
-  usePageMeta(item ? `${item.title} | Born` : 'Service detail | Born', item?.summary ?? 'Explore Born services.');
+  usePageMeta(
+    item
+      ? {
+          title: `${item.title} | Born`,
+          description: item.summary,
+          path: `/services/${item.slug}`,
+        }
+      : { title: 'Service detail | Born', description: 'Explore Born services.', path: '/services' },
+  );
 
   if (!item) return <NotFound />;
 
@@ -24,10 +31,12 @@ export default function ServiceDetailPage({ items }: { items: readonly ServiceIt
         secondaryAction={{ label: 'Back to Services', to: '/services' }}
         aside={
           <div className="surface-panel p-7">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Who it is for</p>
-            <p className="mt-3 text-base leading-7 text-slate-700">{item.audience}</p>
-            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Problem it solves</p>
-            <p className="mt-3 text-base leading-7 text-slate-700">{item.problem}</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Best fit</p>
+            <p className="mt-3 text-base leading-7 text-slate-700">{item.buyerFit}</p>
+            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">System build</p>
+            <p className="mt-3 text-base leading-7 text-slate-700">{item.systemBuild}</p>
+            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Business effect</p>
+            <p className="mt-3 text-base leading-7 text-slate-700">{item.businessEffect}</p>
           </div>
         }
       />
@@ -35,10 +44,10 @@ export default function ServiceDetailPage({ items }: { items: readonly ServiceIt
       <section className="site-section">
         <div className="grid gap-6 lg:grid-cols-2">
           <article className="surface-panel p-7">
-            <p className="meta-kicker">Included in the work</p>
+            <p className="meta-kicker">What gets built</p>
             <ul className="mt-5 grid gap-4 text-sm leading-7 text-slate-700">
               {item.includes.map((entry) => (
-                <li key={entry} className="rounded-[1.5rem] border border-border/80 bg-white/80 px-4 py-4">
+                <li key={entry} className="list-card">
                   {entry}
                 </li>
               ))}
@@ -46,10 +55,11 @@ export default function ServiceDetailPage({ items }: { items: readonly ServiceIt
           </article>
 
           <article className="outline-panel p-7">
-            <p className="meta-kicker">What it drives</p>
+            <p className="meta-kicker">What changes after launch</p>
+            <p className="mt-4 text-base leading-7 text-slate-700">{item.businessEffect}</p>
             <ul className="mt-5 grid gap-4 text-sm leading-7 text-slate-700">
               {item.outcomes.map((entry) => (
-                <li key={entry} className="rounded-[1.5rem] bg-secondary/75 px-4 py-4">
+                <li key={entry} className="accent-panel">
                   {entry}
                 </li>
               ))}
@@ -60,7 +70,7 @@ export default function ServiceDetailPage({ items }: { items: readonly ServiceIt
 
       <CtaBand
         title="Want this service scoped against your current recruiter setup?"
-        description="Born can review your tooling, workflow, target accounts, and follow-up logic to work out whether this is the right fit and what the build should include."
+        description="Born can review your tooling, workflow, target accounts, and follow-up logic to see whether this is the right fit and what the build should include."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'See Process', to: '/process' }}
       />

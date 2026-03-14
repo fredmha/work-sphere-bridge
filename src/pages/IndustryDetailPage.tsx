@@ -1,16 +1,23 @@
 import { useParams } from 'react-router-dom';
 
 import { CtaBand, PageHero } from '@/components/MarketingPrimitives';
-import type { IndustryItem } from '@/content/bornSiteContent';
-import { primaryCta } from '@/content/bornSiteContent';
+import { industries, primaryCta } from '@/content/bornSiteContent';
 import usePageMeta from '@/hooks/usePageMeta';
 import NotFound from '@/pages/NotFound';
 
-export default function IndustryDetailPage({ items }: { items: readonly IndustryItem[] }) {
+export default function IndustryDetailPage() {
   const { slug } = useParams();
-  const item = items.find((entry) => entry.slug === slug);
+  const item = industries.find((entry) => entry.slug === slug);
 
-  usePageMeta(item ? `${item.title} | Born` : 'Use case detail | Born', item?.summary ?? 'Explore Born use cases.');
+  usePageMeta(
+    item
+      ? {
+          title: `${item.title} | Born`,
+          description: item.summary,
+          path: `/industries/${item.slug}`,
+        }
+      : { title: 'Use case detail | Born', description: 'Explore Born use cases.', path: '/industries' },
+  );
 
   if (!item) return <NotFound />;
 
@@ -30,7 +37,9 @@ export default function IndustryDetailPage({ items }: { items: readonly Industry
             <p className="meta-kicker">Pain points</p>
             <ul className="mt-5 grid gap-4 text-sm leading-7 text-slate-700">
               {item.painPoints.map((entry) => (
-                <li key={entry}>{entry}</li>
+                <li key={entry} className="list-card">
+                  {entry}
+                </li>
               ))}
             </ul>
           </article>
@@ -39,7 +48,9 @@ export default function IndustryDetailPage({ items }: { items: readonly Industry
             <p className="meta-kicker">What Born builds</p>
             <ul className="mt-5 grid gap-4 text-sm leading-7 text-slate-700">
               {item.buildFocus.map((entry) => (
-                <li key={entry}>{entry}</li>
+                <li key={entry} className="info-card">
+                  {entry}
+                </li>
               ))}
             </ul>
           </article>
@@ -48,7 +59,9 @@ export default function IndustryDetailPage({ items }: { items: readonly Industry
             <p className="meta-kicker">Outcomes</p>
             <ul className="mt-5 grid gap-4 text-sm leading-7 text-slate-700">
               {item.outcomes.map((entry) => (
-                <li key={entry}>{entry}</li>
+                <li key={entry} className="accent-panel">
+                  {entry}
+                </li>
               ))}
             </ul>
           </article>
@@ -57,7 +70,7 @@ export default function IndustryDetailPage({ items }: { items: readonly Industry
 
       <CtaBand
         title="Need a build shaped to your recruiter motion?"
-        description="Born uses the same operating principles across agencies, but the workflow details are shaped around how your desk actually wins work."
+        description="Born uses the same operating principles across agencies, but the workflow details are always shaped around how your desk actually wins work."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'See Services', to: '/services' }}
       />

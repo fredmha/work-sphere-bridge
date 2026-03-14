@@ -13,7 +13,7 @@ export default function IndustriesPage() {
       <PageHero
         eyebrow="Recruiter use cases"
         title="Different recruiter desks need different workflow detail."
-        description="Born stays inside one market, but the workflow still changes by recruiter motion. The point is not cosmetic personalisation. The point is relevance in sourcing, context, calls, and follow-up."
+        description="Born stays inside one market, but the workflow still changes by recruiter motion. The point is not cosmetic personalisation. The point is practical relevance in sourcing, context, calls, and follow-up."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'See Services', to: '/services' }}
       />
@@ -52,8 +52,8 @@ export default function IndustriesPage() {
       </section>
 
       <CtaBand
-        title="If your desk has special workflow constraints, Born designs around them."
-        description="Use-case relevance matters because generic recruiter systems usually fail at the context, handoff, or follow-up layers."
+        title="If your desk has its own workflow constraints, Born designs around them."
+        description="Use-case relevance matters because generic recruiter systems usually break at the context, handoff, or follow-up layers."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'View Process', to: '/process' }}
       />
