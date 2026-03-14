@@ -9,9 +9,9 @@ export default function InsightDetailPage({ items }: { items: readonly InsightIt
   const { slug } = useParams();
   const item = items.find((entry) => entry.slug === slug);
 
-  if (!item) return <NotFound />;
+  usePageMeta(item ? `${item.title} | Born` : 'Insight detail | Born', item?.summary ?? 'Explore Born insights.');
 
-  usePageMeta(`${item.title} | Born`, item.summary);
+  if (!item) return <NotFound />;
 
   return (
     <>

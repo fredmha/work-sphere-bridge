@@ -10,9 +10,9 @@ export default function IndustryDetailPage({ items }: { items: readonly Industry
   const { slug } = useParams();
   const item = items.find((entry) => entry.slug === slug);
 
-  if (!item) return <NotFound />;
+  usePageMeta(item ? `${item.title} | Born` : 'Use case detail | Born', item?.summary ?? 'Explore Born use cases.');
 
-  usePageMeta(`${item.title} | Born`, item.summary);
+  if (!item) return <NotFound />;
 
   return (
     <>

@@ -10,9 +10,9 @@ export default function ServiceDetailPage({ items }: { items: readonly ServiceIt
   const { slug } = useParams();
   const item = items.find((entry) => entry.slug === slug);
 
-  if (!item) return <NotFound />;
+  usePageMeta(item ? `${item.title} | Born` : 'Service detail | Born', item?.summary ?? 'Explore Born services.');
 
-  usePageMeta(`${item.title} | Born`, item.summary);
+  if (!item) return <NotFound />;
 
   return (
     <>

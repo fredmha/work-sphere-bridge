@@ -11,6 +11,11 @@ function navLinkClass(isActive: boolean) {
 export default function MarketingLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const footerHighlights = [
+    'Signal-driven prospecting',
+    'Reply routing and call prep',
+    'Pipeline control and follow-up',
+  ];
 
   useEffect(() => {
     setMobileOpen(false);
@@ -26,7 +31,7 @@ export default function MarketingLayout() {
   }, []);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-clip">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[999] focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-slate-900 focus:shadow-lg"
@@ -34,7 +39,7 @@ export default function MarketingLayout() {
         Skip to main content
       </a>
 
-      <header className="sticky top-0 z-50 border-b border-border/70 bg-[rgba(247,243,234,0.88)] backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-border/70 bg-[rgba(247,243,234,0.82)] backdrop-blur-xl">
         <nav className="container-shell flex items-center justify-between py-5" aria-label="Primary">
           <Link to="/" className="flex items-center gap-3 text-slate-950" aria-label="Born home">
             <span className="inline-flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl border border-white/70 bg-[radial-gradient(circle_at_30%_30%,#b4d5bb,#487a61_68%,#183126)] shadow-[0_16px_30px_rgba(20,40,32,0.18)]">
@@ -46,7 +51,7 @@ export default function MarketingLayout() {
             </span>
           </Link>
 
-          <div className="hidden items-center gap-2 lg:flex">
+          <div className="hidden items-center gap-2 rounded-full border border-white/70 bg-white/60 px-2 py-2 shadow-[0_14px_28px_rgba(25,44,35,0.08)] lg:flex">
             {siteNav.map((item) => (
               <NavLink
                 key={item.href}
@@ -103,13 +108,20 @@ export default function MarketingLayout() {
         <Outlet />
       </main>
 
-      <footer className="border-t border-border bg-[#14261f] py-16 text-stone-100">
-        <div className="container-shell grid gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr]">
+      <footer className="border-t border-border bg-[#102019] py-16 text-stone-100">
+        <div className="container-shell grid gap-10 lg:grid-cols-[1.15fr_0.95fr_0.75fr_0.75fr]">
           <div>
             <p className="text-lg font-semibold text-white">Born</p>
             <p className="mt-4 max-w-md text-sm leading-6 text-stone-100/76">
               Born designs bespoke recruiter software, outbound workflows, and follow-up systems for recruitment agencies that want more control over pipeline creation.
             </p>
+            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+              {footerHighlights.map((item) => (
+                <div key={item} className="rounded-[1.4rem] border border-white/10 bg-white/5 px-4 py-4 text-sm text-stone-100/82">
+                  {item}
+                </div>
+              ))}
+            </div>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link to={primaryCta.to} className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-primary transition hover:bg-secondary">
                 {primaryCta.label}
@@ -117,6 +129,14 @@ export default function MarketingLayout() {
               <Link to="/case-studies" className="rounded-full border border-white/15 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/5">
                 View Case Studies
               </Link>
+            </div>
+          </div>
+
+          <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">Operating model</p>
+            <div className="mt-5 grid gap-4 text-sm text-stone-100/76">
+              <p>Recruiter-only systems work with live signal intake, sequencing, call preparation, and post-call control.</p>
+              <p>Built to feel closer to a productized operating layer than a generic outbound retainer.</p>
             </div>
           </div>
 
@@ -160,6 +180,7 @@ export default function MarketingLayout() {
                   Systems audit enquiries
                 </Link>
               </li>
+              <li className="pt-3 text-xs uppercase tracking-[0.16em] text-white/45">Built for recruiter teams that need clearer pipeline control.</li>
             </ul>
           </div>
         </div>

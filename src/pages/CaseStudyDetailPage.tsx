@@ -9,9 +9,9 @@ export default function CaseStudyDetailPage({ items }: { items: readonly CaseStu
   const { slug } = useParams();
   const item = items.find((entry) => entry.slug === slug);
 
-  if (!item) return <NotFound />;
+  usePageMeta(item ? `${item.title} | Born` : 'Case study detail | Born', item?.summary ?? 'Explore Born case studies.');
 
-  usePageMeta(`${item.title} | Born`, item.summary);
+  if (!item) return <NotFound />;
 
   return (
     <>
