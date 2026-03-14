@@ -5,18 +5,18 @@
   <path d="M128 127H179.5C215.122 127 244 155.878 244 191.5V191.5C244 227.122 215.122 256 179.5 256H128V127Z" fill="#F6F1E8"/>
   <path d="M128 191.5H182C201.33 191.5 217 207.17 217 226.5V226.5C217 245.83 201.33 261.5 182 261.5H128V191.5Z" fill="#9CCCAA"/>
   <text x="310" y="182" fill="#9CCCAA" font-family="IBM Plex Sans, Arial, sans-serif" font-size="22" font-weight="600" letter-spacing="8">RECRUITER SYSTEMS</text>
-  <text x="310" y="280" fill="#F8F5EE" font-family="Space Grotesk, Arial, sans-serif" font-size="74" font-weight="700">
-    Born builds the system
+  <text x="310" y="280" fill="#F8F5EE" font-family="Space Grotesk, Arial, sans-serif" font-size="68" font-weight="700">
+    Your next 5 clients
   </text>
-  <text x="310" y="362" fill="#F8F5EE" font-family="Space Grotesk, Arial, sans-serif" font-size="74" font-weight="700">
-    behind recruiter pipeline.
+  <text x="310" y="358" fill="#F8F5EE" font-family="Space Grotesk, Arial, sans-serif" font-size="68" font-weight="700">
+    are already hiring.
   </text>
-  <text x="310" y="445" fill="#D7DDD7" font-family="IBM Plex Sans, Arial, sans-serif" font-size="28">
-    Signal intake, outreach, call workflow, CRM structure, and follow-up control.
+  <text x="310" y="438" fill="#D7DDD7" font-family="IBM Plex Sans, Arial, sans-serif" font-size="28">
+    Born builds bespoke outbound systems for recruitment firms.
   </text>
   <rect x="310" y="496" width="252" height="54" rx="27" fill="#9CCCAA" fill-opacity="0.12" stroke="#9CCCAA" stroke-opacity="0.35"/>
   <text x="338" y="531" fill="#F8F5EE" font-family="IBM Plex Sans, Arial, sans-serif" font-size="24" font-weight="600">
-    born.systems
+    born.directory
   </text>
   <defs>
     <linearGradient id="panel" x1="60" y1="54" x2="1115" y2="592" gradientUnits="userSpaceOnUse">

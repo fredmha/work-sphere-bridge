@@ -5,7 +5,7 @@ import usePageMeta from '@/hooks/usePageMeta';
 export default function ProcessPage() {
   usePageMeta({
     title: 'Process | Born',
-    description: 'See how Born audits, designs, builds, launches, and refines bespoke recruiter systems.',
+    description: 'See how Born pulls prospects, builds the system, launches the queue, and keeps improving it with real conversation data.',
     path: '/process',
   });
 
@@ -13,8 +13,8 @@ export default function ProcessPage() {
     <>
       <PageHero
         eyebrow="Process"
-        title="A delivery model that keeps bespoke recruiter work clear from the start."
-        description="The process is simple: understand the desk, shape the workflow, build the system, launch it, and then refine it using real usage instead of guesswork."
+        title="A simple process that gets you from manual BD to a live queue."
+        description="We start by understanding how you win work, then we build the prospecting, outreach, call queue, and follow-up around that."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'See Services', to: '/services' }}
       />
@@ -64,10 +64,10 @@ export default function ProcessPage() {
       </section>
 
       <CtaBand
-        title="If the current recruiter process feels messy, Born can help map what is missing."
-        description="A recruiter systems audit is the fastest way to see whether the problem sits in sourcing, account context, call workflow, routing, or follow-up discipline."
+        title="Want to see how this would work in your market?"
+        description="We will pull 5 researched prospects before the first call and show you what the system would look like for your firm."
         primaryAction={primaryCta}
-        secondaryAction={{ label: 'View Case Studies', to: '/case-studies' }}
+        secondaryAction={{ label: 'See What You Get', to: '/services' }}
       />
     </>
   );

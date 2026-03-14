@@ -42,12 +42,11 @@ export function PageHero({
       <div className="hero-noise absolute inset-0 -z-20 opacity-70" />
       <div className="hero-orb absolute left-[-10rem] top-[-6rem] -z-10 h-72 w-72" />
       <div className="hero-orb hero-orb-secondary absolute bottom-[-8rem] right-[-6rem] -z-10 h-80 w-80" />
-      <div className="editorial-grid absolute inset-x-0 top-0 -z-10 h-[82%] rounded-[2.75rem] opacity-40" />
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.04fr)_minmax(20rem,0.96fr)] lg:items-center lg:gap-8">
-        <div className="surface-panel relative overflow-hidden p-8 sm:p-10 lg:p-12">
-          <div className="absolute inset-x-8 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(27,63,49,0.32),transparent)]" />
+      <div className="editorial-grid absolute inset-x-0 top-0 -z-10 h-[82%] rounded-[2.9rem] opacity-35" />
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.02fr)_minmax(19rem,0.98fr)] lg:items-center lg:gap-8">
+        <div className="section-frame relative z-10 p-8 sm:p-10 lg:p-12">
           <p className="eyebrow">{eyebrow}</p>
-          <h1 className="mt-6 max-w-4xl text-[clamp(2.9rem,8vw,4.35rem)] font-semibold leading-[0.97] tracking-tight text-slate-950">
+          <h1 className="mt-6 max-w-4xl text-[clamp(3rem,8vw,4.55rem)] font-semibold leading-[0.95] tracking-tight text-slate-950">
             {title}
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-8 text-slate-700 sm:text-lg">{description}</p>
@@ -65,13 +64,19 @@ export function PageHero({
               )}
             </div>
           )}
-          <div className="mt-8 flex flex-wrap gap-3 text-sm text-slate-600">
-            <span className="rounded-full border border-primary/10 bg-primary/5 px-4 py-2 font-medium text-primary">
-              Hands-on delivery
-            </span>
-            <span className="rounded-full border border-border bg-white/75 px-4 py-2 font-medium">
-              Built around your desk
-            </span>
+          <div className="mt-8 grid gap-3 sm:grid-cols-3">
+            <div className="metric-tile">
+              <p className="meta-kicker">01</p>
+              <p className="mt-2 text-sm leading-6 text-slate-700">Audit the workflow before adding complexity.</p>
+            </div>
+            <div className="metric-tile">
+              <p className="meta-kicker">02</p>
+              <p className="mt-2 text-sm leading-6 text-slate-700">Build around recruiter behavior, not generic templates.</p>
+            </div>
+            <div className="metric-tile">
+              <p className="meta-kicker">03</p>
+              <p className="mt-2 text-sm leading-6 text-slate-700">Keep ownership, queues, and follow-up visible.</p>
+            </div>
           </div>
         </div>
         {aside && (
@@ -89,8 +94,8 @@ export function SectionIntro({ eyebrow, title, description }: SectionIntroProps)
   return (
     <div className="section-copy">
       <p className="eyebrow">{eyebrow}</p>
-      <h2 className="mt-4 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">{title}</h2>
-      <p className="mt-4 max-w-3xl text-base leading-7 text-slate-700">{description}</p>
+      <h2 className="mt-4 max-w-4xl text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">{title}</h2>
+      <p className="mt-4 max-w-3xl text-base leading-8 text-slate-700">{description}</p>
     </div>
   );
 }
@@ -113,20 +118,37 @@ export function CtaBand({ title, description, primaryAction, secondaryAction }: 
           <Sparkles className="h-5 w-5" />
         </div>
         <p className="eyebrow border-white/15 bg-white/8 text-white shadow-none">Next step</p>
-        <div className="mt-5 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="mt-5 grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(18rem,0.95fr)] lg:items-end">
           <div className="max-w-2xl">
             <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">{title}</h2>
             <p className="mt-3 text-base leading-7 text-stone-100/78">{description}</p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <span className="rounded-full border border-white/12 bg-white/7 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-100/78">
+                Audit
+              </span>
+              <span className="rounded-full border border-white/12 bg-white/7 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-100/78">
+                Build
+              </span>
+              <span className="rounded-full border border-white/12 bg-white/7 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-100/78">
+                Refine
+              </span>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-3 lg:max-w-[22rem] lg:justify-end">
-            <Link to={primaryAction.to} className="cta-primary">
-              {primaryAction.label}
-            </Link>
-            {secondaryAction && (
-              <Link to={secondaryAction.to} className="cta-secondary">
-                {secondaryAction.label}
+          <div className="grid gap-4 rounded-[1.8rem] border border-white/10 bg-white/6 p-5 backdrop-blur-sm">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-100/70">Engagement path</p>
+            <p className="text-sm leading-7 text-stone-100/76">
+              Start with the workflow pressure point, map the operating gap, then scope the cleanest build path.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link to={primaryAction.to} className="cta-primary">
+                {primaryAction.label}
               </Link>
-            )}
+              {secondaryAction && (
+                <Link to={secondaryAction.to} className="cta-secondary">
+                  {secondaryAction.label}
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </div>

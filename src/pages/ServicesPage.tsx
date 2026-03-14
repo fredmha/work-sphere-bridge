@@ -6,7 +6,7 @@ export default function ServicesPage() {
   usePageMeta({
     title: 'Services | Born',
     description:
-      'Explore Born services for recruiter system architecture, signal-led sourcing, reply routing, and follow-up control.',
+      'See what Born builds for recruitment firms: prospecting, outreach, daily call queues, follow-up automations, and ongoing optimisation.',
     path: '/services',
   });
 
@@ -74,7 +74,7 @@ export default function ServicesPage() {
 
       <CtaBand
         title="Need help working out which service fits your desk?"
-        description="A recruiter systems audit is the quickest way to sort that out. Born can tell whether you need a full build, a focused workflow upgrade, or a lighter improvement around your current stack."
+        description="We will pull 5 researched prospects before the first call and show you whether you need the full system or one focused upgrade."
         primaryAction={primaryCta}
       />
     </>

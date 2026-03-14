@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 
 import { PageHero } from '@/components/MarketingPrimitives';
-import { contactChecklist, contactExpectations, contactProcess } from '@/content/bornSiteContent';
+import { contactChecklist, contactExpectations, contactProcess, primaryCta } from '@/content/bornSiteContent';
 import usePageMeta from '@/hooks/usePageMeta';
 
 type ContactFormState = {
@@ -28,7 +28,7 @@ export default function ContactPage() {
   usePageMeta({
     title: 'Contact | Born',
     description:
-      'Book a recruiter systems audit with Born to discuss bespoke recruiter software, sourcing workflow, and follow-up infrastructure.',
+      'Get 5 researched prospects and see how Born would build your outbound system before the first call.',
     path: '/contact',
   });
 
@@ -71,8 +71,8 @@ export default function ContactPage() {
     <>
       <PageHero
         eyebrow="Contact"
-        title="Book a recruiter systems audit if the desk feels too manual."
-        description="Share a short brief about the desk, the workflow, and where control is breaking down. Born uses that to assess fit and make the first conversation more useful."
+        title="Get 5 researched prospects in your niche."
+        description="Share a short brief about what you recruit and where BD is getting stuck. Born uses that to pull live prospects and make the first conversation useful."
       />
 
       <section className="site-section">
@@ -108,8 +108,8 @@ export default function ContactPage() {
                 <p>{contactExpectations.primaryChannel}</p>
                 <p>{contactExpectations.qualifier}</p>
               </div>
-              <a href="mailto:hello@born.systems" className="mt-4 inline-flex text-base font-semibold text-primary hover:text-primary/80">
-                hello@born.systems
+              <a href="mailto:fred@born.directory" className="mt-4 inline-flex text-base font-semibold text-primary hover:text-primary/80">
+                fred@born.directory
               </a>
             </div>
           </aside>
@@ -140,7 +140,7 @@ export default function ContactPage() {
               </label>
 
               <label className="grid gap-2 text-sm font-medium text-slate-900 md:col-span-2">
-                Recruitment firm
+                Company
                 <input
                   className="input-shell"
                   value={form.company}
@@ -160,12 +160,12 @@ export default function ContactPage() {
               </label>
 
               <label className="grid gap-2 text-sm font-medium text-slate-900 md:col-span-2">
-                What needs fixing?
+                What type of recruiting do you do?
                 <textarea
                   className="textarea-shell"
                   value={form.message}
                   onChange={(event) => setForm((current) => ({ ...current, message: event.target.value }))}
-                  placeholder="Describe the desk, your current stack, and where sourcing, reply handling, calls, or follow-up feel weak."
+                  placeholder="Tech, accounting, construction, temp staffing, plus anything slowing BD down right now."
                   rows={7}
                   required
                 />
@@ -187,9 +187,9 @@ export default function ContactPage() {
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <button type="submit" className="cta-primary" disabled={submitting}>
-                {submitting ? 'Submitting...' : 'Request audit'}
+                {submitting ? 'Submitting...' : primaryCta.label}
               </button>
-              <p className="text-sm leading-6 text-slate-600">A short brief is enough. Just give enough context to make the next conversation useful.</p>
+              <p className="text-sm leading-6 text-slate-600">A short brief is enough. We&apos;ll use it to pull 5 prospects and make the next conversation useful.</p>
             </div>
           </form>
         </div>

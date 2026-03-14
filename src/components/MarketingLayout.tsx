@@ -12,9 +12,9 @@ export default function MarketingLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const footerHighlights = [
-    'Signal-led prospecting',
-    'Reply routing',
-    'Follow-up control',
+    'Prospecting engine',
+    'Daily call queue',
+    'Follow-up handled',
   ];
 
   useEffect(() => {
@@ -39,19 +39,22 @@ export default function MarketingLayout() {
         Skip to main content
       </a>
 
-      <header className="sticky top-0 z-50 border-b border-border/70 bg-[rgba(247,243,234,0.86)] backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-[rgba(24,55,41,0.08)] bg-[rgba(248,244,236,0.84)] backdrop-blur-xl">
+        <div className="container-shell hidden py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 lg:block">
+          Built for recruiters. Founder-led. 3 clients per quarter.
+        </div>
         <nav className="container-shell flex items-center justify-between gap-4 py-4 sm:py-5" aria-label="Primary">
           <Link to="/" className="flex items-center gap-3 text-slate-950" aria-label="Born home">
-            <span className="inline-flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl border border-white/70 bg-[radial-gradient(circle_at_30%_30%,#b4d5bb,#487a61_68%,#183126)] shadow-[0_16px_30px_rgba(20,40,32,0.18)]">
+            <span className="inline-flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl border border-white/70 bg-[radial-gradient(circle_at_30%_30%,#b4d5bb,#487a61_68%,#183126)] shadow-[0_18px_34px_rgba(20,40,32,0.18)]">
               <img src="/favicon-Photoroom.png" alt="" className="h-9 w-9 object-contain" />
             </span>
             <span>
               <span className="block text-lg font-semibold tracking-tight">Born</span>
-              <span className="block text-xs uppercase tracking-[0.24em] text-slate-500">Recruiter Systems</span>
+              <span className="block text-xs uppercase tracking-[0.24em] text-slate-500">Recruitment Outbound</span>
             </span>
           </Link>
 
-          <div className="hidden items-center gap-2 rounded-full border border-white/70 bg-white/60 px-2 py-2 shadow-[0_14px_28px_rgba(25,44,35,0.08)] lg:flex">
+          <div className="hidden items-center gap-2 rounded-full border border-[rgba(24,55,41,0.1)] bg-white/72 px-2 py-2 shadow-[0_18px_34px_rgba(18,35,27,0.08)] lg:flex">
             {siteNav.map((item) => (
               <NavLink
                 key={item.href}
@@ -70,7 +73,7 @@ export default function MarketingLayout() {
             </Link>
             <button
               type="button"
-              className="inline-flex rounded-2xl border border-border bg-white/90 p-3 text-slate-700 shadow-sm lg:hidden"
+              className="inline-flex rounded-2xl border border-[rgba(24,55,41,0.12)] bg-white/92 p-3 text-slate-700 shadow-sm lg:hidden"
               aria-expanded={mobileOpen}
               aria-controls="mobile-navigation"
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
@@ -82,7 +85,7 @@ export default function MarketingLayout() {
         </nav>
 
         {mobileOpen && (
-          <div id="mobile-navigation" className="border-t border-border bg-white/95 shadow-[0_18px_34px_rgba(24,40,34,0.08)] lg:hidden">
+          <div id="mobile-navigation" className="border-t border-[rgba(24,55,41,0.08)] bg-white/96 shadow-[0_20px_40px_rgba(18,35,27,0.08)] lg:hidden">
             <div className="container-shell grid gap-2 py-4">
               {siteNav.map((item) => (
                 <NavLink
@@ -108,16 +111,19 @@ export default function MarketingLayout() {
         <Outlet />
       </main>
 
-      <footer className="border-t border-border bg-[#102019] py-16 text-stone-100">
+      <footer className="border-t border-[rgba(24,55,41,0.08)] bg-[#0f2119] py-16 text-stone-100">
         <div className="container-shell grid gap-8 lg:grid-cols-2 xl:grid-cols-[1.2fr_0.9fr_0.68fr_0.68fr_0.82fr]">
           <div>
-            <p className="text-lg font-semibold text-white">Born</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-100/66">Born</p>
+            <p className="mt-4 max-w-md text-2xl font-semibold tracking-tight text-white">
+              Born - bespoke outbound systems for recruitment firms. Sydney, Australia.
+            </p>
             <p className="mt-4 max-w-md text-sm leading-6 text-stone-100/76">
-              Custom recruiter systems for teams that want a calmer, clearer way to run prospecting, replies, and follow-up.
+              Prospecting, outreach, call workflow, and follow-up in one system built around how recruiters actually win work.
             </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
               {footerHighlights.map((item) => (
-                <div key={item} className="rounded-[1.4rem] border border-white/10 bg-white/5 px-4 py-4 text-sm text-stone-100/82">
+                <div key={item} className="rounded-[1.4rem] border border-white/10 bg-white/5 px-4 py-4 text-sm text-stone-100/82 backdrop-blur-sm">
                   {item}
                 </div>
               ))}
@@ -126,24 +132,24 @@ export default function MarketingLayout() {
               <Link to={primaryCta.to} className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-primary transition hover:bg-secondary">
                 {primaryCta.label}
               </Link>
-              <Link to="/case-studies" className="rounded-full border border-white/15 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/5">
-                View Case Studies
+              <Link to="/process" className="rounded-full border border-white/15 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/5">
+                See How It Works
               </Link>
             </div>
           </div>
 
-          <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6">
+          <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">What to expect</p>
             <div className="mt-5 grid gap-4 text-sm text-stone-100/76">
-              <p>Best suited to recruiter teams that want workflow clarity rather than outsourced activity.</p>
-              <p>Most conversations start with a short systems audit and a practical brief on where the desk feels messy.</p>
+              <p>We pull 5 researched prospects before the first call so you can see the system in your market.</p>
+              <p>You work directly with Fred on every engagement. No junior handoff.</p>
             </div>
           </div>
 
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">Explore</p>
             <ul className="mt-4 space-y-3 text-sm text-stone-100/76">
-              {siteNav.slice(0, 4).map((item) => (
+              {siteNav.slice(0, 3).map((item) => (
                 <li key={item.href}>
                   <Link to={item.href} className="transition hover:text-white">
                     {item.label}
@@ -154,33 +160,38 @@ export default function MarketingLayout() {
           </div>
 
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">Resources</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">More</p>
             <ul className="mt-4 space-y-3 text-sm text-stone-100/76">
-              {siteNav.slice(4).map((item) => (
+              {siteNav.slice(3).map((item) => (
                 <li key={item.href}>
                   <Link to={item.href} className="transition hover:text-white">
                     {item.label}
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link to="/insights" className="transition hover:text-white">
+                  Insights
+                </Link>
+              </li>
             </ul>
           </div>
 
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">Contact</p>
             <ul className="mt-4 space-y-3 text-sm text-stone-100/76">
-              <li>Sydney-based custom recruiter systems studio</li>
+              <li>Founder-led outbound systems for recruitment firms</li>
               <li>
-                <a href="mailto:hello@born.systems" className="transition hover:text-white">
-                  hello@born.systems
+                <a href="mailto:fred@born.directory" className="transition hover:text-white">
+                  fred@born.directory
                 </a>
               </li>
               <li>
                 <Link to="/contact" className="transition hover:text-white">
-                  Book a systems audit
+                  {primaryCta.label}
                 </Link>
               </li>
-              <li className="pt-3 text-xs uppercase tracking-[0.16em] text-white/45">Built for recruiter teams that need steadier pipeline control.</li>
+              <li className="pt-3 text-xs uppercase tracking-[0.16em] text-white/45">200% ROI by month 3 or we keep working for free.</li>
             </ul>
           </div>
         </div>

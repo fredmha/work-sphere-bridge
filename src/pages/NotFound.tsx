@@ -26,7 +26,7 @@ export default function NotFound() {
           <Link to="/" className="cta-primary">
             Go to homepage
           </Link>
-          <a href="mailto:hello@born.systems" className="cta-secondary">
+          <a href="mailto:fred@born.directory" className="cta-secondary">
             Contact Born
           </a>
         </div>

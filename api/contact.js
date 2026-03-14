@@ -29,11 +29,11 @@ export default async function handler(req, res) {
   const webhookUrl = process.env.CONTACT_WEBHOOK_URL;
 
   if (!webhookUrl) {
-    return res.status(503).json({ error: 'The contact workflow is not configured yet. Email hello@born.systems instead.' });
+    return res.status(503).json({ error: 'The contact workflow is not configured yet. Email fred@born.directory instead.' });
   }
 
   const forwardedPayload = {
-    source: 'born.systems',
+    source: 'born.directory',
     submittedAt: new Date().toISOString(),
     name: submission.name,
     email: submission.email,
@@ -56,7 +56,7 @@ export default async function handler(req, res) {
   });
 
   if (!response.ok) {
-    return res.status(502).json({ error: 'The brief could not be forwarded. Email hello@born.systems instead.' });
+    return res.status(502).json({ error: 'The brief could not be forwarded. Email fred@born.directory instead.' });
   }
 
   return res.status(200).json({

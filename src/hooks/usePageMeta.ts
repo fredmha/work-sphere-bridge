@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const SITE_URL = 'https://born.systems';
+const SITE_URL = 'https://born.directory';
 const DEFAULT_IMAGE = `${SITE_URL}/og-image.svg`;
 
 type SchemaValue = Record<string, unknown> | readonly Record<string, unknown>[];

@@ -67,26 +67,24 @@ export interface FaqItem {
 }
 
 export const primaryCta = {
-  label: 'Book a Systems Audit',
+  label: 'Get 5 Researched Prospects Today',
   to: '/contact',
 } as const;
 
 export const siteNav = [
   { label: 'Home', href: '/' },
-  { label: 'Services', href: '/services' },
-  { label: 'Use Cases', href: '/industries' },
-  { label: 'Process', href: '/process' },
-  { label: 'Case Studies', href: '/case-studies' },
+  { label: 'How It Works', href: '/process' },
+  { label: 'What You Get', href: '/services' },
+  { label: 'Who It\'s For', href: '/industries' },
   { label: 'About', href: '/about' },
-  { label: 'Insights', href: '/insights' },
   { label: 'Contact', href: '/contact' },
 ] as const satisfies readonly NavItem[];
 
 export const trustPoints = [
-  'Recruiter-only focus',
-  'Custom workflow builds',
-  'Hands-on delivery',
-  'Works with your current stack',
+  'Built exclusively for recruiters',
+  'Founder-led, 3 clients per quarter',
+  'We build around your existing tools',
+  '200% ROI guarantee',
 ] as const;
 
 export const homePillars = [
@@ -98,7 +96,7 @@ export const homePillars = [
   {
     title: 'Outreach and call orchestration',
     description:
-      'Sequences, reply routing, call prep, and task queues are shaped around recruiter business-development workflows rather than generic SDR templates.',
+      'Sequences, call prep, reply handling, and task queues are shaped around recruiter business development rather than generic SDR templates.',
   },
   {
     title: 'Pipeline and follow-up control',
@@ -140,8 +138,8 @@ export const services = [
       'Most agencies have fragments of process spread across spreadsheets, inboxes, CRM views, and recruiter habit. Born turns that into one working system.',
     audience: 'Best for recruitment firms that need the full commercial workflow designed properly, not another isolated tool.',
     buyerFit: 'Best when the desk has real activity but weak consistency between prospecting, replies, calls, and follow-up.',
-    systemBuild: 'Workflow architecture, CRM structure, task routing, and automation rules across the full desk.',
-    businessEffect: 'A more controlled operating layer that is easier for recruiters to run and for managers to review.',
+    systemBuild: 'Prospecting, CRM structure, task routing, and automation rules across the full desk.',
+    businessEffect: 'One system that is easier for recruiters to run and easier for managers to review.',
     includes: [
       'Current-state workflow audit',
       'Recruiter process mapping from signal to booked conversation',
@@ -261,7 +259,7 @@ export const industries = [
       'Managers lack visibility into where business-development follow-up is stalling',
     ],
     buildFocus: [
-      'Hiring-signal intake and account prioritisation',
+      'Finding prospects and prioritising the right accounts',
       'Recruiter outreach sequencing and rapid task creation',
       'Call queues and pipeline views for same-day follow-up',
     ],
@@ -294,7 +292,7 @@ export const industries = [
   {
     slug: 'executive-search-firms',
     title: 'Executive Search Firms',
-    summary: 'Bespoke recruiter software and workflow architecture for complex search cycles and senior relationship management.',
+    summary: 'Bespoke recruiter software for complex search cycles and senior relationship management.',
     painPoints: [
       'Commercial workflows are too bespoke for generic CRM defaults',
       'Senior recruiter context is trapped in notes and individual habit',
@@ -317,7 +315,7 @@ export const industries = [
     summary: 'Custom systems for agencies moving from improvised hustle into repeatable recruiter execution.',
     painPoints: [
       'Process quality depends too much on a few strong operators',
-      'The agency has tools, but no real operating layer connecting them',
+      'The agency has tools, but no real system connecting them',
       'Recruiters spend too much time managing admin instead of conversations',
     ],
     buildFocus: [
@@ -340,9 +338,9 @@ export const processStages = [
     output: 'A concrete view of what the agency should keep, replace, and rebuild.',
   },
   {
-    name: 'Workflow Design',
-    summary: 'Define the recruiter path from live market signal through outreach, calls, pipeline updates, and next actions.',
-    output: 'A recruiter systems blueprint before implementation starts.',
+    name: 'Plan',
+    summary: 'Define how prospects move from hiring signal to outreach, calls, pipeline updates, and next actions.',
+    output: 'A clear build plan before implementation starts.',
   },
   {
     name: 'Build',
@@ -369,7 +367,7 @@ export const caseStudies = [
     summary: 'Born replaced manual prospecting and patchy follow-up with a signal-led recruiter workflow that made daily business development clearer.',
     problem:
       'The desk had good recruiters, but business-development activity was scattered across inboxes, ad hoc sourcing, and weak post-call follow-up.',
-    systemBuild: 'A signal-led sourcing layer, recruiter-ready research packs, reply routing, and a clearer pipeline model.',
+    systemBuild: 'A signal-led sourcing layer, recruiter-ready research packs, reply handling, and a clearer pipeline model.',
     businessEffect: 'Daily business development became easier to run and much harder to lose track of.',
     whatChanged: ['Signal-led account intake', 'Cleaner reply-to-call routing', 'Less leakage after recruiter conversations'],
     build: [
@@ -550,24 +548,32 @@ export const insights = [
 
 export const faqItems = [
   {
-    question: 'Is Born a recruiter lead generation agency?',
+    question: 'Do you make calls on my behalf?',
     answer:
-      'No. Born designs and implements the recruiter system behind business development: sourcing logic, research, outreach workflow, call queues, CRM stages, and follow-up automation.',
+      'No. Born builds the system. You run the calls. We handle prospecting, research, outreach, follow-up automations, and pipeline management so you can stay focused on conversations.',
   },
   {
-    question: 'Do you build custom recruiter software or just advise?',
+    question: 'How long does setup take?',
     answer:
-      'Both. Born can scope the operating model, implement the workflow, and advise on what should be custom-built, automated, or simplified inside your current stack.',
+      'Three weeks from kickoff to a live call queue.',
   },
   {
-    question: 'Can Born work with our current CRM or ATS?',
+    question: 'What tools do you use?',
     answer:
-      'Yes. The goal is not to replace software for the sake of it. The goal is to make the recruiter workflow coherent, with only the custom layer your team actually needs.',
+      'We build on GoHighLevel, Apollo, and Smartlead. If you already use a CRM, we design around your existing stack rather than forcing a migration.',
   },
   {
-    question: 'Who is the best fit for Born?',
+    question: 'What kind of recruitment firms do you work with?',
     answer:
-      'Recruitment firms that want recruiter-only workflow design, steadier follow-up control, and a more bespoke commercial system than generic agency retainers usually provide.',
+      'Agencies with 1 to 20 people in tech, accounting, finance, construction, marketing, or temp staffing. The best fit is usually a founder, director, or MD still carrying part of BD.',
+  },
+  {
+    question: 'How many clients do you take on?',
+    answer: 'Three per quarter. Every engagement is founder-led.',
+  },
+  {
+    question: 'What happens after the 3-month pilot?',
+    answer: 'Most clients continue on the monthly subscription. If the numbers have not worked by month 3, we keep working for free until they do.',
   },
 ] as const satisfies readonly FaqItem[];
 
@@ -593,6 +599,6 @@ export const contactProcess = [
 
 export const contactExpectations = {
   responseWindow: 'Usually within 1 business day.',
-  primaryChannel: 'Replies land by email from hello@born.systems.',
+  primaryChannel: 'Replies land by email from fred@born.directory.',
   qualifier: 'Best suited to agencies that want workflow clarity, not outsourced activity.',
 } as const;
