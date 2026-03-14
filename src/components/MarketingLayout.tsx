@@ -111,7 +111,7 @@ export default function MarketingLayout() {
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-100/66">Born</p>
             <p className="mt-4 max-w-md text-2xl font-semibold tracking-tight text-white">
-              Try the lead magnet first. Get 5 prospects, then book the call.
+              Try 5 prospects, then book the call.
             </p>
             <p className="mt-4 max-w-md text-sm leading-6 text-stone-100/76">
               We pull 5 researched prospects in your niche so you can judge the quality up front. If it looks right, book the call and we map the wider outbound build from there.
