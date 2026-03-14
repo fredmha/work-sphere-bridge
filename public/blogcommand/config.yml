@@ -1,0 +1,42 @@
+# Local editing works today with `npm run cms`.
+# Deployed GitHub editing needs an OAuth proxy or Git Gateway.
+backend:
+  name: github
+  repo: fredmha/work-sphere-bridge
+  branch: main
+
+local_backend: true
+
+media_folder: public/uploads
+public_folder: /uploads
+
+site_url: https://born.directory
+display_url: https://born.directory
+logo_url: /favicon.ico
+
+collections:
+  - name: blog
+    label: Blog Posts
+    label_singular: Blog Post
+    identifier_field: title
+    folder: src/content/blog
+    create: true
+    extension: md
+    format: frontmatter
+    slug: "{{slug}}"
+    preview_path: "blogs/{{slug}}"
+    summary: "{{title}} - {{publishedAt}}"
+    sortable_fields:
+      - publishedAt
+      - updatedAt
+      - title
+    fields:
+      - { label: Slug, name: slug, widget: string, hint: "Used in /blogs/<slug>" }
+      - { label: Title, name: title, widget: string }
+      - { label: Summary, name: summary, widget: text }
+      - { label: SEO Description, name: seoDescription, widget: text }
+      - { label: Category, name: category, widget: string }
+      - { label: Published Date, name: publishedAt, widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+      - { label: Updated Date, name: updatedAt, widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+      - { label: Read Time, name: readTime, widget: string, default: "5 min read" }
+      - { label: Body, name: body, widget: markdown }

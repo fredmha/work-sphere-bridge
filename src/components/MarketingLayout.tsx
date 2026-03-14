@@ -164,7 +164,7 @@ export default function MarketingLayout() {
             <ul className="mt-4 space-y-3 text-sm text-stone-100/76">
               <li>
                 <Link to="/blogs" className="transition hover:text-white">
-                  Blogs and SEO content
+                  Blogs and articles
                 </Link>
               </li>
               <li>

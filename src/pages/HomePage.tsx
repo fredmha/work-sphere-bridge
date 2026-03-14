@@ -4,9 +4,10 @@ import { ArrowRight, BadgeCheck, MessagesSquare, SearchCheck, ShieldCheck, Workf
 import { Link } from 'react-router-dom';
 
 import { LinkArrow, SectionIntro } from '@/components/MarketingPrimitives';
-import { blogPosts } from '@/content/blogContent';
 import { bookingUrl, faqItems, primaryCta, trustPoints } from '@/content/bornSiteContent';
 import usePageMeta from '@/hooks/usePageMeta';
+import { useBlogPosts } from '@/lib/blogPublished';
+import { submitLeadForm } from '@/utils/api';
 
 const heroQueue = [
   {
@@ -105,6 +106,7 @@ const initialState: ContactFormState = {
 };
 
 export default function HomePage() {
+  const { posts: blogPosts } = useBlogPosts();
   const prefersReducedMotion = useReducedMotion();
   const [form, setForm] = useState(initialState);
   const [status, setStatus] = useState<{ tone: 'success' | 'error'; message: string } | null>(null);
@@ -157,19 +159,7 @@ export default function HomePage() {
     setStatus(null);
 
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(form),
-      });
-
-      const payload = (await response.json()) as { error?: string; message?: string; bookingUrl?: string };
-
-      if (!response.ok) {
-        throw new Error(payload.error ?? 'There was a problem submitting the brief.');
-      }
+      const payload = await submitLeadForm(form);
 
       setForm(initialState);
       setStatus({
@@ -439,8 +429,8 @@ export default function HomePage() {
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <SectionIntro
             eyebrow="Blogs"
-            title="A cleaner blog layer for SEO."
-            description="These pages are built to rank, link internally, and push people toward the 5-prospect lead magnet instead of drifting into generic advice."
+            title="Perspectives that strengthen how Born is understood."
+            description="Writing that sharpens the commercial point of view, makes the offer clearer, and gives buyers better context before the conversation."
           />
           <Link to="/blogs" className="cta-text">
             Browse all blogs
@@ -455,19 +445,19 @@ export default function HomePage() {
               <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">{post.title}</h2>
               <p className="mt-4 text-base leading-7 text-slate-700">{post.summary}</p>
               <div className="mt-6">
-                <LinkArrow to={`/blogs/${post.slug}`}>Read the demo blog post</LinkArrow>
+                <LinkArrow to={`/blogs/${post.slug}`}>Read article</LinkArrow>
               </div>
             </article>
           ))}
 
           <article className="outline-panel p-7">
-            <p className="meta-kicker">Why this matters</p>
+            <p className="meta-kicker">What the writing supports</p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">
-              Better internal links. Sharper crawl paths. Cleaner commercial intent.
+              Clearer positioning. Stronger authority. Better conversations.
             </h2>
             <p className="mt-4 text-base leading-7 text-slate-700">
-              The goal is not to publish filler. It is to build pages that support the offer, strengthen internal linking,
-              and give search engines a clearer route into the site.
+              The goal is to publish useful thinking that reflects how Born works, helps the right buyer understand the offer,
+              and makes the business easier to trust before contact happens.
             </p>
             <div className="mt-6">
               <LinkArrow to="/blogs">Open the blog hub</LinkArrow>
@@ -510,6 +500,7 @@ export default function HomePage() {
                 Name
                 <input
                   className="input-shell"
+                  name="name"
                   value={form.name}
                   onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
                   placeholder="Your name"
@@ -522,6 +513,7 @@ export default function HomePage() {
                 <input
                   className="input-shell"
                   type="email"
+                  name="email"
                   value={form.email}
                   onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
                   placeholder="you@firm.com"
@@ -533,6 +525,7 @@ export default function HomePage() {
                 Company
                 <input
                   className="input-shell"
+                  name="company"
                   value={form.company}
                   onChange={(event) => setForm((current) => ({ ...current, company: event.target.value }))}
                   placeholder="Firm name"
@@ -544,6 +537,7 @@ export default function HomePage() {
                 <input
                   tabIndex={-1}
                   autoComplete="off"
+                  name="website"
                   value={form.website}
                   onChange={(event) => setForm((current) => ({ ...current, website: event.target.value }))}
                 />
@@ -553,6 +547,7 @@ export default function HomePage() {
                 What type of recruiting do you do?
                 <textarea
                   className="textarea-shell"
+                  name="message"
                   value={form.message}
                   onChange={(event) => setForm((current) => ({ ...current, message: event.target.value }))}
                   placeholder="Tech, accounting, construction, temp staffing, plus anything slowing BD down right now."

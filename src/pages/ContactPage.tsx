@@ -3,6 +3,7 @@ import { FormEvent, useState } from 'react';
 import { PageHero } from '@/components/MarketingPrimitives';
 import { bookingUrl, contactChecklist, contactExpectations, contactProcess, primaryCta } from '@/content/bornSiteContent';
 import usePageMeta from '@/hooks/usePageMeta';
+import { submitLeadForm } from '@/utils/api';
 
 type ContactFormState = {
   name: string;
@@ -45,19 +46,7 @@ export default function ContactPage() {
     setStatus(null);
 
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(form),
-      });
-
-      const payload = (await response.json()) as { error?: string; message?: string; bookingUrl?: string };
-
-      if (!response.ok) {
-        throw new Error(payload.error ?? 'There was a problem submitting the brief.');
-      }
+      const payload = await submitLeadForm(form);
 
       setForm(initialState);
       setStatus({
@@ -147,6 +136,7 @@ export default function ContactPage() {
                 Name
                 <input
                   className="input-shell"
+                  name="name"
                   value={form.name}
                   onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
                   placeholder="Your name"
@@ -159,6 +149,7 @@ export default function ContactPage() {
                 <input
                   className="input-shell"
                   type="email"
+                  name="email"
                   value={form.email}
                   onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
                   placeholder="you@firm.com"
@@ -170,6 +161,7 @@ export default function ContactPage() {
                 Company
                 <input
                   className="input-shell"
+                  name="company"
                   value={form.company}
                   onChange={(event) => setForm((current) => ({ ...current, company: event.target.value }))}
                   placeholder="Firm name"
@@ -181,6 +173,7 @@ export default function ContactPage() {
                 <input
                   tabIndex={-1}
                   autoComplete="off"
+                  name="website"
                   value={form.website}
                   onChange={(event) => setForm((current) => ({ ...current, website: event.target.value }))}
                 />
@@ -190,6 +183,7 @@ export default function ContactPage() {
                 What type of recruiting do you do?
                 <textarea
                   className="textarea-shell"
+                  name="message"
                   value={form.message}
                   onChange={(event) => setForm((current) => ({ ...current, message: event.target.value }))}
                   placeholder="What you recruit, who you want more of as clients, and where BD is getting stuck."

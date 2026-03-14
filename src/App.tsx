@@ -1,9 +1,11 @@
 import { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 
 const MarketingLayout = lazy(() => import('@/components/MarketingLayout'));
 const AboutPage = lazy(() => import('@/pages/AboutPage'));
+const BlogCommandPage = lazy(() => import('@/pages/BlogCommandPage'));
 const BlogDetailPage = lazy(() => import('@/pages/BlogDetailPage'));
+const BlogPreviewPage = lazy(() => import('@/pages/BlogPreviewPage'));
 const BlogsPage = lazy(() => import('@/pages/BlogsPage'));
 const CaseStudiesPage = lazy(() => import('@/pages/CaseStudiesPage'));
 const CaseStudyDetailPage = lazy(() => import('@/pages/CaseStudyDetailPage'));
@@ -33,6 +35,8 @@ export default function App() {
     <Router>
       <Suspense fallback={<RouteFallback />}>
         <Routes>
+          <Route path="/blogcommand" element={<BlogCommandPage />} />
+          <Route path="/bxgse/command" element={<Navigate to="/blogcommand" replace />} />
           <Route element={<MarketingLayout />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/services" element={<ServicesPage />} />
@@ -41,6 +45,7 @@ export default function App() {
             <Route path="/industries/:slug" element={<IndustryDetailPage />} />
             <Route path="/process" element={<ProcessPage />} />
             <Route path="/blogs" element={<BlogsPage />} />
+            <Route path="/blogs/preview/:draftId" element={<BlogPreviewPage />} />
             <Route path="/blogs/:slug" element={<BlogDetailPage />} />
             <Route path="/case-studies" element={<CaseStudiesPage />} />
             <Route path="/case-studies/:slug" element={<CaseStudyDetailPage />} />

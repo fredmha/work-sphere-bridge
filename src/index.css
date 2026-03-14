@@ -262,7 +262,7 @@
   }
 
   .proof-chip {
-    @apply inline-flex items-center gap-2 rounded-full border border-[rgba(19,59,45,0.12)] bg-[rgba(255,255,255,0.7)] px-4 py-2 text-sm font-medium text-primary shadow-[0_10px_22px_rgba(18,34,27,0.04)];
+    @apply inline-flex items-center gap-2 rounded-full border border-[rgba(19,59,45,0.18)] bg-[rgba(232,241,235,0.98)] px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_12px_24px_rgba(18,34,27,0.06)];
   }
 
   .wordmark {
@@ -313,8 +313,28 @@
     @apply mt-3 text-base leading-8 text-slate-700;
   }
 
+  .article-prose a {
+    @apply font-semibold text-primary underline decoration-primary/30 underline-offset-4 transition hover:text-primary/80;
+  }
+
   .article-prose ul {
     @apply mt-4 grid gap-3 text-base leading-7 text-slate-700;
+  }
+
+  .article-prose li {
+    @apply ml-5 list-disc;
+  }
+
+  .blog-figure {
+    @apply mt-6 grid gap-3;
+  }
+
+  .blog-image {
+    @apply w-full rounded-[1.6rem] border border-[rgba(24,55,41,0.08)] object-cover shadow-[0_22px_52px_rgba(18,35,27,0.08)];
+  }
+
+  .blog-figure figcaption {
+    @apply text-sm leading-6 text-slate-500;
   }
 
   .accent-card {

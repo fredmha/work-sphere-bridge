@@ -150,6 +150,22 @@ npm run preview
 npm run lint
 ```
 
+### Blog CMS
+
+The blog is now file-based under `src/content/blog/*.md` and managed through Decap CMS at `/blogcommand`.
+
+```bash
+# Start the Vite app
+npm run dev
+
+# In a second terminal, start the Decap local backend
+npm run cms
+```
+
+Then open `/blogcommand`.
+
+For localhost, this works with Decap's local backend. For deployed GitHub editing, Decap still needs an OAuth proxy or Git Gateway.
+
 ## 📁 Project Structure
 
 ```
