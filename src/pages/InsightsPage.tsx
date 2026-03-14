@@ -5,17 +5,17 @@ import usePageMeta from '@/hooks/usePageMeta';
 export default function InsightsPage() {
   usePageMeta(
     'Insights | Born',
-    'Read practical Born resources on outbound systems for recruitment agencies, GoHighLevel for recruiters, hiring-signal workflows, and follow-up automation.',
+    'Read practical Born resources on recruiter outbound systems, prospecting workflow, hiring-signal strategy, and follow-up automation.',
   );
 
   return (
     <>
       <PageHero
         eyebrow="Insights"
-        title="Practical recruiter resources, written to rank and still be useful."
-        description="This is the search layer behind Born: specific articles on outbound systems, hiring signals, GoHighLevel, and recruiter follow-up for teams selling into firms."
+        title="Practical recruiter resources for teams selling into hiring companies."
+        description="This is the search layer behind Born: specific articles on outbound systems, hiring signals, follow-up, and prospect quality for recruiter teams that need better-fit companies in the queue."
         primaryAction={primaryCta}
-        secondaryAction={{ label: 'Book a Call', to: '/contact' }}
+        secondaryAction={{ label: 'Get the 5 prospects', to: '/contact' }}
       />
 
       <section className="site-section">
@@ -41,10 +41,10 @@ export default function InsightsPage() {
       </section>
 
       <CtaBand
-        title="Need the practical version applied to your recruiter team?"
-        description="The articles explain the logic. The 5-firm proof-of-concept shows how that logic would look in your market."
+        title="Need the practical version applied to your market?"
+        description="The articles explain the logic. The 5-prospect proof-of-concept shows how that logic would look across your target market."
         primaryAction={primaryCta}
-        secondaryAction={{ label: 'Contact Born', to: '/contact' }}
+        secondaryAction={{ label: 'Get the 5 prospects', to: '/contact' }}
       />
     </>
   );

@@ -25,8 +25,8 @@ export default function IndustriesPage() {
     <>
       <PageHero
         eyebrow="Who It&apos;s For"
-        title="Built for recruitment firms that already know outbound works."
-        description="The workflow changes by niche, team shape, and how your recruiters sell into firms. Born builds around that instead of forcing every agency into the same setup."
+        title="Built for recruiter teams that already know the right companies are out there."
+        description="The workflow changes by niche, team shape, and which kinds of hiring companies your recruiters need to win. Born builds around that instead of forcing every team into the same setup."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'See Services', to: '/services' }}
         highlights={['Contingent to retained', 'Built around your niche', 'No generic setup']}
@@ -36,7 +36,7 @@ export default function IndustriesPage() {
               <p className="eyebrow border-white/10 bg-white/8 text-white shadow-none">Best fit signals</p>
               <div className="mt-6 grid gap-3">
                 {[
-                  'You can sell once you get the conversation.',
+                  'You can sell once you reach the right hiring team.',
                   'BD drops when delivery gets busy.',
                   'The team needs a steadier system, not more tools.',
                 ].map((item) => (
@@ -85,7 +85,7 @@ export default function IndustriesPage() {
 
       <CtaBand
         title="If your team has its own workflow constraints, Born designs around them."
-        description="That matters because generic outbound setups usually break at the context, handoff, or follow-up layers."
+        description="That matters because generic outbound setups usually break at the targeting, handoff, or follow-up layers."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'View Process', to: '/process' }}
       />

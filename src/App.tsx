@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 const MarketingLayout = lazy(() => import('@/components/MarketingLayout'));
 const AboutPage = lazy(() => import('@/pages/AboutPage'));
+const BlogDetailPage = lazy(() => import('@/pages/BlogDetailPage'));
+const BlogsPage = lazy(() => import('@/pages/BlogsPage'));
 const CaseStudiesPage = lazy(() => import('@/pages/CaseStudiesPage'));
 const CaseStudyDetailPage = lazy(() => import('@/pages/CaseStudyDetailPage'));
 const ContactPage = lazy(() => import('@/pages/ContactPage'));
@@ -38,6 +40,8 @@ export default function App() {
             <Route path="/industries" element={<IndustriesPage />} />
             <Route path="/industries/:slug" element={<IndustryDetailPage />} />
             <Route path="/process" element={<ProcessPage />} />
+            <Route path="/blogs" element={<BlogsPage />} />
+            <Route path="/blogs/:slug" element={<BlogDetailPage />} />
             <Route path="/case-studies" element={<CaseStudiesPage />} />
             <Route path="/case-studies/:slug" element={<CaseStudyDetailPage />} />
             <Route path="/about" element={<AboutPage />} />

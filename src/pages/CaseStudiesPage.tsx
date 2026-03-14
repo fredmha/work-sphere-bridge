@@ -16,7 +16,7 @@ export default function CaseStudiesPage() {
       <PageHero
         eyebrow="Case studies"
         title="Proof built around what changed in the outbound workflow."
-        description="Each case study shows how Born helped recruiters sell into firms more consistently by tightening targeting, calls, and follow-up."
+        description="Each case study shows how Born helped recruiter teams reach better-fit hiring companies and run tighter targeting, calls, and follow-up."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'Read Insights', to: '/insights' }}
       />
@@ -57,8 +57,8 @@ export default function CaseStudiesPage() {
       </section>
 
       <CtaBand
-        title="Want to see what Born would actually build for your desk?"
-        description="The case studies show the pattern: 5 researched firms to prove the targeting, then a fuller build around outreach, calls, and follow-up."
+        title="Want to see what Born would actually build for your market?"
+        description="The case studies show the pattern: prove the company targeting first, then build the wider workflow around outreach, calls, and follow-up."
         primaryAction={primaryCta}
       />
     </>

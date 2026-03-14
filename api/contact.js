@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+const bookingUrl = 'https://calendar.app.google/ojKcFNdBimFU2JoF6';
+
 const contactSchema = z.object({
   name: z.string().trim().min(2).max(120),
   email: z.string().trim().email().max(200),
@@ -23,7 +25,7 @@ export default async function handler(req, res) {
   const submission = parsed.data;
 
   if (submission.website) {
-    return res.status(200).json({ message: 'Thanks. Born will review the brief and reply if there is a fit.' });
+    return res.status(200).json({ message: 'Thanks. Redirecting you to booking now.', bookingUrl });
   }
 
   const webhookUrl = process.env.CONTACT_WEBHOOK_URL;
@@ -60,6 +62,7 @@ export default async function handler(req, res) {
   }
 
   return res.status(200).json({
-    message: 'Thanks. Born will review the brief and reply with the next step.',
+    message: 'Thanks. Redirecting you to booking now.',
+    bookingUrl,
   });
 }

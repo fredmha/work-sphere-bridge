@@ -114,7 +114,7 @@ export default function CaseStudyDetailPage() {
 
       <CtaBand
         title="Need a similar build in your own outbound workflow?"
-        description="The details change by team, but the principle stays the same: 5 researched firms to prove the direction, then the wider system build around it."
+        description="The details change by team, but the principle stays the same: 5 researched prospects to prove the direction, then the wider system build around it."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'See Services', to: '/services' }}
       />

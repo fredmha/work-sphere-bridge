@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 
 import { PageHero } from '@/components/MarketingPrimitives';
-import { contactChecklist, contactExpectations, contactProcess, primaryCta } from '@/content/bornSiteContent';
+import { bookingUrl, contactChecklist, contactExpectations, contactProcess, primaryCta } from '@/content/bornSiteContent';
 import usePageMeta from '@/hooks/usePageMeta';
 
 type ContactFormState = {
@@ -26,16 +26,16 @@ export default function ContactPage() {
   const [submitting, setSubmitting] = useState(false);
 
   usePageMeta({
-    title: 'Contact | Get 5 Researched Firms | Born',
+    title: 'Contact | Get 5 Researched Prospects | Born',
     description:
-      'Get 5 researched firms and see how Born would build your wider outbound system for recruiter business development before the first call.',
+      'Get 5 researched prospects, review the quality, and book the call if you want to map the wider outbound build.',
     path: '/contact',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'ContactPage',
-      name: 'Contact Born',
+      name: 'Get 5 Prospects | Born',
       url: 'https://born.directory/contact',
-      description: 'Contact Born to get 5 researched firms and review the wider outbound build.',
+      description: 'Get 5 researched prospects from Born and move straight to booking.',
     },
   });
 
@@ -53,17 +53,18 @@ export default function ContactPage() {
         body: JSON.stringify(form),
       });
 
-      const payload = (await response.json()) as { error?: string; message?: string };
+      const payload = (await response.json()) as { error?: string; message?: string; bookingUrl?: string };
 
       if (!response.ok) {
         throw new Error(payload.error ?? 'There was a problem submitting the brief.');
       }
 
+      setForm(initialState);
       setStatus({
         tone: 'success',
-        message: payload.message ?? 'Thanks. Born will review the brief and reply with the next step.',
+        message: payload.message ?? 'Thanks. Redirecting you to the booking page now.',
       });
-      setForm(initialState);
+      window.location.assign(payload.bookingUrl ?? bookingUrl);
     } catch (error) {
       setStatus({
         tone: 'error',
@@ -78,18 +79,18 @@ export default function ContactPage() {
     <>
       <PageHero
         eyebrow="Contact"
-        title="Get 5 researched firms in your niche."
-        description="Share a short brief about your firm, what you recruit, and where BD is getting stuck. Born uses that to pull live firms and make the first conversation useful."
-        highlights={['Contact details included', 'High-level research included', 'Live hiring signals included']}
+        title="Try it first. Get 5 researched prospects in your niche."
+        description="Share a short brief about your firm, what you recruit, and where BD is getting stuck. Born uses that to pull live prospects, then sends you straight to booking if you want to review them."
+        highlights={['Decision-maker contacts included', 'High-level research included', 'Live hiring signals included']}
         aside={
           <div className="dark-panel p-7">
             <div className="relative z-10">
               <p className="eyebrow border-white/10 bg-white/8 text-white shadow-none">What you get first</p>
               <div className="mt-6 grid gap-3">
                 {[
-                  'Contact details for the right decision-maker.',
+                  'Decision-maker contacts at the target company.',
                   'High-level company research for call prep.',
-                  'The hiring signal that makes the firm worth calling now.',
+                  'The hiring or growth signal that makes the prospect worth calling now.',
                 ].map((item) => (
                   <div key={item} className="rounded-[1.35rem] border border-white/10 bg-white/6 px-4 py-4 text-sm leading-6 text-stone-100/76">
                     {item}
@@ -114,7 +115,7 @@ export default function ContactPage() {
             </ul>
 
             <div className="mt-8 info-card">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">What happens next</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">How the lead magnet works</p>
               <ol className="mt-4 grid gap-3 text-sm leading-7 text-slate-700">
                 {contactProcess.map((item, index) => (
                   <li key={item} className="flex gap-3">
@@ -215,10 +216,10 @@ export default function ContactPage() {
               <button type="submit" className="cta-primary" disabled={submitting}>
                 {submitting ? 'Submitting...' : primaryCta.label}
               </button>
-              <p className="text-sm leading-6 text-slate-600">A short brief is enough. We&apos;ll use it to pull 5 firms and make the next conversation useful.</p>
+              <p className="text-sm leading-6 text-slate-600">A short brief is enough. We&apos;ll use it to pull 5 prospects and send you straight to booking.</p>
             </div>
             <div className="mt-6 rounded-[1.5rem] border border-border/80 bg-white/70 px-4 py-4 text-sm leading-7 text-slate-700">
-              The 5 researched firms are the proof-of-concept, not the whole service. If there is a fit, Born then
+              The 5 researched prospects are the proof-of-concept, not the whole service. If there is a fit, Born then
               scopes the broader outbound system around targeting, outreach, calls, and follow-up.
             </div>
           </form>

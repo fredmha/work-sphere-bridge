@@ -147,29 +147,31 @@ export function LinkArrow({ to, children }: { to: string; children: ReactNode })
 export function CtaBand({ title, description, primaryAction, secondaryAction }: CtaBandProps) {
   return (
     <section className="site-section">
-      <div className="cta-band relative overflow-hidden rounded-[2.25rem] border border-primary/15 p-8 sm:p-10 lg:p-12">
-        <div className="absolute inset-y-0 right-0 hidden w-[28rem] bg-[radial-gradient(circle_at_center,rgba(166,208,176,0.3),transparent_66%)] lg:block" />
-        <div className="absolute left-8 top-8 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-white/90">
+      <div className="cta-band relative overflow-hidden rounded-[2.25rem] border border-[rgba(24,55,41,0.1)] p-8 sm:p-10 lg:p-12">
+        <div className="absolute inset-y-0 right-0 hidden w-[28rem] bg-[radial-gradient(circle_at_center,rgba(164,197,172,0.42),transparent_66%)] lg:block" />
+        <div className="absolute left-8 top-8 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-[rgba(24,55,41,0.12)] bg-white/68 text-primary shadow-[0_18px_38px_rgba(18,35,27,0.08)]">
           <Sparkles className="h-5 w-5" />
         </div>
-        <p className="eyebrow border-white/15 bg-white/8 text-white shadow-none">Next step</p>
         <div className="mt-5 grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(18rem,0.95fr)] lg:items-end">
           <div className="max-w-2xl">
-            <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">{title}</h2>
-            <p className="mt-3 text-base leading-7 text-stone-100/78">{description}</p>
+            <h2 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">{title}</h2>
+            <p className="mt-3 text-base leading-7 text-slate-700">{description}</p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <span className="rounded-full border border-white/12 bg-white/7 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-100/78">
-                5 researched firms first
+              <span className="rounded-full border border-[rgba(24,55,41,0.1)] bg-white/72 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                5 researched prospects
               </span>
-              <span className="rounded-full border border-white/12 bg-white/7 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-100/78">
-                Built around your current stack
+              <span className="rounded-full border border-[rgba(24,55,41,0.1)] bg-white/72 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                Book the call after you review them
+              </span>
+              <span className="rounded-full border border-[rgba(24,55,41,0.1)] bg-white/72 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                200% ROI guarantee
               </span>
             </div>
           </div>
-          <div className="grid gap-4 rounded-[1.8rem] border border-white/10 bg-white/6 p-5 backdrop-blur-sm">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-100/70">What happens on the call</p>
-            <p className="text-sm leading-7 text-stone-100/76">
-              We walk through your current BD flow, the 5 firms we pulled, and whether Born is the right fit.
+          <div className="grid gap-4 rounded-[1.8rem] border border-[rgba(24,55,41,0.08)] bg-[rgba(255,255,255,0.74)] p-5 shadow-[0_18px_36px_rgba(18,35,27,0.06)] backdrop-blur-sm">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Try it first</p>
+            <p className="text-sm leading-7 text-slate-700">
+              Get the 5 researched prospects, review the quality, then book the call if you want the wider outbound build mapped out.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link to={primaryAction.to} className="cta-primary">

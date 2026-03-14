@@ -73,7 +73,7 @@ export default function ServiceDetailPage() {
           {[
             {
               title: 'How the build runs',
-              body: 'See how Born moves from the first 5 researched firms into the full system build.',
+              body: 'See how Born moves from the first 5 researched prospects into the full system build.',
               to: '/process',
               label: 'View process',
             },
@@ -104,7 +104,7 @@ export default function ServiceDetailPage() {
 
       <CtaBand
         title="Want this scoped against your current outbound setup?"
-        description="Born uses the 5 researched firms as the proof point, then scopes the full build around your targeting, outreach, calls, and follow-up."
+        description="Born uses the 5 researched prospects as the proof point, then scopes the full build around your targeting, outreach, calls, and follow-up."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'See Process', to: '/process' }}
       />

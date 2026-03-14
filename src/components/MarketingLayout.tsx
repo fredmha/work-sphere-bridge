@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 
-import { primaryCta, siteNav } from '@/content/bornSiteContent';
+import { bookingUrl, primaryCta, siteNav } from '@/content/bornSiteContent';
 
 function navLinkClass(isActive: boolean) {
   return isActive ? 'nav-link nav-link-active' : 'nav-link';
@@ -12,9 +12,9 @@ export default function MarketingLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const footerHighlights = [
-    'Prospecting engine',
-    'Daily call queue',
-    'Follow-up handled',
+    '5 researched prospects',
+    'Book a short call',
+    '200% ROI guarantee',
   ];
 
   useEffect(() => {
@@ -107,14 +107,14 @@ export default function MarketingLayout() {
       </main>
 
       <footer className="border-t border-[rgba(24,55,41,0.08)] bg-[#0f2119] py-16 text-stone-100">
-        <div className="container-shell grid gap-8 lg:grid-cols-2 xl:grid-cols-[1.2fr_0.9fr_0.68fr_0.68fr_0.82fr]">
+        <div className="container-shell grid gap-8 lg:grid-cols-2 xl:grid-cols-[1.28fr_0.72fr_0.72fr_0.88fr]">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-100/66">Born</p>
             <p className="mt-4 max-w-md text-2xl font-semibold tracking-tight text-white">
-              Outbound systems for recruitment agencies, built from Sydney.
+              Try the lead magnet first. Get 5 prospects, then book the call.
             </p>
             <p className="mt-4 max-w-md text-sm leading-6 text-stone-100/76">
-              Prospecting, outreach, call workflow, and follow-up in one system built around how recruiters actually win work.
+              We pull 5 researched prospects in your niche so you can judge the quality up front. If it looks right, book the call and we map the wider outbound build from there.
             </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
               {footerHighlights.map((item) => (
@@ -127,46 +127,59 @@ export default function MarketingLayout() {
               <Link to={primaryCta.to} className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-primary transition hover:bg-secondary">
                 {primaryCta.label}
               </Link>
-              <Link to="/process" className="rounded-full border border-white/15 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/5">
-                See How It Works
-              </Link>
-            </div>
-          </div>
-
-          <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">What to expect</p>
-            <div className="mt-5 grid gap-4 text-sm text-stone-100/76">
-              <p>We pull 5 researched prospects before the first call so you can see the system in your market.</p>
-              <p>The build is shaped around your niche, your workflow, and the tools you already use.</p>
+              <a href={bookingUrl} className="rounded-full border border-white/15 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/5">
+                Book a call
+              </a>
             </div>
           </div>
 
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">Explore</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">Core Pages</p>
             <ul className="mt-4 space-y-3 text-sm text-stone-100/76">
-              {siteNav.slice(0, 3).map((item) => (
-                <li key={item.href}>
-                  <Link to={item.href} className="transition hover:text-white">
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link to="/process" className="transition hover:text-white">
+                  How the outbound build works
+                </Link>
+              </li>
+              <li>
+                <Link to="/services" className="transition hover:text-white">
+                  What the full build includes
+                </Link>
+              </li>
+              <li>
+                <Link to="/industries" className="transition hover:text-white">
+                  Who the workflow is built for
+                </Link>
+              </li>
+              <li>
+                <Link to="/case-studies" className="transition hover:text-white">
+                  Case studies and outcomes
+                </Link>
+              </li>
             </ul>
           </div>
 
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">More</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">Resources</p>
             <ul className="mt-4 space-y-3 text-sm text-stone-100/76">
-              {siteNav.slice(3).map((item) => (
-                <li key={item.href}>
-                  <Link to={item.href} className="transition hover:text-white">
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link to="/blogs" className="transition hover:text-white">
+                  Blogs and SEO content
+                </Link>
+              </li>
               <li>
                 <Link to="/insights" className="transition hover:text-white">
-                  Insights
+                  Recruiter workflow insights
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="transition hover:text-white">
+                  About Born
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="transition hover:text-white">
+                  Get the 5 prospects
                 </Link>
               </li>
             </ul>
@@ -175,18 +188,18 @@ export default function MarketingLayout() {
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">Contact</p>
             <ul className="mt-4 space-y-3 text-sm text-stone-100/76">
-              <li>Outbound systems for recruitment agencies</li>
+              <li>Built for recruiter-led business development</li>
               <li>
                 <a href="mailto:fred@born.directory" className="transition hover:text-white">
                   fred@born.directory
                 </a>
               </li>
               <li>
-                <Link to="/contact" className="transition hover:text-white">
-                  {primaryCta.label}
-                </Link>
+                <a href={bookingUrl} className="transition hover:text-white">
+                  Book a call
+                </a>
               </li>
-              <li className="pt-3 text-xs uppercase tracking-[0.16em] text-white/45">Prospecting, outreach, call queue, follow-up.</li>
+              <li className="pt-3 text-xs uppercase tracking-[0.16em] text-white/45">Prospects first. Call next. 200% ROI guarantee.</li>
             </ul>
           </div>
         </div>

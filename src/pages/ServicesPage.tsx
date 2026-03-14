@@ -25,8 +25,8 @@ export default function ServicesPage() {
     <>
       <PageHero
         eyebrow="Services"
-        title="The full outbound build for recruiters selling into firms."
-        description="The 5 researched firms are the proof point. The service is the wider build around sourcing, outreach, call workflow, pipeline control, and follow-up."
+        title="The outbound build behind steadier conversations with hiring teams."
+        description="The 5 researched prospects are the proof point. The service is the wider build around targeting, outreach, call workflow, pipeline control, and follow-up once the right prospects are in view."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'See Use Cases', to: '/industries' }}
         highlights={['Full outbound build', 'Call workflow included', 'Follow-up built in']}
@@ -35,8 +35,8 @@ export default function ServicesPage() {
             <p className="meta-kicker">What the first call proves</p>
             <div className="mt-5 grid gap-4">
               {[
-                'Whether Born is targeting the right firms.',
-                'What the contact and research pack should include.',
+                'Whether Born is targeting the right companies.',
+                'What the prospect and research pack should include.',
                 'Which part of the wider outbound system needs fixing first.',
               ].map((item) => (
                 <div key={item} className="accent-card text-sm leading-6 text-slate-700">
@@ -93,7 +93,7 @@ export default function ServicesPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">What stays consistent</p>
             <ul className="mt-4 grid gap-4 text-sm leading-7 text-slate-700">
               <li>Born scopes around real recruiter workflow, not generic outbound templates.</li>
-              <li>Each service is designed to work with your current stack where it makes sense.</li>
+              <li>Each service is designed around how your team already sells and follows up.</li>
               <li>The goal is steadier execution, clearer follow-up, and less admin drag.</li>
             </ul>
           </div>
@@ -102,7 +102,7 @@ export default function ServicesPage() {
 
       <CtaBand
         title="Need help working out which service fits your team?"
-        description="We pull 5 researched firms before the first call and use that proof-of-concept to show you whether you need the full system or one focused upgrade."
+        description="We pull 5 researched prospects before the first call and use that proof-of-concept to show you whether you need the full system or one focused upgrade."
         primaryAction={primaryCta}
       />
     </>

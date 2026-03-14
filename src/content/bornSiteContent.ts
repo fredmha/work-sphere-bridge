@@ -68,23 +68,26 @@ export interface FaqItem {
 }
 
 export const primaryCta = {
-  label: 'Get 5 Researched Prospects Today',
+  label: 'Get 5 Prospects',
   to: '/contact',
 } as const;
+
+export const bookingUrl = 'https://calendar.app.google/ojKcFNdBimFU2JoF6' as const;
 
 export const siteNav = [
   { label: 'Home', href: '/' },
   { label: 'How It Works', href: '/process' },
   { label: 'What You Get', href: '/services' },
   { label: 'Who It\'s For', href: '/industries' },
+  { label: 'Blogs', href: '/blogs' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ] as const satisfies readonly NavItem[];
 
 export const trustPoints = [
   'Built for recruiters',
-  '5 researched firms before the first call',
-  'Works with your current stack',
+  '5 researched prospects first',
+  'Book the call if the quality is there',
   '200% ROI guarantee by month 3',
 ] as const;
 
@@ -732,9 +735,9 @@ export const faqItems = [
       'Three weeks from kickoff to a live call queue.',
   },
   {
-    question: 'What tools do you use?',
+    question: 'Do we need to replace everything we already do?',
     answer:
-      'We build on GoHighLevel, Apollo, and Smartlead. If you already use a CRM, we design around your existing stack rather than forcing a migration.',
+      'No. Born scopes the workflow around what is already working, keeps the operating loop simple, and fixes the parts slowing BD down.',
   },
   {
     question: 'What kind of recruitment firms do you work with?',
@@ -767,12 +770,12 @@ export const contactChecklist = [
 
 export const contactProcess = [
   'Share a short brief about your firm, what you recruit, and where BD is getting stuck.',
-  'Born reviews the fit and comes back with a clear next step.',
-  'If there is a fit, the next call is built around your workflow and 5 researched firms in your niche.',
+  'Submit the form and go straight to the booking page.',
+  'On the call, we review 5 researched prospects in your niche and whether the wider build makes sense.',
 ] as const;
 
 export const contactExpectations = {
-  responseWindow: 'Usually within 1 business day.',
-  primaryChannel: 'Replies land by email from fred@born.directory.',
+  responseWindow: 'You will be redirected to booking straight after submitting.',
+  primaryChannel: 'If we need anything before the call, it comes from fred@born.directory.',
   qualifier: 'Best suited to agencies that want a real outbound system, not outsourced calling.',
 } as const;

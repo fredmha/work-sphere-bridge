@@ -6,7 +6,7 @@ export default function ProcessPage() {
   usePageMeta({
     title: 'How It Works | Recruitment Outbound Systems | Born',
     description:
-      'See how Born goes from 5 researched firms to a live outbound system for recruitment agencies: sourcing, outreach, call workflow, and follow-up.',
+      'See how Born goes from 5 researched prospects to a live outbound system for recruitment agencies: sourcing, outreach, call workflow, and follow-up.',
     path: '/process',
     schema: {
       '@context': 'https://schema.org',
@@ -14,7 +14,7 @@ export default function ProcessPage() {
       name: 'How Born Works',
       url: 'https://born.directory/process',
       description:
-        'How Born takes recruitment agencies from 5 researched firms to a live outbound system built around sourcing, outreach, calls, and follow-up.',
+        'How Born takes recruitment agencies from 5 researched prospects to a live outbound system built around sourcing, outreach, calls, and follow-up.',
       about: 'Recruitment outbound systems',
     },
   });
@@ -23,18 +23,18 @@ export default function ProcessPage() {
     <>
       <PageHero
         eyebrow="Process"
-        title="From 5 researched firms to a live outbound system."
-        description="First we prove the targeting. Then we build the sourcing, outreach, call workflow, and follow-up system around how your team sells into firms."
+        title="From 5 researched prospects to a live outbound system."
+        description="First we prove the targeting against real prospects in your market. Then we build the sourcing, outreach, call workflow, and follow-up system around how your team wins recruiter conversations."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'See Services', to: '/services' }}
-        highlights={['5-firm proof first', 'Built around calls', 'Follow-up stays visible']}
+        highlights={['5-prospect proof first', 'Built around calls', 'Follow-up stays visible']}
         aside={
           <div className="dark-panel p-7">
             <div className="relative z-10">
               <p className="eyebrow border-white/10 bg-white/8 text-white shadow-none">What the rollout proves</p>
               <div className="mt-6 grid gap-3">
                 {[
-                  ['1', 'Proof', 'You see the kind of firms Born would target before anything else gets sold.'],
+                  ['1', 'Proof', 'You see the kind of companies Born would target before anything else gets sold.'],
                   ['2', 'Build', 'Once the fit is clear, the wider outbound system gets scoped around your workflow.'],
                   ['3', 'Launch', 'The end state is a live queue and a cleaner follow-up process your team can actually run.'],
                 ].map(([step, title, body]) => (
@@ -100,7 +100,7 @@ export default function ProcessPage() {
 
       <CtaBand
         title="Want to see how this would work in your market?"
-        description="We pull 5 researched firms before the first call and use that to show you what the wider system would look like for your team."
+        description="We pull 5 researched prospects before the first call and use that to show you what the wider system would look like for your team."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'See What You Get', to: '/services' }}
       />

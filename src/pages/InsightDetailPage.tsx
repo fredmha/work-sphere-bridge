@@ -69,8 +69,8 @@ export default function InsightDetailPage() {
                       </p>
                       <p className="mt-3 max-w-2xl text-base leading-7 text-stone-100/78">
                         If the workflow in this article sounds right but the implementation still feels messy, Born can
-                        build it around your niche and current stack. The starting point is the same on every engagement:
-                        5 researched firms pulled before the first call, then the broader system build behind them.
+                        build it around your niche and current motion. The starting point is the same on every engagement:
+                        5 researched prospects pulled before the first call, then the broader system build behind them.
                       </p>
                       <div className="mt-5 flex flex-wrap gap-3">
                         <Link to="/contact" className="cta-primary">
@@ -106,9 +106,9 @@ export default function InsightDetailPage() {
 
       <CtaBand
         title="If this article reflects your bottleneck, Born can help fix the recruiter workflow behind it."
-        description="The point of the insight layer is practical clarity. The next step is to map that clarity onto your actual outbound workflow and target firms."
+        description="The point of the insight layer is practical clarity. The next step is to map that clarity onto your actual outbound workflow and target companies."
         primaryAction={primaryCta}
-        secondaryAction={{ label: 'Contact Born', to: '/contact' }}
+        secondaryAction={{ label: 'Get the 5 prospects', to: '/contact' }}
       />
     </>
   );

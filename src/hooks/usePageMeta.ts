@@ -88,11 +88,10 @@ export default function usePageMeta(titleOrConfig: string | PageMetaConfig, desc
     ensureMetaTag('meta[name="twitter:image"]', { name: 'twitter:image', content: imageUrl });
     ensureMetaTag('meta[name="twitter:url"]', { name: 'twitter:url', content: canonicalUrl });
 
-    if (noIndex) {
-      ensureMetaTag('meta[name="robots"]', { name: 'robots', content: 'noindex, nofollow' });
-    } else {
-      removeIfExists('meta[name="robots"]');
-    }
+    ensureMetaTag('meta[name="robots"]', {
+      name: 'robots',
+      content: noIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
+    });
 
     const schemaScriptId = 'page-json-ld';
     const existingScript = document.getElementById(schemaScriptId);

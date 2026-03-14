@@ -3,27 +3,28 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, BadgeCheck, MessagesSquare, SearchCheck, ShieldCheck, Workflow } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-import { SectionIntro } from '@/components/MarketingPrimitives';
-import { faqItems, primaryCta, trustPoints } from '@/content/bornSiteContent';
+import { LinkArrow, SectionIntro } from '@/components/MarketingPrimitives';
+import { blogPosts } from '@/content/blogContent';
+import { bookingUrl, faqItems, primaryCta, trustPoints } from '@/content/bornSiteContent';
 import usePageMeta from '@/hooks/usePageMeta';
 
 const heroQueue = [
   {
-    company: 'Series A fintech recruiter',
-    detail: '3 finance roles live, team growing, hiring spike in Sydney',
-    nextAction: 'Decision-maker identified, call angle prepared',
+    company: 'Series B developer tools company',
+    detail: '6 engineering roles live, product hiring expanding across Sydney and remote',
+    nextAction: 'VP Engineering identified, call angle prepared around team scale-up',
     tone: 'bg-emerald-300',
   },
   {
-    company: 'Construction staffing agency',
-    detail: 'Hiring ads active across NSW, repeat project hiring signal',
-    nextAction: 'Director contact researched, call queued for today',
+    company: 'Vertical SaaS platform',
+    detail: 'Customer success and implementation hiring surge after a new market launch',
+    nextAction: 'Talent lead researched, intro sequence and call brief ready',
     tone: 'bg-emerald-400',
   },
   {
-    company: 'Accounting specialist firm',
-    detail: 'Headcount up 28%, multiple specialist roles live now',
-    nextAction: 'Suggested opener written, follow-up path ready',
+    company: 'Fintech infrastructure startup',
+    detail: 'Headcount up 31%, multiple product and data roles live now',
+    nextAction: 'Founder context captured, follow-up path ready',
     tone: 'bg-lime-300',
   },
 ] as const;
@@ -31,21 +32,21 @@ const heroQueue = [
 const heroPacket = [
   'Decision-maker contact details',
   'High-level company research',
-  'The live hiring signal',
-  'Suggested next step',
+  'The live hiring or growth signal',
+  'Suggested call angle',
 ] as const;
 
 const systemSteps = [
   {
-    title: 'We find the right firms',
+    title: 'We find the right companies',
     description:
-      'Born sources hiring signals, job ads, and headcount movement, then delivers qualified firms with decision-maker context every day.',
+      'Born sources hiring signals, job ads, and headcount movement, then turns those into qualified prospects with decision-maker context every day.',
     icon: SearchCheck,
   },
   {
     title: 'Warm outreach runs before you call',
     description:
-      'Each target firm gets tailored email and SMS outreach before you ever pick up the phone, so your name is already familiar when you call.',
+      'Each target prospect gets tailored outreach before you ever pick up the phone, so your name is already familiar when you call.',
     icon: MessagesSquare,
   },
   {
@@ -82,9 +83,9 @@ const notFitPoints = [
 ] as const;
 
 const launchSteps = [
-  'We pull 5 researched firms in your niche before the call.',
-  'On the call, we walk through your current BD process and show how the system would work for your firm.',
-  'If there is a fit, we build the queue, outreach, pipeline, and follow-up around your market.',
+  'We pull 5 researched prospects in your niche before the call.',
+  'You submit the form and go straight to the booking page.',
+  'On the call, we review the prospects and show how the wider system would work for your firm.',
 ] as const;
 
 type ContactFormState = {
@@ -164,17 +165,18 @@ export default function HomePage() {
         body: JSON.stringify(form),
       });
 
-      const payload = (await response.json()) as { error?: string; message?: string };
+      const payload = (await response.json()) as { error?: string; message?: string; bookingUrl?: string };
 
       if (!response.ok) {
         throw new Error(payload.error ?? 'There was a problem submitting the brief.');
       }
 
+      setForm(initialState);
       setStatus({
         tone: 'success',
-        message: payload.message ?? 'Thanks. Born will review the brief and reply with the next step.',
+        message: payload.message ?? 'Thanks. Redirecting you to the booking page now.',
       });
-      setForm(initialState);
+      window.location.assign(payload.bookingUrl ?? bookingUrl);
     } catch (error) {
       setStatus({
         tone: 'error',
@@ -224,8 +226,9 @@ export default function HomePage() {
               Your next 5 clients are already hiring. We&apos;ll find them.
             </motion.h1>
             <motion.p variants={reveal} className="mt-6 max-w-2xl text-base leading-8 text-slate-700 sm:text-lg">
-              Born builds the outbound system behind recruiter BD: target-firm sourcing, outreach, call workflow, and
-              follow-up control, so the next client conversation is ready before delivery takes over the day.
+              Born builds the outbound system behind recruiter BD: target-company sourcing, hiring-signal research,
+              outreach, call workflow, and follow-up control, so your team steps into more conversations with growing
+              companies and less guesswork.
             </motion.p>
 
             <motion.div variants={reveal} className="mt-8 flex flex-wrap gap-3">
@@ -242,7 +245,7 @@ export default function HomePage() {
             </motion.div>
 
             <motion.p variants={reveal} className="mt-4 max-w-2xl text-sm leading-7 text-slate-600">
-              We&apos;ll pull 5 real firms in your niche and walk you through the wider system on a short call.
+              Try the lead magnet first: get 5 researched prospects in your niche, then book the call if the quality is there.
             </motion.p>
 
             <motion.div variants={reveal} className="mt-8 flex flex-wrap gap-3">
@@ -258,12 +261,12 @@ export default function HomePage() {
           <motion.aside initial="hidden" animate="visible" variants={reveal} className="hero-stage">
             <div className="relative z-10">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="eyebrow border-white/10 bg-white/8 text-white shadow-none">5 researched firms</p>
+                <p className="eyebrow border-white/10 bg-white/8 text-white shadow-none">5 researched prospects</p>
                 <p className="hero-card-label">What you see before the call</p>
               </div>
 
               <div className="mt-6 instrument-panel">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/68">Firm preview</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/68">Prospect preview</p>
                 <div className="mt-4 grid gap-3">
                   {heroQueue.map((item) => (
                     <div key={item.company} className="rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-4">
@@ -281,7 +284,7 @@ export default function HomePage() {
               </div>
 
               <div className="mt-4 rounded-[1.6rem] border border-white/10 bg-white/6 p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/68">Each firm pack includes</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/68">Each prospect pack includes</p>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   {heroPacket.map((item) => (
                     <div
@@ -293,8 +296,8 @@ export default function HomePage() {
                   ))}
                 </div>
                 <p className="mt-3 text-sm leading-7 text-stone-100/76">
-                  The point is simple: you start the call with context, not a blank spreadsheet. If the fit is there,
-                  Born then builds the full outbound system behind it.
+                  The point is simple: you start the call with company context, not a blank spreadsheet. If the fit is
+                  there, Born then builds the full outbound system behind it.
                 </p>
                 <a href="#lead-form" className="mt-5 inline-flex text-sm font-semibold text-emerald-100 transition hover:text-white">
                   {primaryCta.label}
@@ -310,7 +313,7 @@ export default function HomePage() {
           <SectionIntro
             eyebrow="How It Works"
             title="How it works."
-            description="Born finds the right firms, warms them up, and keeps the next step moving after each conversation."
+            description="Born finds the right companies, warms them up, and keeps the next step moving after each conversation."
           />
           <Link to="/process" className="cta-text">
             See the full process
@@ -426,9 +429,50 @@ export default function HomePage() {
           <a href="#lead-form" className="cta-primary">
             {primaryCta.label}
           </a>
-          <Link to="/contact" className="cta-secondary">
+          <a href={bookingUrl} className="cta-secondary">
             Book a call
+          </a>
+        </div>
+      </section>
+
+      <section className="site-section border-t border-border/80">
+        <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <SectionIntro
+            eyebrow="Blogs"
+            title="A cleaner blog layer for SEO."
+            description="These pages are built to rank, link internally, and push people toward the 5-prospect lead magnet instead of drifting into generic advice."
+          />
+          <Link to="/blogs" className="cta-text">
+            Browse all blogs
+            <ArrowRight className="h-4 w-4" />
           </Link>
+        </div>
+
+        <div className="mt-10 grid gap-5 lg:grid-cols-2">
+          {blogPosts.slice(0, 1).map((post) => (
+            <article key={post.slug} className="surface-panel p-7">
+              <p className="meta-kicker">{post.category}</p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">{post.title}</h2>
+              <p className="mt-4 text-base leading-7 text-slate-700">{post.summary}</p>
+              <div className="mt-6">
+                <LinkArrow to={`/blogs/${post.slug}`}>Read the demo blog post</LinkArrow>
+              </div>
+            </article>
+          ))}
+
+          <article className="outline-panel p-7">
+            <p className="meta-kicker">Why this matters</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">
+              Better internal links. Sharper crawl paths. Cleaner commercial intent.
+            </h2>
+            <p className="mt-4 text-base leading-7 text-slate-700">
+              The goal is not to publish filler. It is to build pages that support the offer, strengthen internal linking,
+              and give search engines a clearer route into the site.
+            </p>
+            <div className="mt-6">
+              <LinkArrow to="/blogs">Open the blog hub</LinkArrow>
+            </div>
+          </article>
         </div>
       </section>
 
@@ -436,11 +480,10 @@ export default function HomePage() {
         <div className="grid gap-6 lg:grid-cols-[minmax(0,0.86fr)_minmax(0,1.14fr)]">
           <article className="dark-panel p-8 lg:p-10">
             <div className="relative z-10">
-              <p className="eyebrow border-white/10 bg-white/8 text-white shadow-none">Next step</p>
-              <h2 className="mt-6 text-4xl font-semibold tracking-tight text-white">See what your pipeline could look like.</h2>
+              <h2 className="mt-6 text-4xl font-semibold tracking-tight text-white">Try it first. Get 5 researched prospects.</h2>
               <p className="mt-5 max-w-2xl text-base leading-7 text-stone-100/76">
-                We&apos;ll pull 5 real firms in your niche, with contact details, high-level research, and the hiring
-                signal, then walk you through the system on a short call. No pitch deck. No pressure.
+                We&apos;ll pull 5 real prospects in your niche, with contact details, high-level research, and the hiring
+                signal. If the quality is there, you book the call and we walk through the wider system.
               </p>
 
               <div className="mt-8 rounded-[1.8rem] border border-white/10 bg-white/6 p-6">
@@ -537,7 +580,7 @@ export default function HomePage() {
                 {submitting ? 'Submitting...' : primaryCta.label}
               </button>
               <p className="text-sm leading-6 text-slate-600">
-                We&apos;ll use this to pull 5 firms and make the call useful.
+                We&apos;ll use this to pull 5 prospects and send you straight to booking.
               </p>
             </div>
           </form>

@@ -79,13 +79,13 @@ export default function IndustryDetailPage() {
             },
             {
               title: 'How the rollout works',
-              body: 'The 5-firm proof-of-concept is just the start. See how the full build is delivered.',
+              body: 'The 5-prospect proof-of-concept is just the start. See how the full build is delivered.',
               to: '/process',
               label: 'See process',
             },
             {
               title: 'Book the first call',
-              body: 'Share your niche and current workflow. Born will use that to pull the first 5 firms.',
+              body: 'Share your niche and current workflow. Born will use that to pull the first 5 prospects.',
               to: '/contact',
               label: 'Go to contact',
             },
@@ -104,7 +104,7 @@ export default function IndustryDetailPage() {
 
       <CtaBand
         title="Need a build shaped to your recruiter motion?"
-        description="Born uses the same operating principles across agencies, but the workflow details are always shaped around how your team sells into firms."
+        description="Born uses the same operating principles across agencies, but the workflow details are always shaped around how your team sells into target companies."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'See Services', to: '/services' }}
       />

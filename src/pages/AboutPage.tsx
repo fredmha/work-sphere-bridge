@@ -21,17 +21,17 @@ export default function AboutPage() {
     <>
       <PageHero
         eyebrow="About"
-        title="Why recruiters hire Born."
-        description="Most recruitment firms do not need more tools. They need sourcing, outreach, calls, and follow-up working as one system."
+        title="Why recruiter teams bring Born in."
+        description="Most firms do not need more tools. They need targeting, outreach, calls, and follow-up working as one commercial system."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'See Process', to: '/process' }}
-        highlights={['Built for recruiters', 'Focused on sell-side BD', 'Designed to actually get used']}
+        highlights={['Built for recruiter teams', 'Focused on prospect quality', 'Designed to actually get used']}
         aside={
           <div className="surface-panel p-7">
             <p className="meta-kicker">What Born actually changes</p>
             <div className="mt-5 grid gap-4">
               {[
-                'Better firms entering the pipeline.',
+                'Better companies entering the pipeline.',
                 'Cleaner movement from outreach to calls.',
                 'Less follow-up leakage after live conversations.',
               ].map((item) => (
@@ -50,9 +50,9 @@ export default function AboutPage() {
             <p className="meta-kicker">Why Born exists</p>
             <div className="mt-5 grid gap-4 text-base leading-7 text-slate-700">
               <p>
-                Targeting is manual, follow-up depends on memory, and warm opportunities go cold because nobody chased
-                them. Most firms do not need more tools. They need a system that keeps business development moving
-                every day.
+                Targeting is manual, follow-up depends on memory, and good prospect companies go cold because nobody
+                chased them. Most firms do not need more tools. They need a system that keeps business development
+                moving every day.
               </p>
               <p>
                 That is what Born does. The sourcing, outreach, call queue, follow-up, and pipeline get built
@@ -86,7 +86,7 @@ export default function AboutPage() {
           <article className="outline-panel p-7">
             <p className="meta-kicker">Built around your market</p>
             <p className="mt-4 text-base leading-7 text-slate-700">
-              The system gets shaped around your niche, your tone, and your current tools.
+              The system gets shaped around your niche, your tone, and how your team actually runs BD.
             </p>
           </article>
           <article className="outline-panel p-7">
@@ -100,9 +100,9 @@ export default function AboutPage() {
 
       <CtaBand
         title="If that sounds like the kind of help you want, the next step is simple."
-        description="Book the call, see 5 researched firms in your niche, and work out whether Born is the right fit for the wider outbound build."
+        description="Get the 5 researched prospects, book the call, and work out whether Born is the right fit for the wider outbound build."
         primaryAction={primaryCta}
-        secondaryAction={{ label: 'Contact Born', to: '/contact' }}
+        secondaryAction={{ label: 'Get the 5 prospects', to: '/contact' }}
       />
     </>
   );
