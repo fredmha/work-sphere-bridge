@@ -53,6 +53,7 @@ export interface InsightItem {
   topic: string;
   takeaways: string[];
   sections: InsightSection[];
+  relatedSlugs?: readonly string[];
 }
 
 export interface ProcessStage {
@@ -433,6 +434,114 @@ export const caseStudies = [
 
 export const insights = [
   {
+    slug: 'how-to-build-a-cold-outbound-system-for-your-recruitment-firm',
+    title: 'How to build a cold outbound system for your recruitment firm',
+    summary:
+      'A recruiter outbound system only works when prospecting, warm-up outreach, call prep, and follow-up are designed as one operating loop.',
+    topic: 'Outbound systems',
+    takeaways: [
+      'A list is not a system. The workflow has to decide who enters, why they matter, and what happens next.',
+      'Research should happen before the recruiter touches the account, not during the call block.',
+      'Warm-up email and SMS should make the call easier, not replace it.',
+      'Post-call follow-up needs predefined outcomes, ownership, and timing.',
+    ],
+    sections: [
+      {
+        heading: 'Start with the desk you actually run',
+        body:
+          'Most agencies try to copy an SDR playbook that was built for SaaS rather than recruitment. That usually fails because recruiter BD is more call-heavy, more founder-led, and more sensitive to delivery pressure. The system has to fit the desk as it exists today: who is making calls, what vertical they recruit in, how many accounts they can realistically work each day, and where follow-up is currently getting lost.',
+      },
+      {
+        heading: 'Define the signals that make an account worth working',
+        body:
+          'A cold outbound system gets easier when the top of funnel is filtered properly. For recruiters, the strongest inputs are usually hiring activity, role volume, headcount movement, geography, niche fit, and whether there is a reachable decision-maker. If those qualification rules are weak, the queue fills with low-conviction accounts and the team stops trusting the system.',
+      },
+      {
+        heading: 'Package context before the first touch',
+        body:
+          'Recruiters should not burn call time hunting for context in tabs and spreadsheets. A strong queue shows why the company matters, what signal triggered it, who should be contacted, and what angle the recruiter should lead with. That shifts the work from manual prep into system design, which is exactly where it belongs.',
+      },
+      {
+        heading: 'Use outreach to warm the call, not replace it',
+        body:
+          'For most recruitment firms, the goal of outbound email and SMS is not to run a full no-call motion. It is to create familiarity before the call happens. A short sequence that references the hiring signal, the niche, and the likely commercial problem can make the first conversation less cold without turning the workflow into a bloated nurture machine.',
+      },
+      {
+        heading: 'Build the daily call queue as the operating center',
+        body:
+          'The queue should answer four questions immediately: who is most relevant, what happened already, what the next action is, and what the recruiter needs to say. When that is visible, the team spends less time triaging and more time executing. When it is missing, business development collapses back into memory, inbox management, and spreadsheet chasing.',
+      },
+      {
+        heading: 'Predefine the follow-up paths after each disposition',
+        body:
+          'Every live conversation should move the account into a clear next state such as callback, nurture, meeting, not-now, or disqualified. Each state should trigger the right reminder, sequence, owner, and deadline automatically. That is the difference between a real outbound system and a burst of activity that goes stale two days later.',
+      },
+      {
+        heading: 'Review the system against conversations, not opinions',
+        body:
+          'Once the workflow is live, the useful questions are operational. Which signals are producing better conversations. Which call outcomes lead to placements or meetings. Where are follow-ups slipping. Which message angles are creating warmer first calls. A recruitment outbound system improves when you refine it against real desk behavior instead of generic best-practice lists.',
+      },
+    ],
+    relatedSlugs: [
+      'how-to-build-a-daily-call-queue-using-job-posting-signals',
+      'gohighlevel-for-recruitment-agencies-what-works-and-what-doesnt',
+    ],
+  },
+  {
+    slug: 'gohighlevel-for-recruitment-agencies-what-works-and-what-doesnt',
+    title: "GoHighLevel for recruitment agencies: what works and what doesn't",
+    summary:
+      'GoHighLevel can be a strong recruiter operating layer, but only when it is configured around research, calls, and follow-up rather than generic lead-gen templates.',
+    topic: 'GoHighLevel',
+    takeaways: [
+      'GoHighLevel is useful as workflow infrastructure, not as an out-of-the-box recruiter system.',
+      'Pipelines, tasks, and automations need to reflect recruiter dispositions and follow-up timing.',
+      'The weak point is usually data quality and queue design, not the software itself.',
+      'Agencies should keep what already works in their stack instead of forcing a full migration for its own sake.',
+    ],
+    sections: [
+      {
+        heading: 'What GoHighLevel does well for recruiter BD',
+        body:
+          'GoHighLevel is good at the operational middle of the workflow. It can hold pipeline stages, automate reminders, manage simple outreach sequences, and keep next actions visible. That matters because a lot of recruitment firms do not lose business due to a lack of software. They lose it because the commercial workflow between sourcing, calls, and follow-up is not held together anywhere reliably.',
+      },
+      {
+        heading: 'Where agencies go wrong with it',
+        body:
+          'The common failure mode is importing a standard agency template and hoping it behaves like a recruiter workflow. That creates the wrong fields, the wrong stages, and the wrong automations. Recruiter BD usually depends on hiring signals, account context, phone-first execution, and nuanced post-call outcomes. If the configuration does not reflect that, the team will ignore the system quickly.',
+      },
+      {
+        heading: 'Use it as the control layer, not the research engine',
+        body:
+          'GoHighLevel is rarely the best place to discover the accounts in the first place. Research and signal capture often come from other tools or custom sourcing logic. The better model is to let those sources feed a qualified account into GoHighLevel once the account is worth actioning. That keeps the CRM cleaner and makes the queue more believable to the recruiter using it.',
+      },
+      {
+        heading: 'Map pipeline stages to real recruiter outcomes',
+        body:
+          'A useful recruiter pipeline does not stop at contacted or replied. It needs stages and task logic for warm call pending, callback due, meeting booked, nurture, wrong contact, no fit, and whatever else the desk genuinely uses. The more honestly the pipeline reflects live commercial work, the easier it becomes to review performance and coach follow-up discipline.',
+      },
+      {
+        heading: 'Automate what happens after the call',
+        body:
+          'The biggest operational gain usually comes after live conversations. Once a recruiter logs a disposition, the platform should create the right follow-up task, move the record, trigger the right email or SMS when appropriate, and keep overdue actions visible. That is where GoHighLevel can remove a large amount of admin without pretending to replace judgment.',
+      },
+      {
+        heading: 'Keep the surrounding stack pragmatic',
+        body:
+          'A recruitment agency does not need every capability to live inside one platform. If Apollo, Smartlead, or an existing CRM already handles a slice of the process well, it is usually better to design around that instead of forcing a migration just for neatness. The goal is operational control, not tool purity.',
+      },
+      {
+        heading: 'The real question is implementation fit',
+        body:
+          'For recruitment agencies, the relevant question is not whether GoHighLevel is good or bad in the abstract. It is whether the workflow built on top of it gives the desk a cleaner queue, faster follow-up, clearer visibility, and less admin drag. If it does, the platform is useful. If it becomes another container full of half-used templates, it is just more software noise.',
+      },
+    ],
+    relatedSlugs: [
+      'how-to-build-a-cold-outbound-system-for-your-recruitment-firm',
+      'why-custom-recruiter-software-beats-another-point-tool',
+    ],
+  },
+  {
     slug: 'why-recruiter-outbound-breaks-after-the-first-reply',
     title: 'Why recruiter outbound breaks after the first reply',
     summary: 'The sourcing layer matters, but most recruiter systems fail because reply handling and follow-up ownership are weak.',
@@ -458,6 +567,10 @@ export const insights = [
         body:
           'Most firms do not need more pressure on recruiters. They need better routing, clearer tasks, and a system that makes next actions visible immediately.',
       },
+    ],
+    relatedSlugs: [
+      'how-to-build-a-cold-outbound-system-for-your-recruitment-firm',
+      'how-to-structure-recruiter-follow-up-after-calls',
     ],
   },
   {
@@ -487,6 +600,59 @@ export const insights = [
           'Once the right context exists, the workflow needs to move fast into first-touch outreach, calls, and follow-up. Delay is where a lot of signal value gets lost.',
       },
     ],
+    relatedSlugs: [
+      'how-to-build-a-daily-call-queue-using-job-posting-signals',
+      'how-to-build-a-cold-outbound-system-for-your-recruitment-firm',
+    ],
+  },
+  {
+    slug: 'how-to-build-a-daily-call-queue-using-job-posting-signals',
+    title: 'How to build a daily call queue using job posting signals',
+    summary:
+      'Job posting signals are only useful when they are filtered, enriched, and turned into a queue that tells the recruiter exactly who to call next.',
+    topic: 'Call queues',
+    takeaways: [
+      'A signal without qualification logic just creates a noisier list.',
+      'The queue needs account context, contact context, and action context.',
+      'The system should show why the prospect matters before the recruiter opens another tab.',
+      'Post-call outcomes should feed the next day queue automatically.',
+    ],
+    sections: [
+      {
+        heading: 'Choose signal sources that match your niche',
+        body:
+          'The right sources vary by market, but the principle is stable. Use inputs that point to active commercial need in the kinds of firms you actually want to win. That might be live job ads, sudden role volume, multi-role campaigns, location expansion, or repeat hiring in a target function. The source matters less than the discipline of defining what counts as meaningful.',
+      },
+      {
+        heading: 'Filter the queue before the recruiter sees it',
+        body:
+          'A raw feed is not a queue. Before an account appears for the recruiter, the workflow should check fit, remove duplicates, enrich the record, and assign a practical reason to call. If that filtering step is skipped, the queue becomes another bucket of maybes and adoption drops fast.',
+      },
+      {
+        heading: 'Attach research that shortens call prep',
+        body:
+          'The best call queues reduce context switching. Each record should show the hiring trigger, relevant role context, the likely contact, and the next action already taken. That makes it easier for a recruiter to move from one call to the next without rebuilding the story from scratch every time.',
+      },
+      {
+        heading: 'Prioritize by timing and relevance',
+        body:
+          'Not every triggered account deserves same-day attention. A useful queue balances signal freshness with account quality, current outreach state, and whether a callback or follow-up is already due. That ranking logic matters because the daily list is where commercial focus either gets sharpened or diluted.',
+      },
+      {
+        heading: 'Let each disposition shape the next queue',
+        body:
+          'If somebody says call back next week, the system should return that account to the queue at the right time with context intact. If they ask for information first, the outreach should fire and the next task should be set. A strong queue is not only a top-of-funnel view. It is the working surface for the whole commercial loop.',
+      },
+      {
+        heading: 'Measure queue quality, not just activity volume',
+        body:
+          'The useful review questions are whether the queue is producing better conversations, whether the signal rules need refinement, and whether recruiters trust the order of priorities. More calls is not the point if the queue is still sending the desk toward weak-fit accounts or making follow-up harder to track.',
+      },
+    ],
+    relatedSlugs: [
+      'what-a-hiring-signal-workflow-should-include',
+      'how-to-build-a-cold-outbound-system-for-your-recruitment-firm',
+    ],
   },
   {
     slug: 'why-custom-recruiter-software-beats-another-point-tool',
@@ -515,6 +681,10 @@ export const insights = [
           'Custom recruiter software should make the team faster, clearer, and less dependent on individual memory. If it does not, it is the wrong build.',
       },
     ],
+    relatedSlugs: [
+      'gohighlevel-for-recruitment-agencies-what-works-and-what-doesnt',
+      'how-to-build-a-cold-outbound-system-for-your-recruitment-firm',
+    ],
   },
   {
     slug: 'how-to-structure-recruiter-follow-up-after-calls',
@@ -542,6 +712,10 @@ export const insights = [
         body:
           'A strong system lets leaders review what follow-up is late, what stage movement is stuck, and where recruiters are losing momentum between conversations.',
       },
+    ],
+    relatedSlugs: [
+      'why-recruiter-outbound-breaks-after-the-first-reply',
+      'how-to-build-a-cold-outbound-system-for-your-recruitment-firm',
     ],
   },
 ] as const satisfies readonly InsightItem[];
@@ -587,18 +761,18 @@ export const aboutPrinciples = [
 export const contactChecklist = [
   'You run a recruitment firm or recruiter-led commercial team.',
   'You need sourcing, outreach, calls, and follow-up tied together.',
-  'You want a bespoke workflow or custom software layer, not a cookie-cutter retainer.',
-  'You care about commercial control, recruiter adoption, and less admin.',
+  'You want founder-led help, not a generic outbound retainer.',
+  'You care about consistent BD, clearer follow-up, and less admin drag.',
 ] as const;
 
 export const contactProcess = [
-  'Share a short brief about the desk, workflow, and bottlenecks.',
-  'Born reviews the fit and comes back with a concrete next-step recommendation.',
-  'If there is a fit, the next call is structured around the workflow gaps, not a generic intro.',
+  'Share a short brief about your firm, what you recruit, and where BD is getting stuck.',
+  'Born reviews the fit and comes back with a clear next step.',
+  'If there is a fit, the next call is built around your workflow and 5 researched prospects in your niche.',
 ] as const;
 
 export const contactExpectations = {
   responseWindow: 'Usually within 1 business day.',
   primaryChannel: 'Replies land by email from fred@born.directory.',
-  qualifier: 'Best suited to agencies that want workflow clarity, not outsourced activity.',
+  qualifier: 'Best suited to agencies that want a real outbound system, not outsourced calling.',
 } as const;

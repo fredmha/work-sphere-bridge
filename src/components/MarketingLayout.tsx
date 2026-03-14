@@ -41,17 +41,12 @@ export default function MarketingLayout() {
 
       <header className="sticky top-0 z-50 border-b border-[rgba(24,55,41,0.08)] bg-[rgba(248,244,236,0.84)] backdrop-blur-xl">
         <div className="container-shell hidden py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 lg:block">
-          Built for recruiters. Founder-led. 3 clients per quarter.
+          Sydney-based. Founder-led. 3 client builds per quarter.
         </div>
         <nav className="container-shell flex items-center justify-between gap-4 py-4 sm:py-5" aria-label="Primary">
-          <Link to="/" className="flex items-center gap-3 text-slate-950" aria-label="Born home">
-            <span className="inline-flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl border border-white/70 bg-[radial-gradient(circle_at_30%_30%,#b4d5bb,#487a61_68%,#183126)] shadow-[0_18px_34px_rgba(20,40,32,0.18)]">
-              <img src="/favicon-Photoroom.png" alt="" className="h-9 w-9 object-contain" />
-            </span>
-            <span>
-              <span className="block text-lg font-semibold tracking-tight">Born</span>
-              <span className="block text-xs uppercase tracking-[0.24em] text-slate-500">Recruitment Outbound</span>
-            </span>
+          <Link to="/" className="flex items-center gap-4 text-slate-950" aria-label="Born home">
+            <span className="wordmark">Born</span>
+            <span className="brand-note">Outbound systems for recruitment agencies</span>
           </Link>
 
           <div className="hidden items-center gap-2 rounded-full border border-[rgba(24,55,41,0.1)] bg-white/72 px-2 py-2 shadow-[0_18px_34px_rgba(18,35,27,0.08)] lg:flex">
@@ -116,7 +111,7 @@ export default function MarketingLayout() {
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-100/66">Born</p>
             <p className="mt-4 max-w-md text-2xl font-semibold tracking-tight text-white">
-              Born - bespoke outbound systems for recruitment firms. Sydney, Australia.
+              Outbound systems for recruitment agencies, built founder-led from Sydney.
             </p>
             <p className="mt-4 max-w-md text-sm leading-6 text-stone-100/76">
               Prospecting, outreach, call workflow, and follow-up in one system built around how recruiters actually win work.
@@ -180,7 +175,7 @@ export default function MarketingLayout() {
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">Contact</p>
             <ul className="mt-4 space-y-3 text-sm text-stone-100/76">
-              <li>Founder-led outbound systems for recruitment firms</li>
+              <li>Founder-led outbound systems for recruitment agencies</li>
               <li>
                 <a href="mailto:fred@born.directory" className="transition hover:text-white">
                   fred@born.directory

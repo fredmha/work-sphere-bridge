@@ -43,21 +43,21 @@ export default function ProcessPage() {
       <section className="site-section border-t border-border/80">
         <div className="grid gap-6 lg:grid-cols-3">
           <article className="outline-panel p-7">
-            <p className="meta-kicker">Commercial clarity</p>
+            <p className="meta-kicker">Clear next steps</p>
             <p className="mt-4 text-base leading-7 text-slate-700">
-              Buyers can see what will happen before the work starts, which makes the whole engagement feel steadier and easier to trust.
+              You can see what will happen before the work starts, which makes the engagement easier to trust.
             </p>
           </article>
           <article className="outline-panel p-7">
-            <p className="meta-kicker">Operational maturity</p>
+            <p className="meta-kicker">A live system</p>
             <p className="mt-4 text-base leading-7 text-slate-700">
-              The staged model shows that Born designs and manages recruiter systems end to end.
+              The process ends with a working prospecting, outreach, call, and follow-up system your team can run.
             </p>
           </article>
           <article className="outline-panel p-7">
-            <p className="meta-kicker">Better optimisation</p>
+            <p className="meta-kicker">Weekly refinement</p>
             <p className="mt-4 text-base leading-7 text-slate-700">
-              The refine stage matters because live desk activity should shape what gets changed next.
+              Live desk activity shapes what gets adjusted next, so the system improves against real conversations.
             </p>
           </article>
         </div>

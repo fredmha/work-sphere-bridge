@@ -6,7 +6,7 @@ export default function AboutPage() {
   usePageMeta({
     title: 'About | Born',
     description:
-      'Learn why Born exists, what it believes about recruiter workflow, and why its approach is high-touch, bespoke, and systems-led.',
+      'Meet Fred and see why Born builds founder-led outbound systems for recruitment firms.',
     path: '/about',
   });
 
@@ -14,8 +14,8 @@ export default function AboutPage() {
     <>
       <PageHero
         eyebrow="About"
-        title="Born exists to make recruiter business development feel more controlled and easier to run."
-        description="Most agencies do not need more software noise. They need a clearer operating system for prospecting, replies, calls, and follow-up."
+        title="I built Born because most recruiters do not need more tools. They need a system."
+        description="Most recruitment firms I speak to have the same problem: BD runs when there is time for it, then disappears when delivery gets heavy."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'See Process', to: '/process' }}
       />
@@ -26,13 +26,15 @@ export default function AboutPage() {
             <p className="meta-kicker">Why Born exists</p>
             <div className="mt-5 grid gap-4 text-base leading-7 text-slate-700">
               <p>
-                Too much recruiter business development is treated like an activity problem when it is really a systems
-                problem. Signals are weak, context is inconsistent, and follow-up is too dependent on memory.
+                Prospecting is manual, follow-up depends on memory, and warm leads go cold because nobody chased them.
+                Most firms do not need more software noise. They need a system that keeps business development moving
+                every day.
               </p>
               <p>
-                Born exists to correct that with bespoke workflow design and implementation. The work stays close to the
-                desk because revenue-critical process should not be reduced to a generic retainer template.
+                That is what Born does. I build the prospecting, outreach, call queue, follow-up, and pipeline around
+                how your firm actually wins work, then keep tuning it with you.
               </p>
+              <p>You work directly with me on every engagement. No junior handoff. No VA layer.</p>
             </div>
           </article>
 
@@ -52,31 +54,31 @@ export default function AboutPage() {
       <section className="site-section border-t border-border/80">
         <div className="grid gap-6 lg:grid-cols-3">
           <article className="outline-panel p-7">
-            <p className="meta-kicker">High-touch</p>
+            <p className="meta-kicker">Founder-led</p>
             <p className="mt-4 text-base leading-7 text-slate-700">
-              Born stays close to the workflow details that affect pipeline quality and follow-up discipline.
+              You work directly with Fred from the first call through delivery.
             </p>
           </article>
           <article className="outline-panel p-7">
-            <p className="meta-kicker">Bespoke</p>
+            <p className="meta-kicker">Built around your market</p>
             <p className="mt-4 text-base leading-7 text-slate-700">
-              The build adapts to the desk, the offer, and the team&apos;s operating reality instead of forcing a generic playbook.
+              The system gets shaped around your niche, your tone, and your current tools.
             </p>
           </article>
           <article className="outline-panel p-7">
-            <p className="meta-kicker">Implementation-led</p>
+            <p className="meta-kicker">Guaranteed</p>
             <p className="mt-4 text-base leading-7 text-slate-700">
-              Strategy matters only if it becomes a working system that recruiters can actually run.
+              If the numbers have not worked by month 3, Born keeps working for free until they do.
             </p>
           </article>
         </div>
       </section>
 
       <CtaBand
-        title="If that approach sounds like how you want your recruiter pipeline to run, Born is worth talking to."
-        description="The best-fit agencies usually want clarity, control, and a system they can trust with revenue-critical work."
+        title="If that sounds like the kind of help you want, the next step is simple."
+        description="Book the call, see 5 researched prospects in your niche, and work out whether Born is the right fit."
         primaryAction={primaryCta}
-        secondaryAction={{ label: 'View Services', to: '/services' }}
+        secondaryAction={{ label: 'Contact Born', to: '/contact' }}
       />
     </>
   );

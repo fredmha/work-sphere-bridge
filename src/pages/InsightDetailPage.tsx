@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { CtaBand, PageHero } from '@/components/MarketingPrimitives';
 import { insights, primaryCta } from '@/content/bornSiteContent';
@@ -8,6 +8,17 @@ import NotFound from '@/pages/NotFound';
 export default function InsightDetailPage() {
   const { slug } = useParams();
   const item = insights.find((entry) => entry.slug === slug);
+  const relatedArticles = item
+    ? (item.relatedSlugs ?? []).reduce<(typeof insights)[number][]>((accumulator, relatedSlug) => {
+        const relatedItem = insights.find((entry) => entry.slug === relatedSlug);
+
+        if (relatedItem) {
+          accumulator.push(relatedItem);
+        }
+
+        return accumulator;
+      }, [])
+    : [];
 
   usePageMeta(
     item
@@ -47,12 +58,47 @@ export default function InsightDetailPage() {
 
           <article className="outline-panel p-7">
             <div className="article-prose">
-              {item.sections.map((section) => (
+              {item.sections.map((section, index) => (
                 <section key={section.heading}>
                   <h2>{section.heading}</h2>
                   <p>{section.body}</p>
+                  {index === 1 && (
+                    <div className="dark-slab mt-8">
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/70">
+                        Want this built for you?
+                      </p>
+                      <p className="mt-3 max-w-2xl text-base leading-7 text-stone-100/78">
+                        If the workflow in this article sounds right but the implementation still feels messy, Born can
+                        build it around your niche and current stack. The starting point is the same on every engagement:
+                        5 researched prospects pulled before the first call.
+                      </p>
+                      <div className="mt-5 flex flex-wrap gap-3">
+                        <Link to="/contact" className="cta-primary">
+                          Get 5 Researched Prospects Today
+                        </Link>
+                        <Link to="/services" className="cta-secondary">
+                          See What You Get
+                        </Link>
+                      </div>
+                    </div>
+                  )}
                 </section>
               ))}
+
+              {relatedArticles.length > 0 && (
+                <section className="mt-4 border-t border-border/80 pt-8">
+                  <h2>Related reading</h2>
+                  <div className="mt-5 grid gap-4 md:grid-cols-2">
+                    {relatedArticles.map((article) => (
+                      <Link key={article.slug} to={`/insights/${article.slug}`} className="accent-card block">
+                        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">{article.topic}</p>
+                        <p className="mt-2 text-lg font-semibold tracking-tight text-slate-950">{article.title}</p>
+                        <p className="mt-2 text-sm leading-7 text-slate-700">{article.summary}</p>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              )}
             </div>
           </article>
         </div>
@@ -62,7 +108,7 @@ export default function InsightDetailPage() {
         title="If this article reflects your bottleneck, Born can help fix the recruiter workflow behind it."
         description="The point of the insight layer is practical clarity. The next step is to map that clarity onto your actual recruiter pipeline."
         primaryAction={primaryCta}
-        secondaryAction={{ label: 'See Services', to: '/services' }}
+        secondaryAction={{ label: 'Contact Born', to: '/contact' }}
       />
     </>
   );

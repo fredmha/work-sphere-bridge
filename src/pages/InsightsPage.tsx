@@ -5,17 +5,17 @@ import usePageMeta from '@/hooks/usePageMeta';
 export default function InsightsPage() {
   usePageMeta(
     'Insights | Born',
-    'Read practical Born insights on recruiter systems, hiring-signal workflows, follow-up, and custom recruiter software.',
+    'Read practical Born resources on outbound systems for recruitment agencies, GoHighLevel for recruiters, hiring-signal workflows, and follow-up automation.',
   );
 
   return (
     <>
       <PageHero
         eyebrow="Insights"
-        title="Practical recruiter thinking without blog-farm filler."
-        description="The insight layer supports credibility and search, but every page should still feel useful, skimmable, and grounded in real recruiter systems work."
+        title="Practical recruiter resources, written to rank and still be useful."
+        description="This is the search layer behind Born: specific articles on outbound systems, hiring signals, GoHighLevel, and recruiter follow-up written for firms that actually run BD."
         primaryAction={primaryCta}
-        secondaryAction={{ label: 'See Case Studies', to: '/case-studies' }}
+        secondaryAction={{ label: 'Book a Call', to: '/contact' }}
       />
 
       <section className="site-section">
@@ -44,6 +44,7 @@ export default function InsightsPage() {
         title="Need the practical version applied to your recruiter team?"
         description="Insights help you get oriented. The audit helps you work out what should actually be built in your environment."
         primaryAction={primaryCta}
+        secondaryAction={{ label: 'Contact Born', to: '/contact' }}
       />
     </>
   );

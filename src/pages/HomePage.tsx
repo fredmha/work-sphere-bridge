@@ -103,20 +103,44 @@ export default function HomePage() {
   const [submitting, setSubmitting] = useState(false);
 
   usePageMeta({
-    title: 'Born | Bespoke outbound systems for recruitment firms',
+    title: 'Born | Outbound Systems for Recruitment Agencies | Sydney',
     description:
-      'Get 5 researched prospects and see how Born builds prospecting, outreach, call workflow, and follow-up for recruitment firms.',
+      'Born builds bespoke outbound systems for recruitment firms: prospecting, outreach, call queue, and follow-up automation for 1 to 20 person agencies. Founder-led. Sydney.',
     path: '/',
-    schema: {
-      '@context': 'https://schema.org',
-      '@type': 'ProfessionalService',
-      name: 'Born',
-      url: 'https://born.directory/',
-      description:
-        'Born builds bespoke outbound systems for recruitment firms so prospecting, outreach, call workflow, and follow-up run in one system.',
-      email: 'fred@born.directory',
-      areaServed: 'Australia',
-    },
+    schema: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'LocalBusiness',
+        name: 'Born',
+        url: 'https://born.directory/',
+        description:
+          'Born builds bespoke outbound systems for recruitment firms so prospecting, outreach, call workflow, and follow-up run in one system.',
+        email: 'fred@born.directory',
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: 'Sydney',
+          addressCountry: 'AU',
+        },
+        areaServed: ['Sydney', 'Australia'],
+        knowsAbout: [
+          'Outbound systems for recruitment agencies',
+          'Recruitment BD automation',
+          'Call queue and follow-up automation',
+        ],
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqItems.map((item) => ({
+          '@type': 'Question',
+          name: item.question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: item.answer,
+          },
+        })),
+      },
+    ],
   });
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -175,13 +199,13 @@ export default function HomePage() {
 
   return (
     <>
-      <section className="site-section relative overflow-hidden pt-12">
+      <section className="site-section relative overflow-hidden pt-8 sm:pt-10">
         <div className="hero-noise absolute inset-0 -z-20 opacity-45" />
         <div className="hero-orb absolute left-[-10rem] top-[-6rem] -z-10 h-72 w-72" />
         <div className="hero-orb hero-orb-secondary absolute bottom-[-8rem] right-[-6rem] -z-10 h-80 w-80" />
         <div className="editorial-grid absolute inset-x-0 top-0 -z-10 h-[82%] rounded-[2.9rem] opacity-25" />
 
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,0.94fr)_minmax(20rem,1.06fr)] lg:items-start lg:gap-10">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,0.96fr)_minmax(20rem,1.04fr)] lg:items-start lg:gap-8">
           <motion.div variants={stagger} initial="hidden" animate="visible" className="relative z-10">
             <motion.p variants={reveal} className="eyebrow">
               Recruitment outbound systems
@@ -214,6 +238,10 @@ export default function HomePage() {
               We&apos;ll pull 5 real prospects in your niche and walk you through the system on a short call.
             </motion.p>
 
+            <motion.p variants={reveal} className="mt-4 max-w-2xl text-sm font-medium leading-7 text-slate-700">
+              Sydney-based. Founder-led. Limited to 3 client builds per quarter.
+            </motion.p>
+
             <motion.div variants={reveal} className="mt-8 flex flex-wrap gap-3">
               {trustPoints.map((point) => (
                 <span key={point} className="proof-chip">
@@ -226,61 +254,51 @@ export default function HomePage() {
 
           <motion.aside initial="hidden" animate="visible" variants={reveal} className="hero-stage">
             <div className="relative z-10">
-              <p className="eyebrow border-white/10 bg-white/8 text-white shadow-none">Daily queue</p>
-              <h2 className="mt-5 text-3xl font-semibold tracking-tight text-white sm:text-[2.3rem]">
-                Every morning starts with researched prospects, not list building.
-              </h2>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-stone-100/76">
-                The system finds firms already hiring, warms them up before you call, and keeps the next action moving
-                after every conversation.
-              </p>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="eyebrow border-white/10 bg-white/8 text-white shadow-none">Daily queue</p>
+                <p className="hero-card-label">Research first. Call next.</p>
+              </div>
 
-              <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,1.02fr)_minmax(15rem,0.98fr)]">
-                <div className="instrument-panel">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/68">
-                    Queue preview
-                  </p>
-                  <div className="mt-4 grid gap-3">
-                    {heroQueue.map((item) => (
-                      <div key={item.company} className="rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-4">
-                        <div className="flex items-center gap-3">
-                          <span className={`signal-dot ${item.tone}`} />
-                          <p className="text-sm font-semibold text-white">{item.company}</p>
-                        </div>
-                        <p className="mt-2 text-sm leading-6 text-stone-100/72">{item.detail}</p>
-                        <div className="mt-3 rounded-full border border-white/10 bg-white/6 px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/80">
-                          {item.nextAction}
-                        </div>
+              <div className="mt-6 instrument-panel">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/68">Queue preview</p>
+                <div className="mt-4 grid gap-3">
+                  {heroQueue.map((item) => (
+                    <div key={item.company} className="rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-4">
+                      <div className="flex items-center gap-3">
+                        <span className={`signal-dot ${item.tone}`} />
+                        <p className="text-sm font-semibold text-white">{item.company}</p>
                       </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="grid gap-4">
-                  <div className="instrument-panel">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/68">
-                      System flow
-                    </p>
-                    <div className="mt-4 grid gap-3">
-                      {['Hiring signal', 'Research added', 'Email + SMS sent', 'Call queued', 'Follow-up automated'].map(
-                        (step) => (
-                          <div key={step} className="signal-row">
-                            <p className="text-sm font-medium text-white">{step}</p>
-                            <ArrowRight className="h-4 w-4 text-emerald-100/70" />
-                          </div>
-                        ),
-                      )}
+                      <p className="mt-2 text-sm leading-6 text-stone-100/72">{item.detail}</p>
+                      <div className="mt-3 rounded-full border border-white/10 bg-white/6 px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/80">
+                        {item.nextAction}
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="rounded-[1.5rem] border border-white/10 bg-white/6 p-5">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/68">What changes</p>
-                    <p className="mt-3 text-sm leading-7 text-stone-100/76">
-                      Your BD runs every day, even when delivery is heavy. No spreadsheet chasing. No leads going cold
-                      because somebody forgot to follow up.
-                    </p>
-                  </div>
+                  ))}
                 </div>
+              </div>
+
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                {[
+                  ['5', 'Researched prospects'],
+                  ['3', 'Warm calls ready'],
+                  ['1', 'Callback queued'],
+                ].map(([value, label]) => (
+                  <div key={label} className="hero-metric">
+                    <p className="text-xl font-semibold text-white">{value}</p>
+                    <p className="mt-1 text-sm text-stone-100/72">{label}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-4 rounded-[1.6rem] border border-white/10 bg-white/6 p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/68">What changes</p>
+                <p className="mt-3 text-sm leading-7 text-stone-100/76">
+                  The queue is the product: qualified account, context attached, next action already moving. No second
+                  spreadsheet. No manually rebuilt call block.
+                </p>
+                <a href="#lead-form" className="mt-5 inline-flex text-sm font-semibold text-emerald-100 transition hover:text-white">
+                  {primaryCta.label}
+                </a>
               </div>
             </div>
           </motion.aside>
@@ -291,7 +309,7 @@ export default function HomePage() {
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <SectionIntro
             eyebrow="How It Works"
-            title="One clear walkthrough, once."
+            title="How Born works."
             description="Every morning, you log in to a queue of researched prospects ready to call. After each call, the system handles the rest."
           />
           <Link to="/process" className="cta-text">
@@ -321,7 +339,7 @@ export default function HomePage() {
           <SectionIntro
             eyebrow="What You Get"
             title="The full system, end to end."
-            description="Born does not sell three disconnected services. We build the full outbound system and keep it tuned."
+            description="Everything you need to run consistent recruiter BD, built and managed end to end."
           />
           <Link to="/services" className="cta-text">
             See service details
@@ -388,25 +406,40 @@ export default function HomePage() {
       <section className="site-section border-t border-border/70">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
           <article className="dark-panel p-8 lg:p-10">
-            <div className="relative z-10">
-              <p className="eyebrow border-white/10 bg-white/8 text-white shadow-none">Founder-led</p>
-              <div className="mt-6 flex items-center gap-4">
-                <div className="inline-flex h-20 w-20 items-center justify-center rounded-[1.8rem] border border-white/10 bg-white/8 text-3xl font-semibold text-white">
-                  F
-                </div>
-                <div>
-                  <p className="text-xl font-semibold text-white">Fred</p>
-                  <p className="text-sm text-stone-100/70">Sydney, Australia</p>
+            <div className="relative z-10 grid gap-6 lg:grid-cols-[13.5rem_minmax(0,1fr)] lg:items-start">
+              <div className="founder-portrait-frame">
+                <img
+                  src="/fred-founder-portrait.svg"
+                  alt="Founder portrait treatment for Fred, founder of Born"
+                  className="w-full rounded-[1.6rem]"
+                />
+              </div>
+
+              <div>
+                <p className="eyebrow border-white/10 bg-white/8 text-white shadow-none">Founder-led</p>
+                <h2 className="mt-5 max-w-3xl text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                  Built by Fred, not passed to an account team.
+                </h2>
+                <p className="mt-5 text-sm leading-7 text-stone-100/76">
+                  I&apos;m Fred. I built Born while studying CS and Finance at UNSW and spending hours a day on cold
+                  calls. Most recruitment firms do not need another tool. They need a system that keeps BD moving when
+                  delivery gets heavy.
+                </p>
+                <p className="mt-4 text-sm leading-7 text-stone-100/76">
+                  If you want a workflow built by someone still close to the work, not a consultant who last touched
+                  outbound years ago, that&apos;s what Born is. Every engagement is shaped around your niche, your tone,
+                  and how you actually win work.
+                </p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  {['Sydney, Australia', 'Founder-led from first call to launch', '3 client builds per quarter'].map(
+                    (item) => (
+                      <span key={item} className="rounded-full border border-white/10 bg-white/6 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-100/78">
+                        {item}
+                      </span>
+                    ),
+                  )}
                 </div>
               </div>
-              <p className="mt-6 text-sm leading-7 text-stone-100/76">
-                I built Born because most recruitment firms do not need more tools. They need a system that finds the
-                right prospects, warms them up, and keeps follow-up moving after every call.
-              </p>
-              <p className="mt-4 text-sm leading-7 text-stone-100/76">
-                Every engagement is founder-led. You work directly with me, not a VA or a junior account manager. The
-                system gets built around your niche, your tone, and how you actually win work.
-              </p>
             </div>
           </article>
 
@@ -417,8 +450,8 @@ export default function HomePage() {
                 200% ROI by month 3, or we keep working for free.
               </h2>
               <p className="mt-4 max-w-3xl text-base leading-8 text-slate-700">
-                Born takes on 3 clients per quarter. Nothing is templated. If the numbers have not at least doubled
-                your return by month 3, we keep working until they do.
+                Born stays intentionally small. Nothing is templated. If the numbers have not at least doubled your
+                return by month 3, we keep working until they do.
               </p>
 
               <div className="mt-8 grid gap-4 sm:grid-cols-2">
@@ -449,11 +482,8 @@ export default function HomePage() {
           <div className="section-copy">
             <p className="eyebrow">Common Questions</p>
             <h2 className="mt-5 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-              Short answers to the things buyers usually ask first.
+              What people usually ask before booking.
             </h2>
-            <p className="mt-4 max-w-3xl text-base leading-8 text-slate-700">
-              Keep it practical. The right buyers should be able to self-qualify quickly.
-            </p>
           </div>
 
           <div className="grid gap-4">
@@ -464,6 +494,15 @@ export default function HomePage() {
               </details>
             ))}
           </div>
+        </div>
+
+        <div className="mt-8 flex flex-wrap gap-3">
+          <a href="#lead-form" className="cta-primary">
+            {primaryCta.label}
+          </a>
+          <Link to="/contact" className="cta-secondary">
+            Book a call
+          </Link>
         </div>
       </section>
 

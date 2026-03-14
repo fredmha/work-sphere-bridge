@@ -56,9 +56,10 @@ function toAbsoluteUrl(value: string) {
 export default function usePageMeta(title: string, description: string): void;
 export default function usePageMeta(config: PageMetaConfig): void;
 export default function usePageMeta(titleOrConfig: string | PageMetaConfig, descriptionArg?: string) {
+  const currentPath = typeof window === 'undefined' ? '/' : window.location.pathname;
   const title = typeof titleOrConfig === 'string' ? titleOrConfig : titleOrConfig.title;
   const description = typeof titleOrConfig === 'string' ? descriptionArg ?? '' : titleOrConfig.description;
-  const path = typeof titleOrConfig === 'string' ? '/' : titleOrConfig.path ?? '/';
+  const path = typeof titleOrConfig === 'string' ? currentPath : titleOrConfig.path ?? currentPath;
   const image = typeof titleOrConfig === 'string' ? DEFAULT_IMAGE : titleOrConfig.image ?? DEFAULT_IMAGE;
   const type = typeof titleOrConfig === 'string' ? 'website' : titleOrConfig.type ?? 'website';
   const noIndex = typeof titleOrConfig === 'string' ? false : titleOrConfig.noIndex ?? false;
@@ -78,12 +79,14 @@ export default function usePageMeta(titleOrConfig: string | PageMetaConfig, desc
     ensureMetaTag('meta[property="og:description"]', { property: 'og:description', content: description });
     ensureMetaTag('meta[property="og:type"]', { property: 'og:type', content: type });
     ensureMetaTag('meta[property="og:url"]', { property: 'og:url', content: canonicalUrl });
+    ensureMetaTag('meta[property="og:site_name"]', { property: 'og:site_name', content: 'Born' });
     ensureMetaTag('meta[property="og:image"]', { property: 'og:image', content: imageUrl });
 
     ensureMetaTag('meta[name="twitter:card"]', { name: 'twitter:card', content: 'summary_large_image' });
     ensureMetaTag('meta[name="twitter:title"]', { name: 'twitter:title', content: title });
     ensureMetaTag('meta[name="twitter:description"]', { name: 'twitter:description', content: description });
     ensureMetaTag('meta[name="twitter:image"]', { name: 'twitter:image', content: imageUrl });
+    ensureMetaTag('meta[name="twitter:url"]', { name: 'twitter:url', content: canonicalUrl });
 
     if (noIndex) {
       ensureMetaTag('meta[name="robots"]', { name: 'robots', content: 'noindex, nofollow' });

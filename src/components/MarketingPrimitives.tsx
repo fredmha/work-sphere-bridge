@@ -64,20 +64,6 @@ export function PageHero({
               )}
             </div>
           )}
-          <div className="mt-8 grid gap-3 sm:grid-cols-3">
-            <div className="metric-tile">
-              <p className="meta-kicker">01</p>
-              <p className="mt-2 text-sm leading-6 text-slate-700">Audit the workflow before adding complexity.</p>
-            </div>
-            <div className="metric-tile">
-              <p className="meta-kicker">02</p>
-              <p className="mt-2 text-sm leading-6 text-slate-700">Build around recruiter behavior, not generic templates.</p>
-            </div>
-            <div className="metric-tile">
-              <p className="meta-kicker">03</p>
-              <p className="mt-2 text-sm leading-6 text-slate-700">Keep ownership, queues, and follow-up visible.</p>
-            </div>
-          </div>
         </div>
         {aside && (
           <div className="relative lg:pl-2">
@@ -124,20 +110,17 @@ export function CtaBand({ title, description, primaryAction, secondaryAction }: 
             <p className="mt-3 text-base leading-7 text-stone-100/78">{description}</p>
             <div className="mt-6 flex flex-wrap gap-3">
               <span className="rounded-full border border-white/12 bg-white/7 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-100/78">
-                Audit
+                5 researched prospects first
               </span>
               <span className="rounded-full border border-white/12 bg-white/7 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-100/78">
-                Build
-              </span>
-              <span className="rounded-full border border-white/12 bg-white/7 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-100/78">
-                Refine
+                Founder-led delivery
               </span>
             </div>
           </div>
           <div className="grid gap-4 rounded-[1.8rem] border border-white/10 bg-white/6 p-5 backdrop-blur-sm">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-100/70">Engagement path</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-100/70">What happens on the call</p>
             <p className="text-sm leading-7 text-stone-100/76">
-              Start with the workflow pressure point, map the operating gap, then scope the cleanest build path.
+              We walk through your current BD flow, the 5 prospects we pulled, and whether Born is the right fit.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link to={primaryAction.to} className="cta-primary">

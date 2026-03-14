@@ -72,7 +72,7 @@ export default function ContactPage() {
       <PageHero
         eyebrow="Contact"
         title="Get 5 researched prospects in your niche."
-        description="Share a short brief about what you recruit and where BD is getting stuck. Born uses that to pull live prospects and make the first conversation useful."
+        description="Share a short brief about your firm, what you recruit, and where BD is getting stuck. Born uses that to pull live prospects and make the first conversation useful."
       />
 
       <section className="site-section">
@@ -165,7 +165,7 @@ export default function ContactPage() {
                   className="textarea-shell"
                   value={form.message}
                   onChange={(event) => setForm((current) => ({ ...current, message: event.target.value }))}
-                  placeholder="Tech, accounting, construction, temp staffing, plus anything slowing BD down right now."
+                  placeholder="What you recruit, who you want more of as clients, and where BD is getting stuck."
                   rows={7}
                   required
                 />
