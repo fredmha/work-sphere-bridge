@@ -6,7 +6,7 @@ export default function CaseStudiesPage() {
   usePageMeta({
     title: 'Case Studies | Born',
     description:
-      'Read Born case studies showing how bespoke recruiter systems improved workflow clarity, follow-up reliability, and pipeline control.',
+      'Read Born case studies showing how outbound systems for recruiters improved targeting, follow-up reliability, and pipeline control.',
     path: '/case-studies',
     type: 'article',
   });
@@ -15,8 +15,8 @@ export default function CaseStudiesPage() {
     <>
       <PageHero
         eyebrow="Case studies"
-        title="Proof built around workflow change, not vanity metrics."
-        description="Each case study answers four questions: what was broken, what got built, what changed operationally, and why the desk became easier to run."
+        title="Proof built around what changed in the outbound workflow."
+        description="Each case study shows how Born helped recruiters sell into firms more consistently by tightening targeting, calls, and follow-up."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'Read Insights', to: '/insights' }}
       />
@@ -58,7 +58,7 @@ export default function CaseStudiesPage() {
 
       <CtaBand
         title="Want to see what Born would actually build for your desk?"
-        description="The case studies show the pattern: practical recruiter infrastructure, clearer ownership, better follow-up, and a more reliable daily process."
+        description="The case studies show the pattern: 5 researched firms to prove the targeting, then a fuller build around outreach, calls, and follow-up."
         primaryAction={primaryCta}
       />
     </>

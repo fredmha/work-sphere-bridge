@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 
-import { CtaBand, PageHero } from '@/components/MarketingPrimitives';
+import { CtaBand, LinkArrow, PageHero } from '@/components/MarketingPrimitives';
 import { caseStudies, primaryCta } from '@/content/bornSiteContent';
 import usePageMeta from '@/hooks/usePageMeta';
 import NotFound from '@/pages/NotFound';
@@ -78,9 +78,43 @@ export default function CaseStudyDetailPage() {
         </div>
       </section>
 
+      <section className="site-section border-t border-border/80">
+        <div className="grid gap-5 lg:grid-cols-3">
+          {[
+            {
+              title: 'See the service layer',
+              body: 'The case study shows the outcome. The service pages show which parts of the system get built.',
+              to: '/services',
+              label: 'See services',
+            },
+            {
+              title: 'See the rollout',
+              body: 'If you want the step-by-step path from the first call to launch, the process page covers it.',
+              to: '/process',
+              label: 'See process',
+            },
+            {
+              title: 'See similar use cases',
+              body: 'Compare how the workflow changes across different recruiter teams and agency models.',
+              to: '/industries',
+              label: 'See who it fits',
+            },
+          ].map((item) => (
+            <article key={item.title} className="outline-panel p-7">
+              <p className="meta-kicker">Continue exploring</p>
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-950">{item.title}</h2>
+              <p className="mt-4 text-sm leading-7 text-slate-700">{item.body}</p>
+              <div className="mt-5">
+                <LinkArrow to={item.to}>{item.label}</LinkArrow>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <CtaBand
-        title="Need a similar build in your own recruiter pipeline?"
-        description="The details change by desk, but the principle stays the same: Born designs the workflow so better opportunities get found, worked, and followed up properly."
+        title="Need a similar build in your own outbound workflow?"
+        description="The details change by team, but the principle stays the same: 5 researched firms to prove the direction, then the wider system build around it."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'See Services', to: '/services' }}
       />

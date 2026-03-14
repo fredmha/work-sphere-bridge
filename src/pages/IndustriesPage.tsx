@@ -3,19 +3,51 @@ import { industries, primaryCta } from '@/content/bornSiteContent';
 import usePageMeta from '@/hooks/usePageMeta';
 
 export default function IndustriesPage() {
-  usePageMeta(
-    'Recruiter Use Cases | Born',
-    'See how Born tailors bespoke recruiter systems for contingent desks, retained search firms, BD teams, and specialist recruiters.',
-  );
+  usePageMeta({
+    title: 'Who It’s For | Recruitment Outbound Systems | Born',
+    description:
+      'See which recruitment firms Born is built for: contingent desks, retained search teams, executive search firms, and growth-stage agencies.',
+    path: '/industries',
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Born Use Cases',
+      itemListElement: industries.map((industry, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: industry.title,
+        url: `https://born.directory/industries/${industry.slug}`,
+      })),
+    },
+  });
 
   return (
     <>
       <PageHero
-        eyebrow="Recruiter use cases"
-        title="Different recruiter desks need different workflow detail."
-        description="Born stays inside one market, but the workflow still changes by recruiter motion. The point is not cosmetic personalisation. The point is practical relevance in sourcing, context, calls, and follow-up."
+        eyebrow="Who It&apos;s For"
+        title="Built for recruitment firms that already know outbound works."
+        description="The workflow changes by niche, team shape, and how your recruiters sell into firms. Born builds around that instead of forcing every agency into the same setup."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'See Services', to: '/services' }}
+        highlights={['Contingent to retained', 'Built around your niche', 'No generic setup']}
+        aside={
+          <div className="dark-panel p-7">
+            <div className="relative z-10">
+              <p className="eyebrow border-white/10 bg-white/8 text-white shadow-none">Best fit signals</p>
+              <div className="mt-6 grid gap-3">
+                {[
+                  'You can sell once you get the conversation.',
+                  'BD drops when delivery gets busy.',
+                  'The team needs a steadier system, not more tools.',
+                ].map((item) => (
+                  <div key={item} className="rounded-[1.35rem] border border-white/10 bg-white/6 px-4 py-4 text-sm leading-6 text-stone-100/76">
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        }
       />
 
       <section className="site-section">
@@ -52,8 +84,8 @@ export default function IndustriesPage() {
       </section>
 
       <CtaBand
-        title="If your desk has its own workflow constraints, Born designs around them."
-        description="Use-case relevance matters because generic recruiter systems usually break at the context, handoff, or follow-up layers."
+        title="If your team has its own workflow constraints, Born designs around them."
+        description="That matters because generic outbound setups usually break at the context, handoff, or follow-up layers."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'View Process', to: '/process' }}
       />

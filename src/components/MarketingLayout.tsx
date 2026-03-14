@@ -39,9 +39,9 @@ export default function MarketingLayout() {
         Skip to main content
       </a>
 
-      <header className="sticky top-0 z-50 border-b border-[rgba(24,55,41,0.08)] bg-[rgba(248,244,236,0.84)] backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-[rgba(24,55,41,0.08)] bg-[rgba(255,255,255,0.88)] backdrop-blur-xl">
         <div className="container-shell hidden py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 lg:block">
-          Sydney-based. Founder-led. 3 client builds per quarter.
+          Built for recruiters. Research first. Calls next.
         </div>
         <nav className="container-shell flex items-center justify-between gap-4 py-4 sm:py-5" aria-label="Primary">
           <Link to="/" className="flex items-center gap-4 text-slate-950" aria-label="Born home">
@@ -111,7 +111,7 @@ export default function MarketingLayout() {
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-100/66">Born</p>
             <p className="mt-4 max-w-md text-2xl font-semibold tracking-tight text-white">
-              Outbound systems for recruitment agencies, built founder-led from Sydney.
+              Outbound systems for recruitment agencies, built from Sydney.
             </p>
             <p className="mt-4 max-w-md text-sm leading-6 text-stone-100/76">
               Prospecting, outreach, call workflow, and follow-up in one system built around how recruiters actually win work.
@@ -137,7 +137,7 @@ export default function MarketingLayout() {
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">What to expect</p>
             <div className="mt-5 grid gap-4 text-sm text-stone-100/76">
               <p>We pull 5 researched prospects before the first call so you can see the system in your market.</p>
-              <p>You work directly with Fred on every engagement. No junior handoff.</p>
+              <p>The build is shaped around your niche, your workflow, and the tools you already use.</p>
             </div>
           </div>
 
@@ -175,7 +175,7 @@ export default function MarketingLayout() {
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/90">Contact</p>
             <ul className="mt-4 space-y-3 text-sm text-stone-100/76">
-              <li>Founder-led outbound systems for recruitment agencies</li>
+              <li>Outbound systems for recruitment agencies</li>
               <li>
                 <a href="mailto:fred@born.directory" className="transition hover:text-white">
                   fred@born.directory
@@ -186,7 +186,7 @@ export default function MarketingLayout() {
                   {primaryCta.label}
                 </Link>
               </li>
-              <li className="pt-3 text-xs uppercase tracking-[0.16em] text-white/45">200% ROI by month 3 or we keep working for free.</li>
+              <li className="pt-3 text-xs uppercase tracking-[0.16em] text-white/45">Prospecting, outreach, call queue, follow-up.</li>
             </ul>
           </div>
         </div>

@@ -10,35 +10,42 @@ import usePageMeta from '@/hooks/usePageMeta';
 const heroQueue = [
   {
     company: 'Series A fintech recruiter',
-    detail: 'New finance roles live, 41 staff, founder-led',
-    nextAction: 'Call queued for this morning',
+    detail: '3 finance roles live, team growing, hiring spike in Sydney',
+    nextAction: 'Decision-maker identified, call angle prepared',
     tone: 'bg-emerald-300',
   },
   {
     company: 'Construction staffing agency',
-    detail: 'Hiring ads active across NSW, director contact researched',
-    nextAction: 'Email sent, SMS queued, call this afternoon',
+    detail: 'Hiring ads active across NSW, repeat project hiring signal',
+    nextAction: 'Director contact researched, call queued for today',
     tone: 'bg-emerald-400',
   },
   {
     company: 'Accounting specialist firm',
-    detail: 'Headcount up 28%, multiple live roles in your niche',
-    nextAction: 'Callback set, follow-up running automatically',
+    detail: 'Headcount up 28%, multiple specialist roles live now',
+    nextAction: 'Suggested opener written, follow-up path ready',
     tone: 'bg-lime-300',
   },
 ] as const;
 
+const heroPacket = [
+  'Decision-maker contact details',
+  'High-level company research',
+  'The live hiring signal',
+  'Suggested next step',
+] as const;
+
 const systemSteps = [
   {
-    title: 'We find the prospects',
+    title: 'We find the right firms',
     description:
-      'Born sources hiring signals, job ads, and headcount movement, then delivers qualified accounts with decision-maker research every day.',
+      'Born sources hiring signals, job ads, and headcount movement, then delivers qualified firms with decision-maker context every day.',
     icon: SearchCheck,
   },
   {
     title: 'Warm outreach runs before you call',
     description:
-      'Each prospect gets tailored email and SMS outreach before you ever pick up the phone, so your name is already familiar when you call.',
+      'Each target firm gets tailored email and SMS outreach before you ever pick up the phone, so your name is already familiar when you call.',
     icon: MessagesSquare,
   },
   {
@@ -50,9 +57,9 @@ const systemSteps = [
 ] as const;
 
 const deliverables = [
-  'Prospecting engine: automated sourcing from job boards, hiring signals, and headcount data with daily researched accounts.',
+  'Target-firm sourcing engine: automated sourcing from job boards, hiring signals, and headcount data with daily researched accounts.',
   'Branded outreach sequences: email and SMS written with you, in your tone, from a protected secondary domain.',
-  'Daily call queue: prioritised prospects each morning with research displayed and one-click calling.',
+  'Daily call queue: prioritised firms each morning with research displayed and one-click calling.',
   'Disposition-based automations: follow-up, nurture, callbacks, and pipeline updates handled after every call.',
   'Centralised pipeline: every contact, conversation, and outcome in one place.',
   'Weekly strategy call: 30 to 45 minutes to review data, adjust targeting, and tighten messaging.',
@@ -60,7 +67,7 @@ const deliverables = [
 ] as const;
 
 const fitPoints = [
-  'You are a founder, director, or MD still running part of BD yourself.',
+  'You still run part of BD yourself.',
   'You recruit in tech, accounting, finance, construction, marketing, or temp staffing.',
   'Your BD drops off when delivery gets heavy.',
   'You are still building lists by hand on Seek, LinkedIn, or job boards.',
@@ -75,7 +82,7 @@ const notFitPoints = [
 ] as const;
 
 const launchSteps = [
-  'We pull 5 researched prospects in your niche before the call.',
+  'We pull 5 researched firms in your niche before the call.',
   'On the call, we walk through your current BD process and show how the system would work for your firm.',
   'If there is a fit, we build the queue, outreach, pipeline, and follow-up around your market.',
 ] as const;
@@ -105,7 +112,7 @@ export default function HomePage() {
   usePageMeta({
     title: 'Born | Outbound Systems for Recruitment Agencies | Sydney',
     description:
-      'Born builds bespoke outbound systems for recruitment firms: prospecting, outreach, call queue, and follow-up automation for 1 to 20 person agencies. Founder-led. Sydney.',
+      'Born builds bespoke outbound systems for recruitment firms: prospecting, outreach, call queue, and follow-up automation for 1 to 20 person agencies. Sydney.',
     path: '/',
     schema: [
       {
@@ -217,8 +224,8 @@ export default function HomePage() {
               Your next 5 clients are already hiring. We&apos;ll find them.
             </motion.h1>
             <motion.p variants={reveal} className="mt-6 max-w-2xl text-base leading-8 text-slate-700 sm:text-lg">
-              Born builds bespoke outbound systems for recruitment firms so prospecting, outreach, call workflow, and
-              follow-up run every day, not just when delivery is quiet.
+              Born builds the outbound system behind recruiter BD: target-firm sourcing, outreach, call workflow, and
+              follow-up control, so the next client conversation is ready before delivery takes over the day.
             </motion.p>
 
             <motion.div variants={reveal} className="mt-8 flex flex-wrap gap-3">
@@ -235,11 +242,7 @@ export default function HomePage() {
             </motion.div>
 
             <motion.p variants={reveal} className="mt-4 max-w-2xl text-sm leading-7 text-slate-600">
-              We&apos;ll pull 5 real prospects in your niche and walk you through the system on a short call.
-            </motion.p>
-
-            <motion.p variants={reveal} className="mt-4 max-w-2xl text-sm font-medium leading-7 text-slate-700">
-              Sydney-based. Founder-led. Limited to 3 client builds per quarter.
+              We&apos;ll pull 5 real firms in your niche and walk you through the wider system on a short call.
             </motion.p>
 
             <motion.div variants={reveal} className="mt-8 flex flex-wrap gap-3">
@@ -255,12 +258,12 @@ export default function HomePage() {
           <motion.aside initial="hidden" animate="visible" variants={reveal} className="hero-stage">
             <div className="relative z-10">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="eyebrow border-white/10 bg-white/8 text-white shadow-none">Daily queue</p>
-                <p className="hero-card-label">Research first. Call next.</p>
+                <p className="eyebrow border-white/10 bg-white/8 text-white shadow-none">5 researched firms</p>
+                <p className="hero-card-label">What you see before the call</p>
               </div>
 
               <div className="mt-6 instrument-panel">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/68">Queue preview</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/68">Firm preview</p>
                 <div className="mt-4 grid gap-3">
                   {heroQueue.map((item) => (
                     <div key={item.company} className="rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-4">
@@ -277,24 +280,21 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                {[
-                  ['5', 'Researched prospects'],
-                  ['3', 'Warm calls ready'],
-                  ['1', 'Callback queued'],
-                ].map(([value, label]) => (
-                  <div key={label} className="hero-metric">
-                    <p className="text-xl font-semibold text-white">{value}</p>
-                    <p className="mt-1 text-sm text-stone-100/72">{label}</p>
-                  </div>
-                ))}
-              </div>
-
               <div className="mt-4 rounded-[1.6rem] border border-white/10 bg-white/6 p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/68">What changes</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/68">Each firm pack includes</p>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  {heroPacket.map((item) => (
+                    <div
+                      key={item}
+                      className="rounded-[1.1rem] border border-white/10 bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm leading-6 text-stone-100/76"
+                    >
+                      {item}
+                    </div>
+                  ))}
+                </div>
                 <p className="mt-3 text-sm leading-7 text-stone-100/76">
-                  The queue is the product: qualified account, context attached, next action already moving. No second
-                  spreadsheet. No manually rebuilt call block.
+                  The point is simple: you start the call with context, not a blank spreadsheet. If the fit is there,
+                  Born then builds the full outbound system behind it.
                 </p>
                 <a href="#lead-form" className="mt-5 inline-flex text-sm font-semibold text-emerald-100 transition hover:text-white">
                   {primaryCta.label}
@@ -309,8 +309,8 @@ export default function HomePage() {
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <SectionIntro
             eyebrow="How It Works"
-            title="How Born works."
-            description="Every morning, you log in to a queue of researched prospects ready to call. After each call, the system handles the rest."
+            title="How it works."
+            description="Born finds the right firms, warms them up, and keeps the next step moving after each conversation."
           />
           <Link to="/process" className="cta-text">
             See the full process
@@ -339,7 +339,7 @@ export default function HomePage() {
           <SectionIntro
             eyebrow="What You Get"
             title="The full system, end to end."
-            description="Everything you need to run consistent recruiter BD, built and managed end to end."
+            description="Everything needed to run recruiter BD without list-building, dropped follow-up, or tool sprawl."
           />
           <Link to="/services" className="cta-text">
             See service details
@@ -370,7 +370,7 @@ export default function HomePage() {
             </h2>
             <p className="mt-4 max-w-3xl text-base leading-8 text-slate-700">
               Born works best with agencies that have 1 to 20 people, are good at conversations, but do not have a
-              consistent system for getting in front of the right prospects every day.
+              consistent system for getting in front of the right firms every day.
             </p>
           </div>
 
@@ -400,80 +400,6 @@ export default function HomePage() {
               </div>
             </article>
           </div>
-        </div>
-      </section>
-
-      <section className="site-section border-t border-border/70">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
-          <article className="dark-panel p-8 lg:p-10">
-            <div className="relative z-10 grid gap-6 lg:grid-cols-[13.5rem_minmax(0,1fr)] lg:items-start">
-              <div className="founder-portrait-frame">
-                <img
-                  src="/fred-founder-portrait.svg"
-                  alt="Founder portrait treatment for Fred, founder of Born"
-                  className="w-full rounded-[1.6rem]"
-                />
-              </div>
-
-              <div>
-                <p className="eyebrow border-white/10 bg-white/8 text-white shadow-none">Founder-led</p>
-                <h2 className="mt-5 max-w-3xl text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                  Built by Fred, not passed to an account team.
-                </h2>
-                <p className="mt-5 text-sm leading-7 text-stone-100/76">
-                  I&apos;m Fred. I built Born while studying CS and Finance at UNSW and spending hours a day on cold
-                  calls. Most recruitment firms do not need another tool. They need a system that keeps BD moving when
-                  delivery gets heavy.
-                </p>
-                <p className="mt-4 text-sm leading-7 text-stone-100/76">
-                  If you want a workflow built by someone still close to the work, not a consultant who last touched
-                  outbound years ago, that&apos;s what Born is. Every engagement is shaped around your niche, your tone,
-                  and how you actually win work.
-                </p>
-                <div className="mt-6 flex flex-wrap gap-3">
-                  {['Sydney, Australia', 'Founder-led from first call to launch', '3 client builds per quarter'].map(
-                    (item) => (
-                      <span key={item} className="rounded-full border border-white/10 bg-white/6 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-100/78">
-                        {item}
-                      </span>
-                    ),
-                  )}
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <article className="section-frame">
-            <div className="relative z-10">
-              <p className="eyebrow">The Guarantee</p>
-              <h2 className="mt-5 max-w-3xl text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-                200% ROI by month 3, or we keep working for free.
-              </h2>
-              <p className="mt-4 max-w-3xl text-base leading-8 text-slate-700">
-                Born stays intentionally small. Nothing is templated. If the numbers have not at least doubled your
-                return by month 3, we keep working until they do.
-              </p>
-
-              <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                {[
-                  '3 clients per quarter',
-                  'Founder-led delivery',
-                  'Built around your existing tools',
-                  'No templated campaigns',
-                ].map((item) => (
-                  <div key={item} className="list-card text-sm font-medium">
-                    {item}
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-8">
-                <a href="#lead-form" className="cta-primary">
-                  {primaryCta.label}
-                </a>
-              </div>
-            </div>
-          </article>
         </div>
       </section>
 
@@ -513,8 +439,8 @@ export default function HomePage() {
               <p className="eyebrow border-white/10 bg-white/8 text-white shadow-none">Next step</p>
               <h2 className="mt-6 text-4xl font-semibold tracking-tight text-white">See what your pipeline could look like.</h2>
               <p className="mt-5 max-w-2xl text-base leading-7 text-stone-100/76">
-                We&apos;ll pull 5 real prospects in your niche, with decision-maker details and hiring signals, and walk
-                you through the system on a short call. No pitch deck. No pressure.
+                We&apos;ll pull 5 real firms in your niche, with contact details, high-level research, and the hiring
+                signal, then walk you through the system on a short call. No pitch deck. No pressure.
               </p>
 
               <div className="mt-8 rounded-[1.8rem] border border-white/10 bg-white/6 p-6">
@@ -611,7 +537,7 @@ export default function HomePage() {
                 {submitting ? 'Submitting...' : primaryCta.label}
               </button>
               <p className="text-sm leading-6 text-slate-600">
-                We&apos;ll use this to pull 5 prospects and make the call useful.
+                We&apos;ll use this to pull 5 firms and make the call useful.
               </p>
             </div>
           </form>

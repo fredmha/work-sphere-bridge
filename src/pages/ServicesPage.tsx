@@ -4,20 +4,48 @@ import usePageMeta from '@/hooks/usePageMeta';
 
 export default function ServicesPage() {
   usePageMeta({
-    title: 'Services | Born',
+    title: 'Services | Outbound Systems for Recruiters | Born',
     description:
-      'See what Born builds for recruitment firms: prospecting, outreach, daily call queues, follow-up automations, and ongoing optimisation.',
+      'See what Born builds for recruitment firms: target-firm sourcing, outreach, daily call queues, follow-up automations, and ongoing optimisation.',
     path: '/services',
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Born Services',
+      itemListElement: services.map((service, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: service.title,
+        url: `https://born.directory/services/${service.slug}`,
+      })),
+    },
   });
 
   return (
     <>
       <PageHero
         eyebrow="Services"
-        title="Services shaped around the recruiter workflow that needs the most attention."
-        description="Each service is built to steady one part of the desk. Start with the workflow that feels the most manual, scattered, or hard to trust."
+        title="The full outbound build for recruiters selling into firms."
+        description="The 5 researched firms are the proof point. The service is the wider build around sourcing, outreach, call workflow, pipeline control, and follow-up."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'See Use Cases', to: '/industries' }}
+        highlights={['Full outbound build', 'Call workflow included', 'Follow-up built in']}
+        aside={
+          <div className="surface-panel p-7">
+            <p className="meta-kicker">What the first call proves</p>
+            <div className="mt-5 grid gap-4">
+              {[
+                'Whether Born is targeting the right firms.',
+                'What the contact and research pack should include.',
+                'Which part of the wider outbound system needs fixing first.',
+              ].map((item) => (
+                <div key={item} className="accent-card text-sm leading-6 text-slate-700">
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        }
       />
 
       <section className="site-section">
@@ -54,11 +82,11 @@ export default function ServicesPage() {
           <div className="outline-panel p-7">
             <p className="meta-kicker">How to read the offer</p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">
-              Start with the workflow improvement you need now, not more complexity than the desk can absorb.
+              Start with the bottleneck you need fixed now.
             </h2>
             <p className="mt-4 text-base leading-7 text-slate-700">
-              Some firms need the full operating model. Others just need one stressed part of the desk cleaned up first.
-              The service pages are there to make that choice easier.
+              Some firms need the full build. Others need one stressed part of the motion cleaned up first. The service
+              pages are there to make that choice obvious.
             </p>
           </div>
           <div className="surface-panel p-7">
@@ -73,8 +101,8 @@ export default function ServicesPage() {
       </section>
 
       <CtaBand
-        title="Need help working out which service fits your desk?"
-        description="We will pull 5 researched prospects before the first call and show you whether you need the full system or one focused upgrade."
+        title="Need help working out which service fits your team?"
+        description="We pull 5 researched firms before the first call and use that proof-of-concept to show you whether you need the full system or one focused upgrade."
         primaryAction={primaryCta}
       />
     </>

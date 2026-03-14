@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -13,6 +14,7 @@ interface PageHeroProps {
   description: string;
   primaryAction?: HeroAction;
   secondaryAction?: HeroAction;
+  highlights?: readonly string[];
   aside?: ReactNode;
 }
 
@@ -35,8 +37,29 @@ export function PageHero({
   description,
   primaryAction,
   secondaryAction,
+  highlights,
   aside,
 }: PageHeroProps) {
+  const prefersReducedMotion = useReducedMotion();
+  const reveal = {
+    hidden: { opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 16 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.46, ease: [0.22, 1, 0.36, 1] },
+    },
+  };
+
+  const stagger = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: prefersReducedMotion ? 0 : 0.06,
+        delayChildren: prefersReducedMotion ? 0 : 0.03,
+      },
+    },
+  };
+
   return (
     <section className="site-section relative overflow-hidden pt-12">
       <div className="hero-noise absolute inset-0 -z-20 opacity-70" />
@@ -44,14 +67,26 @@ export function PageHero({
       <div className="hero-orb hero-orb-secondary absolute bottom-[-8rem] right-[-6rem] -z-10 h-80 w-80" />
       <div className="editorial-grid absolute inset-x-0 top-0 -z-10 h-[82%] rounded-[2.9rem] opacity-35" />
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.02fr)_minmax(19rem,0.98fr)] lg:items-center lg:gap-8">
-        <div className="section-frame relative z-10 p-8 sm:p-10 lg:p-12">
-          <p className="eyebrow">{eyebrow}</p>
-          <h1 className="mt-6 max-w-4xl text-[clamp(3rem,8vw,4.55rem)] font-semibold leading-[0.95] tracking-tight text-slate-950">
+        <motion.div
+          className="section-frame relative z-10 p-8 sm:p-10 lg:p-12"
+          variants={stagger}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.p variants={reveal} className="eyebrow">
+            {eyebrow}
+          </motion.p>
+          <motion.h1
+            variants={reveal}
+            className="mt-6 max-w-4xl text-[clamp(3rem,8vw,4.55rem)] font-semibold leading-[0.95] tracking-tight text-slate-950"
+          >
             {title}
-          </h1>
-          <p className="mt-6 max-w-2xl text-base leading-8 text-slate-700 sm:text-lg">{description}</p>
+          </motion.h1>
+          <motion.p variants={reveal} className="mt-6 max-w-2xl text-base leading-8 text-slate-700 sm:text-lg">
+            {description}
+          </motion.p>
           {(primaryAction || secondaryAction) && (
-            <div className="mt-8 flex flex-wrap gap-3">
+            <motion.div variants={reveal} className="mt-8 flex flex-wrap gap-3">
               {primaryAction && (
                 <Link to={primaryAction.to} className="cta-primary">
                   {primaryAction.label}
@@ -62,14 +97,28 @@ export function PageHero({
                   {secondaryAction.label}
                 </Link>
               )}
-            </div>
+            </motion.div>
           )}
-        </div>
+          {highlights && highlights.length > 0 && (
+            <motion.div variants={reveal} className="mt-8 flex flex-wrap gap-3">
+              {highlights.map((item) => (
+                <span key={item} className="proof-chip">
+                  {item}
+                </span>
+              ))}
+            </motion.div>
+          )}
+        </motion.div>
         {aside && (
-          <div className="relative lg:pl-2">
+          <motion.div
+            className="relative lg:pl-2"
+            variants={reveal}
+            initial="hidden"
+            animate="visible"
+          >
             <div className="absolute -left-6 top-10 hidden h-28 w-28 rounded-full bg-primary/10 blur-3xl lg:block" />
             {aside}
-          </div>
+          </motion.div>
         )}
       </div>
     </section>
@@ -110,17 +159,17 @@ export function CtaBand({ title, description, primaryAction, secondaryAction }: 
             <p className="mt-3 text-base leading-7 text-stone-100/78">{description}</p>
             <div className="mt-6 flex flex-wrap gap-3">
               <span className="rounded-full border border-white/12 bg-white/7 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-100/78">
-                5 researched prospects first
+                5 researched firms first
               </span>
               <span className="rounded-full border border-white/12 bg-white/7 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-100/78">
-                Founder-led delivery
+                Built around your current stack
               </span>
             </div>
           </div>
           <div className="grid gap-4 rounded-[1.8rem] border border-white/10 bg-white/6 p-5 backdrop-blur-sm">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-100/70">What happens on the call</p>
             <p className="text-sm leading-7 text-stone-100/76">
-              We walk through your current BD flow, the 5 prospects we pulled, and whether Born is the right fit.
+              We walk through your current BD flow, the 5 firms we pulled, and whether Born is the right fit.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link to={primaryAction.to} className="cta-primary">

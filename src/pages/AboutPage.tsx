@@ -4,20 +4,44 @@ import usePageMeta from '@/hooks/usePageMeta';
 
 export default function AboutPage() {
   usePageMeta({
-    title: 'About | Born',
+    title: 'About | Recruitment Outbound Systems | Born',
     description:
-      'Meet Fred and see why Born builds founder-led outbound systems for recruitment firms.',
+      'See what Born is built to do for recruitment firms and how the outbound system work is approached.',
     path: '/about',
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'AboutPage',
+      name: 'About Born',
+      url: 'https://born.directory/about',
+      description: 'About Born and how it approaches outbound systems for recruitment firms.',
+    },
   });
 
   return (
     <>
       <PageHero
         eyebrow="About"
-        title="I built Born because most recruiters do not need more tools. They need a system."
-        description="Most recruitment firms I speak to have the same problem: BD runs when there is time for it, then disappears when delivery gets heavy."
+        title="Why recruiters hire Born."
+        description="Most recruitment firms do not need more tools. They need sourcing, outreach, calls, and follow-up working as one system."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'See Process', to: '/process' }}
+        highlights={['Built for recruiters', 'Focused on sell-side BD', 'Designed to actually get used']}
+        aside={
+          <div className="surface-panel p-7">
+            <p className="meta-kicker">What Born actually changes</p>
+            <div className="mt-5 grid gap-4">
+              {[
+                'Better firms entering the pipeline.',
+                'Cleaner movement from outreach to calls.',
+                'Less follow-up leakage after live conversations.',
+              ].map((item) => (
+                <div key={item} className="info-card text-sm leading-6 text-slate-700">
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        }
       />
 
       <section className="site-section">
@@ -26,15 +50,15 @@ export default function AboutPage() {
             <p className="meta-kicker">Why Born exists</p>
             <div className="mt-5 grid gap-4 text-base leading-7 text-slate-700">
               <p>
-                Prospecting is manual, follow-up depends on memory, and warm leads go cold because nobody chased them.
-                Most firms do not need more software noise. They need a system that keeps business development moving
+                Targeting is manual, follow-up depends on memory, and warm opportunities go cold because nobody chased
+                them. Most firms do not need more tools. They need a system that keeps business development moving
                 every day.
               </p>
               <p>
-                That is what Born does. I build the prospecting, outreach, call queue, follow-up, and pipeline around
-                how your firm actually wins work, then keep tuning it with you.
+                That is what Born does. The sourcing, outreach, call queue, follow-up, and pipeline get built
+                around how your firm actually wins work, then tuned against live usage.
               </p>
-              <p>You work directly with me on every engagement. No junior handoff. No VA layer.</p>
+              <p>The goal is a team workflow that feels clearer to run, easier to review, and harder to let drift.</p>
             </div>
           </article>
 
@@ -54,9 +78,9 @@ export default function AboutPage() {
       <section className="site-section border-t border-border/80">
         <div className="grid gap-6 lg:grid-cols-3">
           <article className="outline-panel p-7">
-            <p className="meta-kicker">Founder-led</p>
+            <p className="meta-kicker">Built for recruiters</p>
             <p className="mt-4 text-base leading-7 text-slate-700">
-              You work directly with Fred from the first call through delivery.
+              The work is scoped around recruitment workflows rather than generic outbound templates.
             </p>
           </article>
           <article className="outline-panel p-7">
@@ -66,9 +90,9 @@ export default function AboutPage() {
             </p>
           </article>
           <article className="outline-panel p-7">
-            <p className="meta-kicker">Guaranteed</p>
+            <p className="meta-kicker">Practical</p>
             <p className="mt-4 text-base leading-7 text-slate-700">
-              If the numbers have not worked by month 3, Born keeps working for free until they do.
+              The focus is steadier execution, clearer follow-up, and less admin drag for the team.
             </p>
           </article>
         </div>
@@ -76,7 +100,7 @@ export default function AboutPage() {
 
       <CtaBand
         title="If that sounds like the kind of help you want, the next step is simple."
-        description="Book the call, see 5 researched prospects in your niche, and work out whether Born is the right fit."
+        description="Book the call, see 5 researched firms in your niche, and work out whether Born is the right fit for the wider outbound build."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'Contact Born', to: '/contact' }}
       />

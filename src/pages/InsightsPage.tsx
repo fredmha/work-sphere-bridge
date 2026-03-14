@@ -13,7 +13,7 @@ export default function InsightsPage() {
       <PageHero
         eyebrow="Insights"
         title="Practical recruiter resources, written to rank and still be useful."
-        description="This is the search layer behind Born: specific articles on outbound systems, hiring signals, GoHighLevel, and recruiter follow-up written for firms that actually run BD."
+        description="This is the search layer behind Born: specific articles on outbound systems, hiring signals, GoHighLevel, and recruiter follow-up for teams selling into firms."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'Book a Call', to: '/contact' }}
       />
@@ -42,7 +42,7 @@ export default function InsightsPage() {
 
       <CtaBand
         title="Need the practical version applied to your recruiter team?"
-        description="Insights help you get oriented. The audit helps you work out what should actually be built in your environment."
+        description="The articles explain the logic. The 5-firm proof-of-concept shows how that logic would look in your market."
         primaryAction={primaryCta}
         secondaryAction={{ label: 'Contact Born', to: '/contact' }}
       />

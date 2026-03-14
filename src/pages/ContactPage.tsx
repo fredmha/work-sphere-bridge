@@ -26,10 +26,17 @@ export default function ContactPage() {
   const [submitting, setSubmitting] = useState(false);
 
   usePageMeta({
-    title: 'Contact | Born',
+    title: 'Contact | Get 5 Researched Firms | Born',
     description:
-      'Get 5 researched prospects and see how Born would build your outbound system before the first call.',
+      'Get 5 researched firms and see how Born would build your wider outbound system for recruiter business development before the first call.',
     path: '/contact',
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'ContactPage',
+      name: 'Contact Born',
+      url: 'https://born.directory/contact',
+      description: 'Contact Born to get 5 researched firms and review the wider outbound build.',
+    },
   });
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -71,8 +78,27 @@ export default function ContactPage() {
     <>
       <PageHero
         eyebrow="Contact"
-        title="Get 5 researched prospects in your niche."
-        description="Share a short brief about your firm, what you recruit, and where BD is getting stuck. Born uses that to pull live prospects and make the first conversation useful."
+        title="Get 5 researched firms in your niche."
+        description="Share a short brief about your firm, what you recruit, and where BD is getting stuck. Born uses that to pull live firms and make the first conversation useful."
+        highlights={['Contact details included', 'High-level research included', 'Live hiring signals included']}
+        aside={
+          <div className="dark-panel p-7">
+            <div className="relative z-10">
+              <p className="eyebrow border-white/10 bg-white/8 text-white shadow-none">What you get first</p>
+              <div className="mt-6 grid gap-3">
+                {[
+                  'Contact details for the right decision-maker.',
+                  'High-level company research for call prep.',
+                  'The hiring signal that makes the firm worth calling now.',
+                ].map((item) => (
+                  <div key={item} className="rounded-[1.35rem] border border-white/10 bg-white/6 px-4 py-4 text-sm leading-6 text-stone-100/76">
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        }
       />
 
       <section className="site-section">
@@ -189,7 +215,11 @@ export default function ContactPage() {
               <button type="submit" className="cta-primary" disabled={submitting}>
                 {submitting ? 'Submitting...' : primaryCta.label}
               </button>
-              <p className="text-sm leading-6 text-slate-600">A short brief is enough. We&apos;ll use it to pull 5 prospects and make the next conversation useful.</p>
+              <p className="text-sm leading-6 text-slate-600">A short brief is enough. We&apos;ll use it to pull 5 firms and make the next conversation useful.</p>
+            </div>
+            <div className="mt-6 rounded-[1.5rem] border border-border/80 bg-white/70 px-4 py-4 text-sm leading-7 text-slate-700">
+              The 5 researched firms are the proof-of-concept, not the whole service. If there is a fit, Born then
+              scopes the broader outbound system around targeting, outreach, calls, and follow-up.
             </div>
           </form>
         </div>

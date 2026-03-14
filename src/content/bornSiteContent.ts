@@ -82,27 +82,27 @@ export const siteNav = [
 ] as const satisfies readonly NavItem[];
 
 export const trustPoints = [
-  'Built exclusively for recruiters',
-  'Founder-led, 3 clients per quarter',
-  'We build around your existing tools',
-  '200% ROI guarantee',
+  'Built for recruiters',
+  '5 researched firms before the first call',
+  'Works with your current stack',
+  '200% ROI guarantee by month 3',
 ] as const;
 
 export const homePillars = [
   {
-    title: 'Hiring-signal sourcing',
+    title: 'Target-account sourcing and research',
     description:
-      'Born designs recruiter prospecting engines around hiring signals, account qualification, and the research your team needs before outreach starts.',
+      'Born finds firms worth selling into, qualifies the signal, and attaches the research your team needs before outreach starts.',
   },
   {
-    title: 'Outreach and call orchestration',
+    title: 'Outreach and call workflow',
     description:
-      'Sequences, call prep, reply handling, and task queues are shaped around recruiter business development rather than generic SDR templates.',
+      'Sequences, call prep, reply handling, and task queues are shaped around recruiter BD rather than generic SDR templates.',
   },
   {
     title: 'Pipeline and follow-up control',
     description:
-      'CRM stages, reminders, automations, and review loops keep recruiter follow-up visible after every reply, intro call, and live opportunity.',
+      'CRM stages, reminders, automations, and review loops keep firm-side follow-up visible after every reply, intro call, and live opportunity.',
   },
 ] as const;
 
@@ -110,22 +110,22 @@ export const audienceCards = [
   {
     title: 'Contingent desks',
     description:
-      'Fast client-side business-development systems for teams that need more recruiter conversations from active hiring signals and steadier follow-up.',
+      'Fast business-development systems for teams that need more conversations with target firms from active hiring signals and steadier follow-up.',
   },
   {
     title: 'Retained search teams',
     description:
-      'Higher-context workflow design for firms that need tighter research, stronger outreach quality, and cleaner pipeline management across longer cycles.',
+      'Higher-context workflow design for teams selling into fewer firms with tighter research, stronger outreach quality, and cleaner pipeline management.',
   },
   {
     title: 'Executive search firms',
     description:
-      'Custom recruiter infrastructure for senior search teams where account selection, briefing context, and relationship follow-up matter more than pure volume.',
+      'Custom recruiter infrastructure for senior search teams where account selection, briefing context, and relationship follow-up matter more than volume.',
   },
   {
     title: 'Growth-stage agencies',
     description:
-      'Recruitment firms that have outgrown spreadsheets and ad hoc tools, and now need bespoke software, automation, and steadier operating discipline.',
+      'Recruitment firms that have outgrown spreadsheets and ad hoc tools, and now need a steadier system for sourcing, outreach, calls, and follow-up.',
   },
 ] as const;
 
@@ -134,13 +134,13 @@ export const services = [
     slug: 'recruiter-system-architecture',
     title: 'Recruiter System Architecture',
     summary:
-      'A custom recruiter operating system spanning sourcing, outreach, CRM structure, recruiter tasks, and follow-up control.',
+      'The full outbound system for recruiters selling into firms: sourcing, outreach, CRM structure, call workflow, and follow-up control.',
     problem:
       'Most agencies have fragments of process spread across spreadsheets, inboxes, CRM views, and recruiter habit. Born turns that into one working system.',
     audience: 'Best for recruitment firms that need the full commercial workflow designed properly, not another isolated tool.',
-    buyerFit: 'Best when the desk has real activity but weak consistency between prospecting, replies, calls, and follow-up.',
-    systemBuild: 'Prospecting, CRM structure, task routing, and automation rules across the full desk.',
-    businessEffect: 'One system that is easier for recruiters to run and easier for managers to review.',
+    buyerFit: 'Best when the team can sell, but the path from target firm to booked meeting to follow-up still feels scattered.',
+    systemBuild: 'Target-account sourcing, CRM structure, call workflow, task routing, and automation rules across the full motion.',
+    businessEffect: 'One outbound system that is easier for recruiters to run and easier for managers to review.',
     includes: [
       'Current-state workflow audit',
       'Recruiter process mapping from signal to booked conversation',
@@ -158,13 +158,13 @@ export const services = [
   {
     slug: 'hiring-signal-prospecting-engine',
     title: 'Hiring-Signal Prospecting Engine',
-    summary: 'Custom sourcing and research infrastructure that helps recruiters find better-fit agency opportunities faster.',
+    summary: 'Custom sourcing and research infrastructure that helps recruiters find better-fit firms to sell into faster.',
     problem:
       'Manual list building creates stale data, weak context, and uneven quality. Recruiters need sourcing logic built around live signals and account relevance.',
-    audience: 'Best for firms where business development starts with hiring activity, market triggers, and structured recruiter research.',
-    buyerFit: 'Best when the team knows who they want to win but sourcing is still manual, slow, or inconsistent.',
+    audience: 'Best for firms where BD starts with hiring activity, market triggers, and structured research before the call.',
+    buyerFit: 'Best when the team knows what kinds of firms they want to win but sourcing is still manual, slow, or inconsistent.',
     systemBuild: 'Signal qualification rules, research enrichment, prioritisation views, and cleaner routing into the live queue.',
-    businessEffect: 'More relevant accounts enter the desk with enough context for recruiters to act quickly.',
+    businessEffect: 'More relevant target firms enter the system with enough context for recruiters to act quickly.',
     includes: [
       'Signal source selection and qualification rules',
       'Research enrichment for company, role, and hiring context',
@@ -181,12 +181,12 @@ export const services = [
   {
     slug: 'recruiter-outreach-and-reply-routing',
     title: 'Recruiter Outreach and Reply Routing',
-    summary: 'Bespoke sequence design and response handling for recruiter-led business development.',
+    summary: 'Bespoke sequence design and response handling for recruiters selling into target firms.',
     problem:
       'Most recruiter outreach breaks after the first touch because reply handling, call creation, and follow-up ownership are left undefined.',
-    audience: 'Best for agencies with lead sources in place but inconsistent recruiter execution after outreach starts.',
-    buyerFit: 'Best when good leads already exist but replies, call creation, and ownership are still handled ad hoc.',
-    systemBuild: 'Message structure, reply triage, handoff rules, and quality checkpoints for recruiter outreach.',
+    audience: 'Best for agencies with target firms identified but inconsistent recruiter execution after outreach starts.',
+    buyerFit: 'Best when good firms are already being found but replies, call creation, and ownership are still handled ad hoc.',
+    systemBuild: 'Message structure, reply triage, call handoff rules, and quality checkpoints for recruiter outreach.',
     businessEffect: 'Replies turn into visible next actions instead of more inbox noise.',
     includes: [
       'Multi-step outreach structure matched to recruiter offers',
@@ -204,11 +204,11 @@ export const services = [
   {
     slug: 'call-queue-and-follow-up-automation',
     title: 'Call Queue and Follow-Up Automation',
-    summary: 'Daily recruiter call workflows, briefing context, and post-call automation built around commercial discipline.',
+    summary: 'Daily recruiter call workflows, briefing context, and post-call automation built around selling into firms consistently.',
     problem:
       'Recruiters often rely on calls to convert interest into meetings, but the prep, queue design, and follow-up structure are usually weak or missing.',
     audience: 'Best for recruiter teams where calls, voicemail, and rapid follow-up sit at the centre of conversion.',
-    buyerFit: 'Best when the desk already runs on calls but daily priorities and post-call discipline are inconsistent.',
+    buyerFit: 'Best when the team already sells on calls but daily priorities and post-call discipline are inconsistent.',
     systemBuild: 'Priority queues, briefing views, follow-up timing, and SLA-style task logic after each conversation.',
     businessEffect: 'The team spends less time deciding what to chase and misses fewer next steps after live conversations.',
     includes: [
@@ -227,11 +227,11 @@ export const services = [
   {
     slug: 'custom-recruiter-software-advisory',
     title: 'Custom Recruiter Software Advisory',
-    summary: 'Senior guidance for firms deciding what recruiter workflow software to build, keep, replace, or automate next.',
+    summary: 'Senior guidance for firms deciding what part of their outbound system to build, keep, replace, or automate next.',
     problem:
       'Some agencies do not need a full rebuild immediately. They need a sharp view on what their recruiter stack should do and what should change first.',
-    audience: 'Best for recruitment firms with partial infrastructure in place but weak alignment between sourcing, outreach, and follow-up.',
-    buyerFit: 'Best when the team knows something is wrong but needs a sharper build roadmap before committing.',
+    audience: 'Best for recruitment firms with partial infrastructure in place but weak alignment between sourcing, outreach, calls, and follow-up.',
+    buyerFit: 'Best when the team knows something is wrong but needs a sharper roadmap before committing.',
     systemBuild: 'Stack review, workflow diagnosis, custom-build recommendations, and implementation sequencing.',
     businessEffect: 'Leadership gets a clearer view of what to keep, what to replace, and what to build next.',
     includes: [
@@ -253,14 +253,14 @@ export const industries = [
   {
     slug: 'contingent-recruitment-desks',
     title: 'Contingent Recruitment Desks',
-    summary: 'Systems built for speed, hiring-signal responsiveness, and tighter recruiter follow-up after first contact.',
+    summary: 'Systems built for speed, hiring-signal responsiveness, and tighter follow-up after first contact with target firms.',
     painPoints: [
-      'New opportunities arrive inconsistently because sourcing is manual and unstructured',
+      'New target firms enter the pipeline inconsistently because sourcing is manual and unstructured',
       'Recruiters lose momentum between first touch, calls, and next actions',
       'Managers lack visibility into where business-development follow-up is stalling',
     ],
     buildFocus: [
-      'Finding prospects and prioritising the right accounts',
+      'Finding target firms and prioritising the right accounts',
       'Recruiter outreach sequencing and rapid task creation',
       'Call queues and pipeline views for same-day follow-up',
     ],
@@ -273,7 +273,7 @@ export const industries = [
   {
     slug: 'retained-search-teams',
     title: 'Retained Search Teams',
-    summary: 'Higher-context workflow design for firms where precision, research quality, and stakeholder follow-up matter most.',
+    summary: 'Higher-context workflow design for teams where precision, research quality, and stakeholder follow-up matter most.',
     painPoints: [
       'Senior accounts need richer research than the current workflow can support',
       'Outreach quality drops when account context is scattered across tools',
@@ -293,7 +293,7 @@ export const industries = [
   {
     slug: 'executive-search-firms',
     title: 'Executive Search Firms',
-    summary: 'Bespoke recruiter software for complex search cycles and senior relationship management.',
+    summary: 'Bespoke outbound workflow design for complex search cycles and senior relationship management.',
     painPoints: [
       'Commercial workflows are too bespoke for generic CRM defaults',
       'Senior recruiter context is trapped in notes and individual habit',
@@ -313,7 +313,7 @@ export const industries = [
   {
     slug: 'growth-stage-recruitment-agencies',
     title: 'Growth-Stage Recruitment Agencies',
-    summary: 'Custom systems for agencies moving from improvised hustle into repeatable recruiter execution.',
+    summary: 'Custom systems for agencies moving from improvised hustle into repeatable recruiter BD execution.',
     painPoints: [
       'Process quality depends too much on a few strong operators',
       'The agency has tools, but no real system connecting them',
@@ -335,18 +335,18 @@ export const industries = [
 export const processStages = [
   {
     name: 'Audit',
-    summary: 'Review recruiter workflow, offer shape, data quality, current tooling, and where follow-up is breaking down.',
+    summary: 'Review your recruiter workflow, offer shape, target firms, current tooling, and where follow-up is breaking down.',
     output: 'A concrete view of what the agency should keep, replace, and rebuild.',
   },
   {
     name: 'Plan',
-    summary: 'Define how prospects move from hiring signal to outreach, calls, pipeline updates, and next actions.',
+    summary: 'Define how target firms move from hiring signal to outreach, calls, pipeline updates, and next actions.',
     output: 'A clear build plan before implementation starts.',
   },
   {
     name: 'Build',
     summary: 'Implement sourcing logic, recruiter views, automation, sequences, and CRM structure around the agreed operating model.',
-    output: 'A custom recruiter system configured around how the desk actually works.',
+    output: 'A custom outbound system configured around how the team actually sells into firms.',
   },
   {
     name: 'Launch',
@@ -365,9 +365,9 @@ export const caseStudies = [
     slug: 'contingent-desk-hiring-signal-rebuild',
     title: 'Contingent desk rebuilds client BD around live hiring signals',
     clientType: 'Contingent recruitment agency',
-    summary: 'Born replaced manual prospecting and patchy follow-up with a signal-led recruiter workflow that made daily business development clearer.',
+    summary: 'Born replaced manual prospecting and patchy follow-up with a signal-led workflow that made selling into target firms clearer day to day.',
     problem:
-      'The desk had good recruiters, but business-development activity was scattered across inboxes, ad hoc sourcing, and weak post-call follow-up.',
+      'The team could sell once conversations happened, but business-development activity was scattered across inboxes, ad hoc sourcing, and weak post-call follow-up.',
     systemBuild: 'A signal-led sourcing layer, recruiter-ready research packs, reply handling, and a clearer pipeline model.',
     businessEffect: 'Daily business development became easier to run and much harder to lose track of.',
     whatChanged: ['Signal-led account intake', 'Cleaner reply-to-call routing', 'Less leakage after recruiter conversations'],
@@ -380,7 +380,7 @@ export const caseStudies = [
     workflow:
       'Hiring-led accounts entered the system automatically, were enriched with recruiter context, and then moved into daily outreach and call queues with clear follow-up ownership.',
     outcome:
-      'The desk got a more reliable business-development rhythm, faster first-touch execution, and much less lead leakage after conversations.',
+      'The team got a more reliable business-development rhythm, faster first-touch execution, and much less lead leakage after conversations.',
     takeaway:
       'Recruiter outbound improves quickly when sourcing, calls, and follow-up are designed as one system.',
   },
@@ -388,7 +388,7 @@ export const caseStudies = [
     slug: 'search-firm-follow-up-control',
     title: 'Search firm standardises follow-up after intro calls',
     clientType: 'Retained search firm',
-    summary: 'Born built a higher-context workflow so strong recruiter conversations no longer disappeared into personal notes and inboxes.',
+    summary: 'Born built a higher-context workflow so strong firm-side conversations no longer disappeared into personal notes and inboxes.',
     problem:
       'The firm had strong commercial conversations, but follow-up discipline and visibility varied by recruiter, which made pipeline control weak.',
     systemBuild: 'A standard post-call workflow with briefing templates, task logic, and manager review views.',
@@ -411,7 +411,7 @@ export const caseStudies = [
     slug: 'agency-call-queue-automation',
     title: 'Recruitment agency replaces spreadsheet chasing with call queue automation',
     clientType: 'Growth-stage recruitment agency',
-    summary: 'Born turned a spreadsheet-heavy outreach motion into a custom recruiter workflow with clearer daily priorities.',
+    summary: 'Born turned a spreadsheet-heavy outreach motion into a custom outbound workflow with clearer daily priorities.',
     problem:
       'The agency relied on recruiter memory and manual trackers to decide who to call, who to chase, and what needed action next.',
     systemBuild: 'A single call queue with account context, next-best actions, and follow-up automation after each interaction.',
@@ -739,11 +739,11 @@ export const faqItems = [
   {
     question: 'What kind of recruitment firms do you work with?',
     answer:
-      'Agencies with 1 to 20 people in tech, accounting, finance, construction, marketing, or temp staffing. The best fit is usually a founder, director, or MD still carrying part of BD.',
+      'Agencies with 1 to 20 people in tech, accounting, finance, construction, marketing, or temp staffing. The best fit is usually a team still running part of BD in-house.',
   },
   {
     question: 'How many clients do you take on?',
-    answer: 'Three per quarter. Every engagement is founder-led.',
+    answer: 'A small number at a time so the build stays focused and practical.',
   },
   {
     question: 'What happens after the 3-month pilot?',
@@ -755,20 +755,20 @@ export const aboutPrinciples = [
   'Recruiter workflow should feel controlled, not improvised.',
   'Follow-up discipline matters as much as first-touch activity.',
   'Custom systems should remove admin, not add complexity.',
-  'Bespoke recruiter builds outperform generic templates when pipeline matters.',
+  'The system should fit the desk, not force the desk into a template.',
 ] as const;
 
 export const contactChecklist = [
   'You run a recruitment firm or recruiter-led commercial team.',
   'You need sourcing, outreach, calls, and follow-up tied together.',
-  'You want founder-led help, not a generic outbound retainer.',
+  'You want a practical system, not more disconnected tools.',
   'You care about consistent BD, clearer follow-up, and less admin drag.',
 ] as const;
 
 export const contactProcess = [
   'Share a short brief about your firm, what you recruit, and where BD is getting stuck.',
   'Born reviews the fit and comes back with a clear next step.',
-  'If there is a fit, the next call is built around your workflow and 5 researched prospects in your niche.',
+  'If there is a fit, the next call is built around your workflow and 5 researched firms in your niche.',
 ] as const;
 
 export const contactExpectations = {
