@@ -73,7 +73,7 @@ export function PageHero({
           initial="hidden"
           animate="visible"
         >
-          <motion.p variants={reveal} className="eyebrow">
+          <motion.p variants={reveal} className="eyebrow-hero">
             {eyebrow}
           </motion.p>
           <motion.h1

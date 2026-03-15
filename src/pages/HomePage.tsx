@@ -207,7 +207,7 @@ export default function HomePage() {
 
         <div className="grid gap-8 lg:grid-cols-[minmax(0,0.96fr)_minmax(20rem,1.04fr)] lg:items-start lg:gap-8">
           <motion.div variants={stagger} initial="hidden" animate="visible" className="relative z-10">
-            <motion.p variants={reveal} className="eyebrow">
+            <motion.p variants={reveal} className="eyebrow-hero">
               Recruitment outbound systems
             </motion.p>
             <motion.h1
@@ -252,7 +252,9 @@ export default function HomePage() {
           <motion.aside initial="hidden" animate="visible" variants={reveal} className="hero-stage">
             <div className="relative z-10">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="eyebrow border-white/10 bg-white/8 text-white shadow-none">5 researched prospects</p>
+                <p className="inline-flex items-center rounded-full border border-emerald-200/20 bg-emerald-300/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-50">
+                  5 researched prospects
+                </p>
                 <p className="hero-card-label">What you see before the call</p>
               </div>
 
