@@ -1,8 +1,8 @@
 ---
 slug: gohighlevel-recruitment-agency-business-development-outbound
 title: "GoHighLevel for Recruitment Agencies: Build a BD Outbound Machine"
-summary: " How recruitment agencies use GoHighLevel for business development
-  cold calling. Two pipelines, automated follow-up, full system guide."
+summary: How recruitment agencies use GoHighLevel for business development cold
+  calling. Two pipelines, automated follow-up, full system guide.
 seoDescription: How recruitment agencies use GoHighLevel to build cold calling
   BD systems. Two pipelines, automated follow-up, done-for-you builds. See the
   full guide.
