@@ -32,6 +32,101 @@ function parseFrontmatterValue(rawValue: string) {
   return value;
 }
 
+function isIndentedLine(line: string) {
+  return /^[ \t]+/.test(line);
+}
+
+function foldMultilineValue(lines: string[], preserveLineBreaks: boolean) {
+  const normalisedLines = lines.map((line) => line.replace(/^[ \t]+/, '').trimRight());
+
+  if (preserveLineBreaks) {
+    return normalisedLines.join('\n').trim();
+  }
+
+  const paragraphs: string[] = [];
+  let currentParagraph: string[] = [];
+
+  for (const line of normalisedLines) {
+    if (!line.trim()) {
+      if (currentParagraph.length > 0) {
+        paragraphs.push(currentParagraph.join(' '));
+        currentParagraph = [];
+      }
+
+      continue;
+    }
+
+    currentParagraph.push(line.trim());
+  }
+
+  if (currentParagraph.length > 0) {
+    paragraphs.push(currentParagraph.join(' '));
+  }
+
+  return paragraphs.join('\n\n').trim();
+}
+
+function parseFrontmatter(rawFrontmatter: string) {
+  const lines = rawFrontmatter.split('\n');
+  const frontmatter: Record<string, string> = {};
+  let index = 0;
+
+  while (index < lines.length) {
+    const line = lines[index];
+
+    if (!line.trim()) {
+      index += 1;
+      continue;
+    }
+
+    const separatorIndex = line.indexOf(':');
+
+    if (separatorIndex === -1) {
+      index += 1;
+      continue;
+    }
+
+    const key = line.slice(0, separatorIndex).trim();
+    const rawValue = line.slice(separatorIndex + 1);
+
+    if (!key) {
+      index += 1;
+      continue;
+    }
+
+    const trimmedValue = rawValue.trim();
+
+    if (/^[>|][+-]?\d*$/.test(trimmedValue)) {
+      const preserveLineBreaks = trimmedValue.startsWith('|');
+      const blockLines: string[] = [];
+      index += 1;
+
+      while (index < lines.length && (isIndentedLine(lines[index]) || !lines[index].trim())) {
+        blockLines.push(lines[index]);
+        index += 1;
+      }
+
+      frontmatter[key] = foldMultilineValue(blockLines, preserveLineBreaks);
+      continue;
+    }
+
+    const continuationLines: string[] = [];
+    index += 1;
+
+    while (index < lines.length && isIndentedLine(lines[index])) {
+      continuationLines.push(lines[index]);
+      index += 1;
+    }
+
+    frontmatter[key] =
+      continuationLines.length > 0
+        ? foldMultilineValue([rawValue, ...continuationLines], false)
+        : parseFrontmatterValue(rawValue);
+  }
+
+  return frontmatter;
+}
+
 function parseMarkdownDocument(markdown: string) {
   if (!markdown.startsWith('---\n')) {
     return {
@@ -51,23 +146,7 @@ function parseMarkdownDocument(markdown: string) {
 
   const rawFrontmatter = markdown.slice(4, closingMarker).trim();
   const bodyMarkdown = markdown.slice(closingMarker + 5).trim();
-  const frontmatter = rawFrontmatter.split('\n').reduce<Record<string, string>>((accumulator, line) => {
-    const separatorIndex = line.indexOf(':');
-
-    if (separatorIndex === -1) {
-      return accumulator;
-    }
-
-    const key = line.slice(0, separatorIndex).trim();
-    const value = line.slice(separatorIndex + 1);
-
-    if (!key) {
-      return accumulator;
-    }
-
-    accumulator[key] = parseFrontmatterValue(value);
-    return accumulator;
-  }, {});
+  const frontmatter = parseFrontmatter(rawFrontmatter);
 
   return {
     frontmatter,
