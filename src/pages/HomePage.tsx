@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, BadgeCheck, MessagesSquare, SearchCheck, ShieldCheck, Workflow } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+import { BlogInlineMarkdown } from '@/components/BlogRichText';
 import { LinkArrow, SectionIntro } from '@/components/MarketingPrimitives';
 import { bookingUrl, faqItems, primaryCta, trustPoints } from '@/content/bornSiteContent';
 import usePageMeta from '@/hooks/usePageMeta';
@@ -443,7 +444,9 @@ export default function HomePage() {
             <article key={post.slug} className="surface-panel p-7">
               <p className="meta-kicker">{post.category}</p>
               <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">{post.title}</h2>
-              <p className="mt-4 text-base leading-7 text-slate-700">{post.summary}</p>
+              <p className="mt-4 text-base leading-7 text-slate-700">
+                <BlogInlineMarkdown text={post.summary} />
+              </p>
               <div className="mt-6">
                 <LinkArrow to={`/blogs/${post.slug}`}>Read article</LinkArrow>
               </div>

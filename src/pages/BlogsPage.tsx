@@ -1,3 +1,4 @@
+import { BlogInlineMarkdown } from '@/components/BlogRichText';
 import { LinkArrow, PageHero } from '@/components/MarketingPrimitives';
 import usePageMeta from '@/hooks/usePageMeta';
 import { useBlogPosts } from '@/lib/blogPublished';
@@ -68,7 +69,9 @@ export default function BlogsPage() {
                 <span>{featuredPost.readTime}</span>
               </div>
               <h2 className="mt-4 text-4xl font-semibold tracking-tight text-slate-950">{featuredPost.title}</h2>
-              <p className="mt-4 max-w-3xl text-base leading-8 text-slate-700">{featuredPost.summary}</p>
+              <p className="mt-4 max-w-3xl text-base leading-8 text-slate-700">
+                <BlogInlineMarkdown text={featuredPost.summary} />
+              </p>
               <div className="mt-6">
                 <LinkArrow to={`/blogs/${featuredPost.slug}`}>Read article</LinkArrow>
               </div>
@@ -76,7 +79,9 @@ export default function BlogsPage() {
 
             <div className="outline-panel p-6">
               <p className="meta-kicker">Key point</p>
-              <p className="mt-4 text-base leading-7 text-slate-700">{featuredPost.seoDescription}</p>
+              <p className="mt-4 text-base leading-7 text-slate-700">
+                <BlogInlineMarkdown text={featuredPost.seoDescription} />
+              </p>
             </div>
           </article>
         )}
@@ -94,7 +99,9 @@ export default function BlogsPage() {
                 <span>{post.readTime}</span>
               </div>
               <h2 className="mt-4 text-3xl font-semibold tracking-tight text-slate-950">{post.title}</h2>
-              <p className="mt-4 text-base leading-7 text-slate-700">{post.summary}</p>
+              <p className="mt-4 text-base leading-7 text-slate-700">
+                <BlogInlineMarkdown text={post.summary} />
+              </p>
               <div className="mt-6">
                 <LinkArrow to={`/blogs/${post.slug}`}>Read article</LinkArrow>
               </div>

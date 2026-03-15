@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 
 import { BlogPostItem } from '@/content/blogContent';
-import BlogRichText from '@/components/BlogRichText';
+import BlogRichText, { BlogInlineMarkdown } from '@/components/BlogRichText';
+import { extractMarkdownHeadings } from '@/lib/blogMarkdown';
 
 function formatDate(date: string) {
   return new Intl.DateTimeFormat('en-AU', {
@@ -17,6 +18,8 @@ interface BlogArticlePageProps {
 }
 
 export default function BlogArticlePage({ post, previewMode = false }: BlogArticlePageProps) {
+  const pageHeadings = extractMarkdownHeadings(post.bodyMarkdown);
+
   return (
     <>
       {previewMode && (
@@ -37,7 +40,9 @@ export default function BlogArticlePage({ post, previewMode = false }: BlogArtic
             <h1 className="mt-6 max-w-4xl text-[clamp(2.8rem,7vw,4.4rem)] font-semibold leading-[0.96] tracking-tight text-slate-950">
               {post.title}
             </h1>
-            <p className="mt-6 max-w-3xl text-base leading-8 text-slate-700 sm:text-lg">{post.summary}</p>
+            <p className="mt-6 max-w-3xl text-base leading-8 text-slate-700 sm:text-lg">
+              <BlogInlineMarkdown text={post.summary} />
+            </p>
             <div className="mt-8 flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
               <span>{formatDate(post.publishedAt)}</span>
               <span className="h-1 w-1 rounded-full bg-slate-300" />
@@ -48,16 +53,20 @@ export default function BlogArticlePage({ post, previewMode = false }: BlogArtic
           </div>
 
           <aside className="grid gap-5">
-            <div className="surface-panel p-7">
-              <p className="meta-kicker">On this page</p>
-              <ul className="mt-5 grid gap-3 text-sm leading-7 text-slate-700">
-                {post.sections.map((section) => (
-                  <li key={section.heading} className="list-card">
-                    {section.heading}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {pageHeadings.length > 0 && (
+              <div className="surface-panel p-7">
+                <p className="meta-kicker">On this page</p>
+                <ul className="mt-5 grid gap-3 text-sm leading-7 text-slate-700">
+                  {pageHeadings.map((heading) => (
+                    <li key={heading.id} className="list-card">
+                      <a href={`#${heading.id}`} className="block transition hover:text-slate-950">
+                        {heading.text}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <div className="surface-panel p-7">
               <p className="meta-kicker">Continue</p>
@@ -81,12 +90,7 @@ export default function BlogArticlePage({ post, previewMode = false }: BlogArtic
         <div className="grid gap-6">
           <article className="outline-panel p-7 sm:p-8">
             <div className="article-prose">
-              {post.sections.map((section) => (
-                <section key={section.heading}>
-                  <h2>{section.heading}</h2>
-                  <BlogRichText body={section.body} />
-                </section>
-              ))}
+              <BlogRichText body={post.bodyMarkdown} />
             </div>
           </article>
         </div>
