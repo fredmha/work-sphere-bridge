@@ -1,6 +1,8 @@
 import { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 
+import GoogleAnalyticsTracker from '@/components/GoogleAnalyticsTracker';
+
 const MarketingLayout = lazy(() => import('@/components/MarketingLayout'));
 const AboutPage = lazy(() => import('@/pages/AboutPage'));
 const BlogCommandPage = lazy(() => import('@/pages/BlogCommandPage'));
@@ -33,6 +35,7 @@ function RouteFallback() {
 export default function App() {
   return (
     <Router>
+      <GoogleAnalyticsTracker />
       <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route path="/blogcommand" element={<BlogCommandPage />} />
