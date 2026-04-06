@@ -19,6 +19,7 @@ const InsightDetailPage = lazy(() => import('@/pages/InsightDetailPage'));
 const InsightsPage = lazy(() => import('@/pages/InsightsPage'));
 const NotFound = lazy(() => import('@/pages/NotFound'));
 const ProcessPage = lazy(() => import('@/pages/ProcessPage'));
+const RoiPage = lazy(() => import('@/pages/RoiPage'));
 const ServiceDetailPage = lazy(() => import('@/pages/ServiceDetailPage'));
 const ServicesPage = lazy(() => import('@/pages/ServicesPage'));
 
@@ -47,6 +48,7 @@ export default function App() {
             <Route path="/industries" element={<IndustriesPage />} />
             <Route path="/industries/:slug" element={<IndustryDetailPage />} />
             <Route path="/process" element={<ProcessPage />} />
+            <Route path="/roi" element={<RoiPage />} />
             <Route path="/blogs" element={<BlogsPage />} />
             <Route path="/blogs/preview/:draftId" element={<BlogPreviewPage />} />
             <Route path="/blogs/:slug" element={<BlogDetailPage />} />

@@ -70,6 +70,7 @@ const blogSlugs = readMarkdownFiles('src/content/blog')
 
 const routes = [
   '/',
+  '/roi',
   '/process',
   '/services',
   '/industries',
