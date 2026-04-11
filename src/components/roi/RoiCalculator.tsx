@@ -48,7 +48,7 @@ const inputFields = [
     label: 'Prospects dialed per day',
     min: 20,
     max: ROI_MAX_DAILY_DIALS,
-    step: 1,
+    step: 0.5,
   },
   {
     key: 'connectRate',

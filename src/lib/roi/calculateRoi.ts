@@ -23,7 +23,7 @@ export const ROI_BASE_RECRUITERS = 1;
 export const ROI_BASE_WORKING_DAYS_PER_MONTH = 20;
 export const ROI_BASE_MONTHS_PER_YEAR = 12;
 export const ROI_MONTHLY_LEAD_CAP = 750;
-export const ROI_MAX_DAILY_DIALS = Math.ceil(ROI_MONTHLY_LEAD_CAP / ROI_BASE_WORKING_DAYS_PER_MONTH);
+export const ROI_MAX_DAILY_DIALS = ROI_MONTHLY_LEAD_CAP / ROI_BASE_WORKING_DAYS_PER_MONTH;
 
 export function calculateRoi({
   dailyDials,

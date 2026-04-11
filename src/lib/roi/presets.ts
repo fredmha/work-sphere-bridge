@@ -16,7 +16,7 @@ export const roiPresets = {
     averagePlacementFee: 12000,
   },
   aggressive: {
-    dailyDials: 38,
+    dailyDials: 37.5,
     connectRate: 15,
     discoveryRate: 24,
     placementRate: 18,

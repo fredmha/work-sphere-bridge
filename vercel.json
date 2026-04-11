@@ -9,6 +9,10 @@
       "destination": "/blogcommand/index.html"
     },
     {
+      "source": "/blogcommand/(.*)",
+      "destination": "/blogcommand/$1"
+    },
+    {
       "source": "/((?!api/|blogcommand/).*)",
       "destination": "/index.html"
     }

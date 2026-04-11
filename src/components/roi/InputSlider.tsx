@@ -13,7 +13,11 @@ interface InputSliderProps {
   onChange: (value: number) => void;
 }
 
-const numberFormatter = new Intl.NumberFormat('en-GB');
+const integerFormatter = new Intl.NumberFormat('en-GB', { maximumFractionDigits: 0 });
+const decimalFormatter = new Intl.NumberFormat('en-GB', {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 1,
+});
 
 function snapToStep(value: number, min: number, step: number) {
   return min + Math.round((value - min) / step) * step;
@@ -21,13 +25,16 @@ function snapToStep(value: number, min: number, step: number) {
 
 function formatValue(
   value: number,
+  step: number,
   prefix?: string,
   suffix?: string,
   formatter?: (value: number) => string,
 ) {
   if (formatter) return formatter(value);
 
-  return `${prefix ?? ''}${numberFormatter.format(value)}${suffix ?? ''}`;
+  const formattedValue = Number.isInteger(step) ? integerFormatter.format(value) : decimalFormatter.format(value);
+
+  return `${prefix ?? ''}${formattedValue}${suffix ?? ''}`;
 }
 
 export default function InputSlider({
@@ -43,6 +50,7 @@ export default function InputSlider({
   onChange,
 }: InputSliderProps) {
   const [draftValue, setDraftValue] = useState(String(value));
+  const allowsDecimal = !Number.isInteger(step);
 
   useEffect(() => {
     setDraftValue(String(value));
@@ -96,13 +104,15 @@ export default function InputSlider({
           {prefix ? <span className="text-sm font-semibold text-primary">{prefix}</span> : null}
           <input
             aria-label={label}
-            inputMode="numeric"
-            pattern="[0-9]*"
+            inputMode={allowsDecimal ? 'decimal' : 'numeric'}
+            pattern={allowsDecimal ? '[0-9]*[.]?[0-9]*' : '[0-9]*'}
             className="w-full border-0 bg-transparent p-0 text-right text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-400"
             value={draftValue}
             onBlur={() => commitDraft(draftValue)}
             onChange={(event) => {
-              const sanitizedValue = event.target.value.replace(/[^\d]/g, '');
+              const sanitizedValue = allowsDecimal
+                ? event.target.value.replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1')
+                : event.target.value.replace(/[^\d]/g, '');
               setDraftValue(sanitizedValue);
             }}
             onKeyDown={handleKeyDown}
@@ -113,9 +123,9 @@ export default function InputSlider({
 
       <div className="mt-3">
         <div className="mb-2 flex items-center justify-between gap-4 text-[11px] font-medium text-slate-500">
-          <span>{formatValue(min, prefix, suffix, displayFormatter)}</span>
-          <span className="text-sm font-semibold text-primary">{formatValue(value, prefix, suffix, displayFormatter)}</span>
-          <span>{formatValue(max, prefix, suffix, displayFormatter)}</span>
+          <span>{formatValue(min, step, prefix, suffix, displayFormatter)}</span>
+          <span className="text-sm font-semibold text-primary">{formatValue(value, step, prefix, suffix, displayFormatter)}</span>
+          <span>{formatValue(max, step, prefix, suffix, displayFormatter)}</span>
         </div>
         <input
           type="range"
